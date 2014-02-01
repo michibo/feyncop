@@ -1,0 +1,294 @@
+#!/usr/bin/env python2.7
+# - Main program code for "feyncop" - 
+# A program to calculate the coproduct on the 
+# Hopf algebra of Feynman graphs. 
+# Please consult my Master thesis: 
+# "Algorithmization of the Hopf algebra of Feynman graphs" 
+# for details. 
+#
+# Author: Michael Borinsky
+# Email : borinsky@physik.hu-berlin.de
+#
+# If you have problems using this program, 
+# please feel free to contact me!
+# August 2013
+
+from fractions import *
+import copy
+import argparse
+import re
+import sys
+import collections
+from math import *
+from stuff import *
+
+from graph import Graph
+from hopf_graph import HopfGraph
+
+var_name_ptrn = re.compile( "^(\S+)\s*:=\s*" )
+def parse_var_name( string ):
+    m = var_name_ptrn.search( string )
+
+    if m:
+        return m.group(1), m.end(1), m.end()
+    else:
+        return "", 0, 0
+
+fraction_pattern = re.compile(r"^(\d*)(/?)(\d*)$")
+def parse_fraction( s ):
+    if not s:
+        return Fraction( 1, 1 )
+
+    m = fraction_pattern.match( s )
+
+    n = 1
+    try:
+        n = int(m.group(1))
+    except ValueError:
+        pass
+
+    d=1
+    try:
+        d = int(m.group(3))
+    except ValueError:
+        pass
+
+    return Fraction(n,d)
+        
+graph_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?G\[([0-9,\[\]\sAfc]*)\]\*?(\d*/?\d*)?\s*")
+edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
+def get_graph_from_match( m ):
+    edges_string = m.group(3)
+    
+    dict_W = { 'A' : 2, 'f' : 1, 'c' : 3 }
+    global ym 
+    ym = False
+    def gen_edges():
+        for m_e in edge_pattern.finditer( edges_string ):
+            v1 = int(m_e.group(1))
+            v2 = int(m_e.group(2))
+            w = dict_W[m_e.group(4)] if m_e.group(3)=="," else 2
+
+            if m_e.group(3) == ",":
+                global ym
+                ym = True
+
+            yield (v1,v2,w)
+
+    edges_weights = tuple(gen_edges())
+
+    edges = [ (v1,v2) for v1,v2,w in edges_weights ]
+    weights = [ w for v1,v2,w in edges_weights ]
+
+    f1 = parse_fraction( m.group(2) )
+    f2 = parse_fraction( m.group(4) )
+    sign = -1 if "-" in m.group(1) else 1
+
+    return HopfGraph( edges, weights, 0 ), sign*f1*f2, ym
+ 
+def parse_sum_of_graphs( string ):
+    for m in graph_pattern.finditer( string ):
+        yield get_graph_from_match(m), m.start(), m.end()
+
+def not_parsable_check( s ):
+    if s:
+        print "\n********************************"
+        print "Warning: Could not parse this: %s" % s
+        print "********************************"
+
+end_pattern = re.compile(r";\s*(.*)$")
+def parse_input_lines( instream, outstream, string ):
+    for line in instream:
+        string += line
+        for g_fac,strbeg,strend in parse_sum_of_graphs( string ):
+            not_parsable_check( string[:strbeg] )
+            string = string[strend:]
+
+            yield g_fac
+    else:
+        for g_fac,strbeg,strend in parse_sum_of_graphs( string ):
+            not_parsable_check( string[:strbeg] )
+            string = string[strend:]
+
+            yield g_fac
+
+    if string:
+        m = end_pattern.match(string)
+        if not m:
+            not_parsable_check( string )
+        else:
+            not_parsable_check( m.group(1) )
+
+def get_sub_graph_str( sub_graphs ):
+    sub_graph_strs = [ "{" + ",".join([ "%d" % e for e in sg ] ) + "}" for sg in sub_graphs ]
+    return "{" + ",".join( sub_graph_strs ) + "}"
+
+def get_coproduct_str( g, dimension, ym ):
+    sum_str = []
+    for sub_graphs in g.reduced_coproduct(dimension, ym):
+        sub_graph_str = get_sub_graph_str( sub_graphs )
+
+        sum_str+= [ "%s" % (sub_graph_str) ]
+
+    return "D[%s,\n[%s]]" % ( str(g), ", ".join(sum_str) )
+
+def get_coproduct_with_residues_str( g, dimension, ym ):
+    sum_str = []
+    for sub_graphs, residue_graph in g.reduced_coproduct_with_residue_graph(dimension, ym):
+        sub_graph_str = get_sub_graph_str( sub_graphs )
+
+        sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph) ]
+
+    return "D[%s,[\n%s]\n]" % ( str(g), ", \n".join(sum_str) )
+
+def get_tensor_product_str( tp ):
+    sum_str = []
+    sub_graphs, residue_graph = tp
+    def nosymfac( g ):
+        gp = copy.copy(g)
+        gp.prepare_graph()
+        gp.symmetry_factor = 0
+        return gp
+    def get_sg_str( g, m ):
+        if m == 1:
+            return "%s" % str(nosymfac(g))
+        else:
+            return "(%s)^%d" % (str(nosymfac(g)),m)
+
+    sub_graphs_str = "*".join( [ get_sg_str(g, m) for g,m in sub_graphs ] )
+    return "T[ %s, %s ]" % (sub_graphs_str, str(nosymfac(residue_graph)))
+
+def get_primitive_str( g, dimension, ym ):
+    if g.is_primitive( dimension ):
+        return str(g)
+    else:
+        return ""
+
+def get_element_str( element, fac ):
+    sign = "-" if fac < 0 else "+"
+    if abs(fac) == Fraction(1,1): 
+        return "%s %s" % (sign, element)
+    else:
+        return "%s %d/%d * %s" % (sign, fac.numerator, fac.denominator, element)
+
+def main():
+    parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the hopf algebra of feynman graphs')
+    parser.add_argument('-D', '--dimension', dest='dimension', type=int, default=4, help='Dimension of the theory (default: 4)')
+    parser.add_argument('-c', '--cographs', dest='residues', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
+    parser.add_argument('-u', '--unlabeled', dest='unlabeled', action='store_true', help='Calculate the coproduct of a sum of graphs with unlabeled subgraphs and cographs. (default: false)')
+    parser.add_argument('-p', '--primitives', dest='primitives', action='store_true', help='Filter graphs for primitive/skeleton graphs. (default: false)')
+
+    parser.add_argument('-k', '--check', dest='check', action='store_true', help='Check the sum of 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
+    args = parser.parse_args()
+        
+    string = ""
+    try:
+        string = next(sys.stdin)
+    except StopIteration:
+        return
+
+    var_name,ev,el = parse_var_name(string)
+    if var_name:
+        if args.unlabeled:
+            sys.stdout.write("%s_reduced_coproduct_unlabeled%s" % (var_name, string[ev:]))
+        elif args.primitives:
+            sys.stdout.write("%s_proj_to_prim%s" % (var_name, string[ev:]))
+        else:
+            sys.stdout.write("%s_reduced_coproduct%s" % (var_name, string[ev:]))
+        string = string[el:]
+
+    if args.unlabeled or args.check:
+        graphs_fac = frozenset((g.unlabeled_graph,fac,ym) for g,fac,ym in parse_input_lines( sys.stdin, None, string ))
+
+        coproducts = dict()
+        for g,fac,ym in graphs_fac:
+            for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ):
+                tensor_product = (tuple(sorted(sub_graphs.items())), residue_graph)
+
+                coproducts.setdefault( tensor_product, Fraction(0,1) ) 
+                coproducts[tensor_product] += fac
+
+        if args.unlabeled:
+            for tp, fac in coproducts.items():
+                tp_str = get_tensor_product_str( tp )
+                print get_element_str( tp_str, fac )
+        else:
+            for tensor_product, factor in coproducts.items():
+                sub_graphs, residue_graph = tensor_product
+                print " --- "
+                print "\t",
+                for g, fac in sub_graphs:
+                    print '%d x' % fac, g,
+                if not sub_graphs:
+                    print "1 ",
+                print ""
+                print "\t", residue_graph
+
+                sg_mults = [ m for g,m in sub_graphs ]
+                res_structure = collections.Counter()
+                sym_factor_sg = 1
+                edges_permutations = 1
+                calc_factor = Fraction(1,1)
+                for g,m in sub_graphs:
+                    sym_factor_sg *= factorial(m) * g.symmetry_factor**m
+
+                    r = g.residue_type 
+                    res_cntr = collections.Counter( r )
+                    for s in res_cntr.values():
+                        edges_permutations *= factorial(s)**m
+                    
+                    res_structure[ r ] += m
+
+                calc_factor = Fraction( edges_permutations, sym_factor_sg*residue_graph.symmetry_factor )
+                for r,m in res_structure.items():
+                    if len(r) == 2:
+                        w1,w2 = r
+                        if abs(w1) != abs(w2):
+                            raise
+
+                        w = abs(w1)
+
+                        insert_edges = sum( 1 for e in residue_graph.internal_edges_set if residue_graph.edge_weights[e] == w )
+                        if not residue_graph.internal_vtcs_set:
+                            insert_edges = sum( 1 for e in residue_graph.external_edges_set if residue_graph.edge_weights[e] == w )
+                        insertion_places_edges = binomial( insert_edges + m - 1, m ) * factorial(m)
+
+                        calc_factor *= insertion_places_edges
+                    else:
+                        insert_vtcs = sum( 1 for v in residue_graph.internal_vtcs_set if residue_graph.get_vtx_type(v) == r )
+                        insertion_places_vtcs = binomial( insert_vtcs, m ) * factorial(m)
+
+                        calc_factor *= insertion_places_vtcs
+
+                print ' ', calc_factor, factor, "******************************** BAD *************************" if calc_factor != factor else ""
+                if calc_factor != factor: 
+                    print "Check failed!"
+                    print "Maybe not all 1PI graphs of a given loop number where piped into feyncop or the dimension is wrong?",
+                    print "Please make sure that feyncop with the -u option is used! Handling of leg-fixed graphs is not possible in this check."
+                    sys.exit()
+            print "Check successful!"
+            sys.exit()
+        
+    else:
+        for g, fac, ym in parse_input_lines( sys.stdin, sys.stdout, string ):
+            if args.primitives:
+                prim_str = get_primitive_str( g, args.dimension, ym )
+                if prim_str:
+                    print get_element_str( prim_str, fac )
+            else:
+                cop_str = ""
+                if args.residues:
+                    cop_str = get_coproduct_with_residues_str( g, args.dimension, ym )
+                else:
+                    cop_str = get_coproduct_str( g, args.dimension, ym )
+               
+                print get_element_str( cop_str, fac ) 
+
+    print ";"
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"

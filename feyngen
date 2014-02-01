@@ -1,0 +1,176 @@
+#!/usr/bin/env python2.7
+# - Main program code for "feyngen" - 
+# A program to generate Feynman graphs suitable
+# for Hopf algebra calculations.
+# Please consult my Master thesis: 
+# "Algorithmization of the Hopf algebra of Feynman graphs" 
+# for details. 
+#
+# Author: Michael Borinsky
+# Email : borinsky@physik.hu-berlin.de
+#
+# If you have problems using this program, 
+# please feel free to contact me!
+# August 2013
+
+import sys
+import argparse
+
+from stuff import *
+import combinatorics
+from weighted_graph import WeightedGraph
+import phi_k_gen, qed_gen, qcd_gen
+from fractions import Fraction
+
+def gen_and_count( gen_graphs, unlabeled_ext_legs, test_sums ):
+    sym_fac_non_fixed = Fraction(0,1)
+    sym_fac_fixed = Fraction(0,1)
+
+    for g in gen_graphs:
+        sym_fac_non_fixed += Fraction(1, g.symmetry_factor)
+
+        if not unlabeled_ext_legs:
+            gen_fixed_graphs = ( fixed_g.unlabeled_graph for fixed_g in g.permute_external_edges() )
+
+            fixed_graphs = frozenset( gen_fixed_graphs )
+            for g_fixed in fixed_graphs:
+                sym_fac_fixed += Fraction(1, g_fixed.symmetry_factor)
+
+                yield g_fixed
+        else:
+            yield g
+
+    test_sums['fixed'] = sym_fac_fixed
+    test_sums['non-fixed'] = sym_fac_non_fixed
+
+def write_maple_graphs( graphs ):
+    for g in graphs:
+        sign = '+' #if g.get_graph_sign() > 0 else "-"
+        print "%s%s" % (sign, str(g))
+
+    return True
+ 
+def compare_sym_factors( num_loops, test_sums, args ):
+    test_sum_a = 0
+    test_sum_af = 0
+    fix_factor = 0
+    
+    if args.ym:
+        fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
+        if args.connected:   
+            test_sum_a = combinatorics.cntd_qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+        else:
+            test_sum_a = combinatorics.qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+    elif args.qed:
+        fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
+        if args.connected:   
+            test_sum_a = combinatorics.cntd_qed_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+        else:
+            test_sum_a = combinatorics.qed_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+    else:
+        fix_factor = factorial(args.num_ext_legs)
+        if args.connected:
+            test_sum_a = combinatorics.cntd_phi_k_class_coeff( num_loops, args.num_ext_legs, args.valence )
+        else:
+            test_sum_a = combinatorics.phi_k_class_coeff( num_loops, args.num_ext_legs, args.valence )
+
+    if test_sums['non-fixed'] != test_sum_a:
+        print test_sums['non-fixed'], test_sum_a
+        print 'nonfixed'
+        return False
+
+    if not args.unlabeled_ext_legs and test_sums['fixed'] != test_sum_a*fix_factor:
+        print test_sums['fixed'], test_sum_a*fix_factor
+        print 'fixed', fix_factor
+        return False
+    
+    return True
+
+def main():
+    parser = argparse.ArgumentParser(description='Enumerate non-isomorphic feynman diagrams with their corresponding symmetry-factors.')
+    parser.add_argument('loops', metavar='#loops', type=int, nargs='+', help='loop number(s) to enumerate or order in h-bar for non connected graphs')
+    
+    parser.add_argument('-c', '--connected', dest='connected', action='store_true', help='only enumerate connected graphs. (default: false)')
+    parser.add_argument('-p', '--1PI', dest='edge2cntd', action='store_true', help='only enumerate 1PI graphs. Implies -c/--connected. (default: false)')
+    parser.add_argument('-v', '--vtx2cntd', dest='vtx2cntd', action='store_true', help='only enumerate 2-vertex connected graphs. Implies -p/--1PI and -t/--notadpoles. (default: false)')
+    parser.add_argument('-t', '--notadpoles', dest='notadpoles', action='store_true', help='only enumerate non-tadpole graphs. (default: false)')
+
+    parser.add_argument('-k', '--valence', dest='valence', type=int, default=4, help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
+    
+    parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs. -k is ignored. (default: false)')
+    parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
+
+    parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='number of external legs in scalar phi^k-QFT. (default: 0)')
+    parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='number of external photon/gluon legs (default: 0)')
+    parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='number of external fermion legs (default: 0)')
+
+    parser.add_argument('-u', '--no_ext_label', dest='unlabeled_ext_legs', action='store_true', help='Don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
+
+    args = parser.parse_args()
+
+    qed = args.qed
+
+    if qed or args.ym:
+        if args.num_ext_legs:
+            print "Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead."
+    if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs):
+        print "Warning: -b# and -f# are ignored. Use only -b and -f without -j to indicate QED enumeration."
+    elif (args.num_ext_blegs or args.num_ext_flegs) and not args.ym:
+        args.qed = qed = True
+
+    if not qed and args.valence <= 2:
+        print "Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3"
+        return
+
+    loops_str =  ""
+    if len(args.loops) == 1:
+        loops_str = "%d" % args.loops[0]
+    else:
+        loops_str = "(%s)" % ",".join(["%d" % l for l in args.loops])
+
+    unlabeled_str = "_unlab_ext_legs" if args.unlabeled_ext_legs else ""
+    if qed:
+        print "qed_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+    elif args.ym:
+        print "ym_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+    else:
+        print "phi%d_j%d_h%s%s :=" % ( args.valence, args.num_ext_legs, loops_str, unlabeled_str )
+
+    graphs_yielded = False
+    for num_loops in args.loops:
+        num_vtcs = combinatorics.n_from_L( num_loops, args.valence if not qed else 3, args.num_ext_legs if not qed else args.num_ext_blegs + args.num_ext_flegs )
+        #if num_vtcs <= 0:
+        #    continue
+
+        gen_graphs = None
+
+        if qed:
+            gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+        elif args.ym:
+            gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+        else:
+            gen_graphs = phi_k_gen.gen_graphs( num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
+        
+        test_sums = dict()
+        gen_graphs_c = gen_and_count( gen_graphs, args.unlabeled_ext_legs, test_sums )
+
+        if write_maple_graphs ( gen_graphs_c ):
+            graphs_yielded = True
+
+            testable = not args.notadpoles and not args.edge2cntd and not args.vtx2cntd
+            if testable and not compare_sym_factors( num_loops, test_sums, args ):
+                print "Warning: Internal error check failed"
+
+    if graphs_yielded:
+        print ";"
+    else:
+        print "0;"
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"
+        
+
