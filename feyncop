@@ -130,7 +130,7 @@ def get_coproduct_str( g, dimension, ym ):
 
         sum_str+= [ "%s" % (sub_graph_str) ]
 
-    return "D[%s,\n[%s]]" % ( str(g), ", ".join(sum_str) )
+    return "D[%s,\n[%s]]" % ( g.get_graph_str(ym), ", ".join(sum_str) )
 
 def get_coproduct_with_residues_str( g, dimension, ym ):
     sum_str = []
@@ -139,9 +139,10 @@ def get_coproduct_with_residues_str( g, dimension, ym ):
 
         sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph) ]
 
-    return "D[%s,[\n%s]\n]" % ( str(g), ", \n".join(sum_str) )
+    return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
 
-def get_tensor_product_str( tp ):
+def get_tensor_product_str( tp, ym ):
+    print ym
     sum_str = []
     sub_graphs, residue_graph = tp
     def nosymfac( g ):
@@ -151,16 +152,17 @@ def get_tensor_product_str( tp ):
         return gp
     def get_sg_str( g, m ):
         if m == 1:
-            return "%s" % str(nosymfac(g))
+            return "%s" % nosymfac(g).get_graph_str(ym)
         else:
-            return "(%s)^%d" % (str(nosymfac(g)),m)
+            return "(%s)^%d" % (nosymfac(g).get_graph_str(ym),m)
 
     sub_graphs_str = "*".join( [ get_sg_str(g, m) for g,m in sub_graphs ] )
-    return "T[ %s, %s ]" % (sub_graphs_str, str(nosymfac(residue_graph)))
+    print sub_graphs_str
+    return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
 
 def get_primitive_str( g, dimension, ym ):
     if g.is_primitive( dimension ):
-        return str(g)
+        return g.get_graph_str(ym)
     else:
         return ""
 
@@ -201,16 +203,18 @@ def main():
         graphs_fac = frozenset((g.unlabeled_graph,fac,ym) for g,fac,ym in parse_input_lines( sys.stdin, None, string ))
 
         coproducts = dict()
+        ym_glob = False
         for g,fac,ym in graphs_fac:
             for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ):
                 tensor_product = (tuple(sorted(sub_graphs.items())), residue_graph)
 
                 coproducts.setdefault( tensor_product, Fraction(0,1) ) 
                 coproducts[tensor_product] += fac
+                ym_glob = ym_glob or ym
 
         if args.unlabeled:
             for tp, fac in coproducts.items():
-                tp_str = get_tensor_product_str( tp )
+                tp_str = get_tensor_product_str( tp, ym_glob )
                 print get_element_str( tp_str, fac )
         else:
             for tensor_product, factor in coproducts.items():

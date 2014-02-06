@@ -2,9 +2,17 @@
 import collections
 import itertools
 from weighted_graph import WeightedGraph
+from graph import Graph
 import copy
 
 class HopfGraph(WeightedGraph):
+    def get_graph_str( self, ym=False ):
+        if ym:
+            return WeightedGraph.__str__( self )
+        else:
+            print "No ym!"
+            return Graph.__str__( self )
+
     def is_primitive( self, dimension, ym=False ):
         try:
             sg = next( self.reduced_coproduct( dimension, ym ) )
