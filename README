@@ -96,8 +96,9 @@ To test feyncop run,
 the output should be:
 
 phi4_j2_h2_reduced_coproduct_unlabeled :=
-+ 1/4 * T[ G[[0,0,A],[1,0,A],[2,0,A]], G[[0,0,A],[1,0,A],[2,0,A]] ]
-+ 3/4 * T[ G[[1,0,A],[1,0,A],[2,0,A],[3,0,A],[4,1,A],[5,1,A]], G[[0,0,A],[1,0,A],[2,0,A]] ]
+phi4_j2_h2_reduced_coproduct_unlabeled :=
++ 1/4 * T[ G[[0,0],[1,0],[2,0]], G[[0,0],[1,0],[2,0]] ]
++ 3/4 * T[ G[[1,0],[1,0],[2,0],[3,0],[4,1],[5,1]], G[[0,0],[1,0],[2,0]] ]
 ;
 
 This output corresponds to the coproduct of the sum of all 1PI, 

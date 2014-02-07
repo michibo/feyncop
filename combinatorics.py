@@ -243,6 +243,20 @@ def phi_k_cc( n, m, k ):
 
     return Fraction( wick_coeff, lambda_coeff*exp_coeff )
 
+def phi_3_4_cc( n, m, k ):
+    dbl_l = m + n * k
+
+    if dbl_l % 2 != 0:
+        return 0
+    
+    exp_coeff = factorial(n) * factorial(m)
+    wick_coeff = double_factorial( dbl_l - 1 )
+
+    lambda_coeff = factorial( k ) ** n
+
+    return Fraction( wick_coeff, lambda_coeff*exp_coeff )
+
+
 def phi_k_cc_l( l, m, k ):
     return phi_k_cc( (2*l - m)/k, m, k ) if (2*l - m) % k == 0 else 0 
 

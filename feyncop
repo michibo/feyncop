@@ -142,7 +142,6 @@ def get_coproduct_with_residues_str( g, dimension, ym ):
     return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
 
 def get_tensor_product_str( tp, ym ):
-    print ym
     sum_str = []
     sub_graphs, residue_graph = tp
     def nosymfac( g ):
@@ -157,7 +156,6 @@ def get_tensor_product_str( tp, ym ):
             return "(%s)^%d" % (nosymfac(g).get_graph_str(ym),m)
 
     sub_graphs_str = "*".join( [ get_sg_str(g, m) for g,m in sub_graphs ] )
-    print sub_graphs_str
     return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
 
 def get_primitive_str( g, dimension, ym ):

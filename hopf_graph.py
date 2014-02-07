@@ -8,10 +8,9 @@ import copy
 class HopfGraph(WeightedGraph):
     def get_graph_str( self, ym=False ):
         if ym:
-            return WeightedGraph.__str__( self )
+            return str( self )
         else:
-            print "No ym!"
-            return Graph.__str__( self )
+            return str( Graph( self.edges, self.symmetry_factor ) )
 
     def is_primitive( self, dimension, ym=False ):
         try:

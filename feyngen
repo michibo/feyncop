@@ -99,6 +99,7 @@ def main():
     
     parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs. -k is ignored. (default: false)')
     parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
+    parser.add_argument('--phi34', dest='phi34', action='store_true', help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
 
     parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='number of external legs in scalar phi^k-QFT. (default: 0)')
     parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='number of external photon/gluon legs (default: 0)')
@@ -133,14 +134,14 @@ def main():
         print "qed_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
     elif args.ym:
         print "ym_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+    elif args.phi34:
+        print "phi3_4_j%d_h%s%s :=" % ( args.num_ext_legs, loops_str, unlabeled_str )
     else:
         print "phi%d_j%d_h%s%s :=" % ( args.valence, args.num_ext_legs, loops_str, unlabeled_str )
 
     graphs_yielded = False
     for num_loops in args.loops:
         num_vtcs = combinatorics.n_from_L( num_loops, args.valence if not qed else 3, args.num_ext_legs if not qed else args.num_ext_blegs + args.num_ext_flegs )
-        #if num_vtcs <= 0:
-        #    continue
 
         gen_graphs = None
 
@@ -148,6 +149,8 @@ def main():
             gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.ym:
             gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+        elif:
+            gen_graphs = phi_34_gen.gen_graphs( num_loops, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         else:
             gen_graphs = phi_k_gen.gen_graphs( num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         
