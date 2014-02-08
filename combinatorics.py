@@ -137,54 +137,17 @@ def phi34_class_coeff( num_loops, num_ext_edges ):
     s = 2*(L-1) + m
     return phi34_cc( s, m )
 
-# 1/n! ( g^2 \phi^4 + g \phi^3 + g \phi \psi^2 )^n
-# 1/n! \sum_{ k1+k2+k3 = n } ( n \over k1 k2 k3 ) g^( 2*k1 + k2 + k3 ) \phi^( 4*k1 + 3*k2 + k1 ) \psi^(2*k1)
-def qcd_class_coeff_no_ghosts( num_loops, num_ext_fermions, num_ext_bosons ):
+def qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
     if num_ext_fermions % 2 != 0:
+        return 0
+    if num_ext_ghosts % 2 != 0:
         return 0
     L = num_loops
     r = num_ext_fermions/2
+    u = num_ext_ghosts/2
     m = num_ext_bosons
-    s = m + 2*r + 2*(L - 1)
-
-    return sum( qcd_cc_no_ghosts( l, s, m, r ) for l in range( 0, (3*s + m + 2*r)/2+1 ) )
-
-def qcd_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    L = num_loops
-    r = num_ext_fermions/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*(L - 1)
-
-    return sum( qcd_cc( l, s, m, r ) for l in range( 0, (3*s + m + 2*r)/2+1 ) )
-
-
-def qcd_cc_no_ghosts( l, s, m, r ):
-    max_q = max_p = (2*l - m - 2*r - 2*s) 
-
-    def gen_terms():
-        for q in range( 0, max_q+1 ):
-            for p in range( 0, 1 ):
-                n = 2*l - 2*s - q - p - m - 2*r
-                two_k = 3*s + m + 2*r - 2*l
-                if (two_k < 0) or (n < 0) or (two_k % 2 != 0):
-                    continue
-                k = two_k / 2
-                
-                phi_power = 3*n + 4*k + q + p + m 
-                psi_power = 2*r + 2*q
-                c_power = 2*p
-
-                exp_coeff = factorial(n) * factorial(k) * factorial(q) * \
-                            factorial(p) * factorial(m) * factorial(r)**2
-                dom1_coeff = factorial(3) ** n
-                dom2_coeff = factorial(4) ** k
-                wick = double_factorial( phi_power - 1 ) * factorial( psi_power / 2) * factorial( c_power / 2)
-                
-                yield Fraction( wick, exp_coeff*dom1_coeff*dom2_coeff )
-
-    return sum( fac for fac in gen_terms() )
+    s = m + 2*r + 2*u + 2*(L - 1)
+    return qcd_cc(s,m,r,u)
 
 def phi34_cc( s, m ):
     l_min = max(0, (m + 2*s + 1)/2)
@@ -205,56 +168,48 @@ def phi34_cc( s, m ):
 
     return S
 
-def qcd_cc( l, s, m, r ):
-    max_q = max_p = (2*l - m - 2*r - 2*s) 
+def qcd_cc( s, m, r, u ):
+    l2_min = r
+    l3_min = u
+    l1_min = (m+1)/2
+    l1_max = l2_max = l3_max = (3*s+m+2*r+2*u)/2
 
-    def gen_terms():
-        for q in range( 0, max_q+1 ):
-            for p in range( 0, max_p+1 ):
-                n = 2*l - 2*s - q - p - m - 2*r
-                two_k = 3*s + m + 2*r - 2*l
-                if (two_k < 0) or (n < 0) or (two_k % 2 != 0):
+    S = 0
+    for l1 in range(l1_min, l2_max+1):
+        for l2 in range(l2_min, l2_max+1):
+            for l3 in range(l3_min, l3_max+1):
+                n1 = 2*l1 + l2 + l3 - 2*s - m - r - u
+                n2_t2 = -2*(l1+l2+l3) + 3*s + m + 2*r + 2*u
+                n3 = l2-r
+                n4 = l3-u
+                if n2_t2%2 != 0:
                     continue
-                k = two_k / 2
+                n2 = n2_t2/2
+                if n1 < 0 or n2 < 0 or n3 < 0 or n4 < 0:
+                    continue
+
+                denom = factorial(n1)*factorial(n2)*factorial(n3)*factorial(n4)*factorial(3)**n1*factorial(4)**n2*factorial(m)*factorial(r)**2*factorial(u)**2
+
+                nom = double_factorial(2*l1-1)*factorial(l2)*factorial(l3)
+                S+= Fraction(nom, denom)
+
+    return S
                 
-                phi_power = 3*n + 4*k + q + p + m 
-                psi_power = 2*r + 2*q
-                c_power = 2*p
-
-                exp_coeff = factorial(n) * factorial(k) * factorial(q) * \
-                            factorial(p) * factorial(m) * factorial(r)**2
-                dom1_coeff = factorial(3) ** n
-                dom2_coeff = factorial(4) ** k
-                wick = double_factorial( phi_power - 1 ) * factorial( psi_power / 2) * factorial( c_power / 2)
-                
-                yield Fraction( wick, exp_coeff*dom1_coeff*dom2_coeff )
-
-    return sum( fac for fac in gen_terms() )
-
 def cntd_qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons):
     num_vtcs = n_from_L( num_loops, 3, num_ext_fermions + num_ext_bosons )
 
     return cntd_qed_cc( num_vtcs, num_ext_fermions, num_ext_bosons )
 
-def cntd_qcd_class_coeff_no_ghosts( num_loops, num_ext_fermions, num_ext_bosons ):
+def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
     if num_ext_fermions % 2 != 0:
         return 0
     l = num_loops
     r = num_ext_fermions/2
+    u = num_ext_ghosts/2
     m = num_ext_bosons
-    s = m + 2*r + 2*(l - 1)
+    s = m + 2*r + 2*u + 2*(l - 1)
 
-    return cntd_qcd_cc_no_ghosts( s, m, r )
-
-def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    l = num_loops
-    r = num_ext_fermions/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*(l - 1)
-
-    return cntd_qcd_cc( s, m, r )
+    return cntd_qcd_cc( s, m, r, u )
 
 def cntd_phi34_class_coeff( num_loops, num_ext_bosons ):
     L = num_loops
@@ -343,25 +298,14 @@ def cntd_qed_cc( num_vtcs, num_ext_bosons, num_ext_fermions ):
     
     return Alog[num_edges][num_ext_fermions][num_ext_bosons]
 
-def cntd_qcd_cc_no_ghosts( s, m, r ):
-    l = (3*s + m + 2*r)/2
-    # Warning: quick and dirty optimization!
-    A = [ [ [ [ qcd_cc_no_ghosts( lp, sp, mp, rp ) for sp in range(max( min(s+1, lp+1-(mp+2*rp)/2), 1)) ] for mp in range(m+1) ] for rp in range(r+1) ] for lp in range(l+1) ]
+def cntd_qcd_cc( s, m, r, u ):
+    A = [ [ [ [ qcd_cc( sp, mp, rp, up ) for rp in range(r+1) ] for up in range(u+1) ] for mp in range(m+1) ] for sp in range(s+1) ] 
 
     Alog = lLog( A )
-    return sum( Alog[lp][r][m][s] for lp in range(l+1) if len(Alog[lp][r][m]) > s )
-
-def cntd_qcd_cc( s, m, r ):
-    l = (3*s + m + 2*r)/2
-    # Warning: quick and dirty optimization!
-    A = [ [ [ [ qcd_cc( lp, sp, mp, rp ) for sp in range(max( min(s+1, lp+1-(mp+2*rp)/2), 1)) ] for mp in range(m+1) ] for rp in range(r+1) ] for lp in range(l+1) ]
-
-    Alog = lLog( A )
-    return sum( Alog[lp][r][m][s] for lp in range(l+1) if len(Alog[lp][r][m]) > s )
+    return Alog[s][m][u][r]
 
 def cntd_phi34_cc( s, m ):
-    A = [ [ phi34_cc( sp, mp ) for sp in range(s+1) ] for mp in range(m+1) ]
+    A = [ [ phi34_cc( sp, mp ) for mp in range(m+1) ] for sp in range(s+1) ]
 
     Alog = lLog( A )
-    return Alog[m][s]
-
+    return Alog[s][m]
