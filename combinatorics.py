@@ -129,6 +129,13 @@ def qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
     num_vtcs = n_from_L( num_loops, 3, num_ext_fermions + num_ext_bosons )
 
     return qed_cc( num_vtcs, num_ext_fermions, num_ext_bosons )
+   
+def phi34_class_coeff( num_loops, num_ext_edges ):
+    L = num_loops
+    m = num_ext_edges
+
+    s = 2*(L-1) + m
+    return phi34_cc( s, m )
 
 # 1/n! ( g^2 \phi^4 + g \phi^3 + g \phi \psi^2 )^n
 # 1/n! \sum_{ k1+k2+k3 = n } ( n \over k1 k2 k3 ) g^( 2*k1 + k2 + k3 ) \phi^( 4*k1 + 3*k2 + k1 ) \psi^(2*k1)
@@ -178,6 +185,25 @@ def qcd_cc_no_ghosts( l, s, m, r ):
                 yield Fraction( wick, exp_coeff*dom1_coeff*dom2_coeff )
 
     return sum( fac for fac in gen_terms() )
+
+def phi34_cc( s, m ):
+    l_min = max(0, (m + 2*s + 1)/2)
+    l_max = ( 3*s + m ) / 2 
+    S = 0
+    for l in range(l_min, l_max+1):
+        n_1 =  2*l - 2*s - m
+        n_2_t2 = -2*l + 3*s + m
+        if n_2_t2 % 2 != 0:
+            continue
+        n_2 = n_2_t2 / 2
+
+        denom = factorial( n_1 ) * factorial( n_2 ) * \
+                factorial( m ) * factorial(3)**n_1 *  \
+                factorial(4) ** n_2
+
+        S += Fraction(double_factorial(2*l-1), denom)
+
+    return S
 
 def qcd_cc( l, s, m, r ):
     max_q = max_p = (2*l - m - 2*r - 2*s) 
@@ -230,20 +256,14 @@ def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
 
     return cntd_qcd_cc( s, m, r )
 
+def cntd_phi34_class_coeff( num_loops, num_ext_bosons ):
+    L = num_loops
+    m = num_ext_bosons
+    s = m + 2*(L - 1)
+
+    return cntd_phi34_cc( s, m )
+
 def phi_k_cc( n, m, k ):
-    dbl_l = m + n * k
-
-    if dbl_l % 2 != 0:
-        return 0
-    
-    exp_coeff = factorial(n) * factorial(m)
-    wick_coeff = double_factorial( dbl_l - 1 )
-
-    lambda_coeff = factorial( k ) ** n
-
-    return Fraction( wick_coeff, lambda_coeff*exp_coeff )
-
-def phi_3_4_cc( n, m, k ):
     dbl_l = m + n * k
 
     if dbl_l % 2 != 0:
@@ -338,3 +358,10 @@ def cntd_qcd_cc( s, m, r ):
 
     Alog = lLog( A )
     return sum( Alog[lp][r][m][s] for lp in range(l+1) if len(Alog[lp][r][m]) > s )
+
+def cntd_phi34_cc( s, m ):
+    A = [ [ phi34_cc( sp, mp ) for sp in range(s+1) ] for mp in range(m+1) ]
+
+    Alog = lLog( A )
+    return Alog[m][s]
+
