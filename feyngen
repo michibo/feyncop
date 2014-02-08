@@ -19,7 +19,7 @@ import argparse
 from stuff import *
 import combinatorics
 from weighted_graph import WeightedGraph
-import phi_k_gen, qed_gen, qcd_gen
+import phi_k_gen, qed_gen, qcd_gen, phi_34_gen
 from fractions import Fraction
 
 def gen_and_count( gen_graphs, unlabeled_ext_legs, test_sums ):
@@ -67,6 +67,12 @@ def compare_sym_factors( num_loops, test_sums, args ):
             test_sum_a = combinatorics.cntd_qed_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
         else:
             test_sum_a = combinatorics.qed_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+    elif args.phi34:
+        fix_factor = factorial(args.num_ext_legs)
+        if args.connected:
+            test_sum_a = combinatorics.cntd_phi34_class_coeff( num_loops, args.num_ext_legs )
+        else:
+            test_sum_a = combinatorics.phi34_class_coeff( num_loops, args.num_ext_legs )
     else:
         fix_factor = factorial(args.num_ext_legs)
         if args.connected:
@@ -148,8 +154,8 @@ def main():
         if qed:
             gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.ym:
-            gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
-        elif:
+            gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, 0, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+        elif args.phi34:
             gen_graphs = phi_34_gen.gen_graphs( num_loops, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         else:
             gen_graphs = phi_k_gen.gen_graphs( num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
