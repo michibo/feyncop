@@ -35,7 +35,6 @@ def gen_and_count( gen_graphs, unlabeled_ext_legs, test_sums ):
             fixed_graphs = frozenset( gen_fixed_graphs )
             for g_fixed in fixed_graphs:
                 sym_fac_fixed += Fraction(1, g_fixed.symmetry_factor)
-
                 yield g_fixed
         else:
             yield g
@@ -56,11 +55,11 @@ def compare_sym_factors( num_loops, test_sums, args ):
     fix_factor = 0
     
     if args.ym:
-        fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
+        fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2*factorial(args.num_ext_glegs/2)**2
         if args.connected:   
-            test_sum_a = combinatorics.cntd_qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+            test_sum_a = combinatorics.cntd_qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs )
         else:
-            test_sum_a = combinatorics.qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+            test_sum_a = combinatorics.qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs )
     elif args.qed:
         fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
         if args.connected:   
@@ -110,6 +109,7 @@ def main():
     parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='number of external legs in scalar phi^k-QFT. (default: 0)')
     parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='number of external photon/gluon legs (default: 0)')
     parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='number of external fermion legs (default: 0)')
+    parser.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0, help='number of external ghost legs (default: 0)')
 
     parser.add_argument('-u', '--no_ext_label', dest='unlabeled_ext_legs', action='store_true', help='Don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
 
@@ -154,7 +154,7 @@ def main():
         if qed:
             gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.ym:
-            gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, 0, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+            gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.phi34:
             gen_graphs = phi_34_gen.gen_graphs( num_loops, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         else:

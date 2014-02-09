@@ -24,7 +24,7 @@ class WeightedGraph(Graph):
         return sub_graph
 
     def get_edges_tuple( self ):
-        return tuple( sorted( ( tuple( sorted(edge) if w!=1 else edge ), w) for edge,w in zip(self.edges,self.edge_weights) ) )
+        return tuple( sorted( ( tuple( sorted(edge) if w==2 else edge ), w) for edge,w in zip(self.edges,self.edge_weights) ) )
 
     def get_edge_str( self, e ):
         #if all( w == 2 for w in self.edge_weights ):
@@ -142,10 +142,18 @@ class WeightedGraph(Graph):
         extern_out_fermion_vtcs = \
             frozenset( self.edges[e][1] for e in self.sub_edges_by_weight(1) ) \
             & self.external_vtcs_set
+        extern_in_ghost_vtcs = \
+            frozenset( self.edges[e][0] for e in self.sub_edges_by_weight(3) ) \
+            & self.external_vtcs_set
+        extern_out_ghost_vtcs = \
+            frozenset( self.edges[e][1] for e in self.sub_edges_by_weight(3) ) \
+            & self.external_vtcs_set
 
         extern_vtcs_list =  list(extern_boson_vtcs) + \
                             list(extern_in_fermion_vtcs) + \
-                            list(extern_out_fermion_vtcs)
+                            list(extern_out_fermion_vtcs) + \
+                            list(extern_in_ghost_vtcs) + \
+                            list(extern_out_ghost_vtcs)
         if frozenset(extern_vtcs_list) != self.external_vtcs_set:
             raise
 
@@ -155,16 +163,18 @@ class WeightedGraph(Graph):
         for perm0 in itertools.permutations( extern_boson_vtcs ):
             for perm1 in itertools.permutations( extern_in_fermion_vtcs ):
                 for perm2 in itertools.permutations( extern_out_fermion_vtcs ):
+                    for perm3 in itertools.permutations( extern_in_ghost_vtcs ):
+                        for perm4 in itertools.permutations( extern_out_ghost_vtcs ):
 
-                    new_vtcs_list = tuple(self.internal_vtcs_set) + \
-                                    perm0 + perm1 + perm2
-                    m = dict( zip( vtcs_list, new_vtcs_list ) )
+                            new_vtcs_list = tuple(self.internal_vtcs_set) + \
+                                            perm0 + perm1 + perm2 + perm3 + perm4
+                            m = dict( zip( vtcs_list, new_vtcs_list ) )
 
-                    def relabel_edge( (v1,v2) ):
-                        return (m[v1], m[v2])
+                            def relabel_edge( (v1,v2) ):
+                                return (m[v1], m[v2])
 
-                    yield FixedGraph( 
-                            [ relabel_edge(edge) for edge in self.edges ], self.edge_weights, 0 )
+                            yield FixedGraph( 
+                                [ relabel_edge(edge) for edge in self.edges ], self.edge_weights, 0 )
 
     @property
     def clean_graph( self ):
@@ -181,3 +191,4 @@ class WeightedGraph(Graph):
         g.prepare_graph()
 
         return g
+

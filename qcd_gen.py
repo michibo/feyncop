@@ -78,6 +78,6 @@ def gen_from_phi34_g( fg, num_ext_flegs, num_ext_glegs, num_ext_blegs ):
                             ghost_weights[e] = 3
 
                 gw = WeightedGraph( tuple(edges), tuple(ghost_weights) )
-                if len(gw.sub_edges_by_weight(3)&gw.external_edges_set) == num_ext_glegs:
+                if len(gw.external_vtcs_set&gw.vtcs_set_sub_edges( gw.sub_edges_by_weight(3)&gw.external_edges_set)) == num_ext_glegs:
                     yield gw
 
