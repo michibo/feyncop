@@ -13,6 +13,9 @@ def phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
     if s_tkm2 % (k-2) != 0: return 0 
     s = s_tkm2/(k-2)
 
+    if s<0:
+        return 0
+
     return phi_k_cc( s, m, k )
 
 def cntd_phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
@@ -24,6 +27,9 @@ def cntd_phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
     if s_tkm2 % (k-2) != 0: return 0 
     s = s_tkm2/(k-2)
 
+    if s<0:
+        return 0
+
     return cntd_phi_k_cc( s, m, k )
    
 def phi34_class_coeff( num_loops, num_ext_edges ):
@@ -31,6 +37,9 @@ def phi34_class_coeff( num_loops, num_ext_edges ):
     m = num_ext_edges
 
     s = 2*(L-1) + m
+
+    if s<0:
+        return 0
 
     return phi34_cc( s, m )
 
@@ -41,6 +50,9 @@ def qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
     r = num_ext_fermions/2
     m = num_ext_bosons
     s = m + 2*r + 2*(L - 1)
+    
+    if s<0:
+        return 0
 
     return qed_cc(s,m,r)
 
@@ -55,7 +67,47 @@ def qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons
     m = num_ext_bosons
     s = m + 2*r + 2*u + 2*(L - 1)
 
+    if s<0:
+        return 0
+
     return qcd_cc(s,m,r,u)
+
+def cntd_qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons):
+    if num_ext_fermions % 2 != 0:
+        return 0
+    L = num_loops
+    r = num_ext_fermions/2
+    m = num_ext_bosons
+    s = m + 2*r + 2*(L - 1)
+
+    if s<0:
+        return 0
+
+    return cntd_qed_cc(s,m,r)
+
+def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
+    if num_ext_fermions % 2 != 0:
+        return 0
+    l = num_loops
+    r = num_ext_fermions/2
+    u = num_ext_ghosts/2
+    m = num_ext_bosons
+    s = m + 2*r + 2*u + 2*(l - 1)
+
+    if s<0:
+        return 0
+
+    return cntd_qcd_cc( s, m, r, u )
+
+def cntd_phi34_class_coeff( num_loops, num_ext_bosons ):
+    L = num_loops
+    m = num_ext_bosons
+    s = m + 2*(L - 1)
+
+    if s<0:
+        return 0
+
+    return cntd_phi34_cc( s, m )
 
 def phi_k_cc( s, m, k ):
     l_t2 = m + s * k
@@ -125,34 +177,6 @@ def qcd_cc( s, m, r, u ):
                 S+= Fraction(nom, denom)
 
     return S
-                
-def cntd_qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    L = num_loops
-    r = num_ext_fermions/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*(L - 1)
-
-    return cntd_qed_cc(s,m,r)
-
-def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    l = num_loops
-    r = num_ext_fermions/2
-    u = num_ext_ghosts/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*u + 2*(l - 1)
-
-    return cntd_qcd_cc( s, m, r, u )
-
-def cntd_phi34_class_coeff( num_loops, num_ext_bosons ):
-    L = num_loops
-    m = num_ext_bosons
-    s = m + 2*(L - 1)
-
-    return cntd_phi34_cc( s, m )
 
 def cntd_phi_k_cc( s, m, k ):
     A = [ [ phi_k_cc(sp, mp, k) for mp in range(m+1) ] for sp in range(s+1) ]
