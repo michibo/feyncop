@@ -147,8 +147,6 @@ def main():
 
     graphs_yielded = False
     for num_loops in args.loops:
-        num_vtcs = combinatorics.n_from_L( num_loops, args.valence if not qed else 3, args.num_ext_legs if not qed else args.num_ext_blegs + args.num_ext_flegs )
-
         gen_graphs = None
 
         if qed:
