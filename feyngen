@@ -43,11 +43,13 @@ def gen_and_count( gen_graphs, unlabeled_ext_legs, test_sums ):
     test_sums['non-fixed'] = sym_fac_non_fixed
 
 def write_maple_graphs( graphs ):
+    graphs_yielded = False
     for g in graphs:
+        graphs_yielded = True
         sign = '+' #if g.get_graph_sign() > 0 else "-"
         print "%s%s" % (sign, str(g))
 
-    return True
+    return graphs_yielded
  
 def compare_sym_factors( num_loops, test_sums, args ):
     test_sum_a = 0
@@ -92,24 +94,24 @@ def compare_sym_factors( num_loops, test_sums, args ):
     return True
 
 def main():
-    parser = argparse.ArgumentParser(description='Enumerate non-isomorphic feynman diagrams with their corresponding symmetry-factors.')
-    parser.add_argument('loops', metavar='#loops', type=int, nargs='+', help='loop number(s) to enumerate or order in h-bar for non connected graphs')
+    parser = argparse.ArgumentParser(description='Generate non-isomorphic feynman diagrams with their corresponding symmetry-factors.')
+    parser.add_argument('loops', metavar='#loops', type=int, nargs='+', help='Loop number(s) to generate or order in h-bar for non connected graphs')
     
-    parser.add_argument('-c', '--connected', dest='connected', action='store_true', help='only enumerate connected graphs. (default: false)')
-    parser.add_argument('-p', '--1PI', dest='edge2cntd', action='store_true', help='only enumerate 1PI graphs. Implies -c/--connected. (default: false)')
-    parser.add_argument('-v', '--vtx2cntd', dest='vtx2cntd', action='store_true', help='only enumerate 2-vertex connected graphs. Implies -p/--1PI and -t/--notadpoles. (default: false)')
-    parser.add_argument('-t', '--notadpoles', dest='notadpoles', action='store_true', help='only enumerate non-tadpole graphs. (default: false)')
+    parser.add_argument('-c', '--connected', dest='connected', action='store_true', help='Generate only connected graphs. (default: false)')
+    parser.add_argument('-p', '--1PI', dest='edge2cntd', action='store_true', help='Generate only 1PI graphs. Implies -c/--connected. (default: false)')
+    parser.add_argument('-v', '--vtx2cntd', dest='vtx2cntd', action='store_true', help='Generate only 2-vertex connected graphs. Implies -p/--1PI and -t/--notadpoles. (default: false)')
+    parser.add_argument('-t', '--notadpoles', dest='notadpoles', action='store_true', help='Generate only non-tadpole graphs. (default: false)')
 
     parser.add_argument('-k', '--valence', dest='valence', type=int, default=4, help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
+    parser.add_argument('--phi34', dest='phi34', action='store_true', help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
     
     parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs. -k is ignored. (default: false)')
     parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
-    parser.add_argument('--phi34', dest='phi34', action='store_true', help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
 
-    parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='number of external legs in scalar phi^k-QFT. (default: 0)')
-    parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='number of external photon/gluon legs (default: 0)')
-    parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='number of external fermion legs (default: 0)')
-    parser.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0, help='number of external ghost legs (default: 0)')
+    parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='Set the number of external legs in scalar phi^k-QFT. (default: 0)')
+    parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='Set the number of external photon/gluon legs (default: 0)')
+    parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='Set the number of external fermion legs (default: 0)')
+    parser.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0, help='Set the number of external ghost legs (default: 0)')
 
     parser.add_argument('-u', '--no_ext_label', dest='unlabeled_ext_legs', action='store_true', help='Don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
 
@@ -120,8 +122,8 @@ def main():
     if qed or args.ym:
         if args.num_ext_legs:
             print "Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead."
-    if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs):
-        print "Warning: -b# and -f# are ignored. Use only -b and -f without -j to indicate QED enumeration."
+    if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs or args.num_ext_glegs):
+        print "Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym and without -j to indicate QED or Yang Mills enumeration."
     elif (args.num_ext_blegs or args.num_ext_flegs) and not args.ym:
         args.qed = qed = True
 
@@ -145,17 +147,24 @@ def main():
     else:
         print "phi%d_j%d_h%s%s :=" % ( args.valence, args.num_ext_legs, loops_str, unlabeled_str )
 
+    ext_legs_total = 0 
+    possible_emptyness = not args.connected and not args.edge2cntd and not args.vtx2cntd
+
     graphs_yielded = False
     for num_loops in args.loops:
         gen_graphs = None
 
         if qed:
+            ext_legs_total = args.num_ext_flegs + args.num_ext_blegs
             gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.ym:
+            ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
             gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
         elif args.phi34:
+            ext_legs_total = args.num_ext_legs
             gen_graphs = phi_34_gen.gen_graphs( num_loops, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         else:
+            ext_legs_total = args.num_ext_legs
             gen_graphs = phi_k_gen.gen_graphs( num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         
         test_sums = dict()
@@ -167,6 +176,14 @@ def main():
             testable = not args.notadpoles and not args.edge2cntd and not args.vtx2cntd
             if testable and not compare_sym_factors( num_loops, test_sums, args ):
                 print "Warning: Internal error check failed"
+        elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
+            print "+%s" % str(WeightedGraph( tuple(), tuple() ).unlabeled_graph)
+            graphs_yielded = True
+            
+            test_sums['fixed'] = test_sums['non-fixed'] = 1
+            if not compare_sym_factors( num_loops, test_sums, args ):
+                print "Warning: Internal error check failed"
+
 
     if graphs_yielded:
         print ";"
