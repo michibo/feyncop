@@ -1,5 +1,5 @@
 
-feyncop and feyngen
+feyngen and feyncop 
 
 Author: Michael Borinsky
 Email: borinsky@physik.hu-berlin.de
@@ -7,26 +7,29 @@ Email: borinsky@physik.hu-berlin.de
 
 What is it? 
 -----------
+feyngen is a program to generate Feynman graphs for the use in perturbative 
+calculations of quantum field theory.
+
 feyncop is a program to calculate the coproduct of Feynman graphs in the 
 scope of the Hopf algebra of Feynman graphs. 
 
-feyngen is a program to generate Feynman graphs for the use in perturbative 
-calulations of quantum field theory.
 
+Prerequisites
+-------------
 
-Installation
-------------
+To use either of the programs Python 2.7 must be installed 
+on your machine. For information on how to install Python 
+please consult 
+http://www.python.org/.
 
-To use either of the programs python 2.7 must be installed 
-on your machine. For information on how to install python 
-please consult http://www.python.org/.
-
-Additionally the nauty package by Brendan McKay is needed. 
-The newest version can be downloaded from:
+Additionally, the nauty package by Brendan McKay is needed. The newest 
+version can be downloaded from:
 
 http://pallini.di.uniroma1.it/
 
 
+Installation
+------------
 
 Copy the feyncop and nauty archives into the same directory and extract them:
 
@@ -42,7 +45,7 @@ mv nautyXXXX/ nauty/
 and build the nauty package:
 
 cd nauty/
-.configure && make
+./configure && make
 cd ../
 
 Now, feyncop and feyngen can be build:
@@ -89,7 +92,7 @@ theory.
 
 To test feyncop run, 
 
-./feyngen 2 -j2 -p | ./feyncop -h
+./feyngen 2 -j2 -p | ./feyncop -u
 
 the output should be:
 
