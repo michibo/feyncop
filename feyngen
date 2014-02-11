@@ -22,14 +22,14 @@ from weighted_graph import WeightedGraph
 import phi_k_gen, qed_gen, qcd_gen, phi_34_gen
 from fractions import Fraction
 
-def gen_and_count( gen_graphs, unlabeled_ext_legs, test_sums ):
+def gen_and_count( gen_graphs, non_leg_fixed, test_sums ):
     sym_fac_non_fixed = Fraction(0,1)
     sym_fac_fixed = Fraction(0,1)
 
     for g in gen_graphs:
         sym_fac_non_fixed += Fraction(1, g.symmetry_factor)
 
-        if not unlabeled_ext_legs:
+        if not non_leg_fixed:
             gen_fixed_graphs = ( fixed_g.unlabeled_graph for fixed_g in g.permute_external_edges() )
 
             fixed_graphs = frozenset( gen_fixed_graphs )
@@ -86,7 +86,7 @@ def compare_sym_factors( num_loops, test_sums, args ):
         print 'nonfixed'
         return False
 
-    if not args.unlabeled_ext_legs and test_sums['fixed'] != test_sum_a*fix_factor:
+    if not args.non_leg_fixed and test_sums['fixed'] != test_sum_a*fix_factor:
         print test_sums['fixed'], test_sum_a*fix_factor
         print 'fixed', fix_factor
         return False
@@ -113,7 +113,7 @@ def main():
     parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='Set the number of external fermion legs (default: 0)')
     parser.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0, help='Set the number of external ghost legs (default: 0)')
 
-    parser.add_argument('-u', '--no_ext_label', dest='unlabeled_ext_legs', action='store_true', help='Don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
+    parser.add_argument('-u', '--non_leg_fixed', dest='non_leg_fixed', action='store_true', help='Generate non-leg-fixed graphs. I.e. don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
 
     args = parser.parse_args()
 
@@ -137,11 +137,11 @@ def main():
     else:
         loops_str = "(%s)" % ",".join(["%d" % l for l in args.loops])
 
-    unlabeled_str = "_unlab_ext_legs" if args.unlabeled_ext_legs else ""
+    unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if qed:
         print "qed_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
     elif args.ym:
-        print "ym_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+        print "ym_f%d_g%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, loops_str, unlabeled_str )
     elif args.phi34:
         print "phi3_4_j%d_h%s%s :=" % ( args.num_ext_legs, loops_str, unlabeled_str )
     else:
@@ -168,7 +168,7 @@ def main():
             gen_graphs = phi_k_gen.gen_graphs( num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles ) 
         
         test_sums = dict()
-        gen_graphs_c = gen_and_count( gen_graphs, args.unlabeled_ext_legs, test_sums )
+        gen_graphs_c = gen_and_count( gen_graphs, args.non_leg_fixed, test_sums )
 
         if write_maple_graphs ( gen_graphs_c ):
             graphs_yielded = True

@@ -14,17 +14,6 @@ feyngen is a program to generate Feynman graphs for the use in perturbative
 calulations of quantum field theory.
 
 
-The latest version
-------------------
-The latest version can be obtained from github: 
-
-git clone git@github.com:michibo/feyncop.git
-
-Or from my website:
-
-http://people.physik.hu-berlin.de/~borinsky/feyncop
-
-
 Installation
 ------------
 
@@ -64,11 +53,15 @@ make
 The two python programs feyngen and feyncop in the feyncop/ directory should 
 know be working as expected. 
 
-An overview of the parameters of the two programs is displayed with:
+An overview of the parameters of the two programs is displayed with 
 
 ./feyngen --help
+
+or
+
 ./feyncop --help
 
+.
 
 Testing
 -------
@@ -100,8 +93,7 @@ To test feyncop run,
 
 the output should be:
 
-phi4_j2_h2_reduced_coproduct_unlabeled :=
-phi4_j2_h2_reduced_coproduct_unlabeled :=
+phi4_j2_h2_red_cop_unlab :=
 + 1/4 * T[ G[[0,0],[1,0],[2,0]], G[[0,0],[1,0],[2,0]] ]
 + 3/4 * T[ G[[1,0],[1,0],[2,0],[3,0],[4,1],[5,1]], G[[0,0],[1,0],[2,0]] ]
 ;

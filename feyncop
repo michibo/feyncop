@@ -137,7 +137,7 @@ def get_coproduct_with_residues_str( g, dimension, ym ):
     for sub_graphs, residue_graph in g.reduced_coproduct_with_residue_graph(dimension, ym):
         sub_graph_str = get_sub_graph_str( sub_graphs )
 
-        sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph) ]
+        sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph.get_graph_str(ym)) ]
 
     return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
 
@@ -172,9 +172,9 @@ def get_element_str( element, fac ):
         return "%s %d/%d * %s" % (sign, fac.numerator, fac.denominator, element)
 
 def main():
-    parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the hopf algebra of feynman graphs')
+    parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the Hopf algebra of Feynman graphs')
     parser.add_argument('-D', '--dimension', dest='dimension', type=int, default=4, help='Dimension of the theory (default: 4)')
-    parser.add_argument('-c', '--cographs', dest='residues', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
+    parser.add_argument('-c', '--cographs', dest='cographs', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
     parser.add_argument('-u', '--unlabeled', dest='unlabeled', action='store_true', help='Calculate the coproduct of a sum of graphs with unlabeled subgraphs and cographs. (default: false)')
     parser.add_argument('-p', '--primitives', dest='primitives', action='store_true', help='Filter graphs for primitive/skeleton graphs. (default: false)')
 
@@ -190,11 +190,11 @@ def main():
     var_name,ev,el = parse_var_name(string)
     if var_name:
         if args.unlabeled:
-            sys.stdout.write("%s_reduced_coproduct_unlabeled%s" % (var_name, string[ev:]))
+            sys.stdout.write("%s_red_cop_unlab%s" % (var_name, string[ev:]))
         elif args.primitives:
             sys.stdout.write("%s_proj_to_prim%s" % (var_name, string[ev:]))
         else:
-            sys.stdout.write("%s_reduced_coproduct%s" % (var_name, string[ev:]))
+            sys.stdout.write("%s_red_cop%s" % (var_name, string[ev:]))
         string = string[el:]
 
     if args.unlabeled or args.check:
@@ -279,7 +279,7 @@ def main():
                     print get_element_str( prim_str, fac )
             else:
                 cop_str = ""
-                if args.residues:
+                if args.cographs:
                     cop_str = get_coproduct_with_residues_str( g, args.dimension, ym )
                 else:
                     cop_str = get_coproduct_str( g, args.dimension, ym )
