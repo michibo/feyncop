@@ -17,10 +17,11 @@ scope of the Hopf algebra of Feynman graphs.
 Prerequisites
 -------------
 
-To use either of the programs Python 2.7 must be installed 
-on your machine. For information on how to install Python 
-please consult 
-http://www.python.org/.
+To use either of the programs Python 2.7 with development files must be 
+installed on your machine. For information on how to install Python please 
+consult 
+http://www.python.org/
+.
 
 Additionally, the nauty package by Brendan McKay is needed. The newest 
 version can be downloaded from:
