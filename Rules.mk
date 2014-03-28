@@ -5,19 +5,26 @@ sp 		:= $(sp).x
 dirstack_$(sp)	:= $(d)
 d		:= $(dir)
 
-TGTS_$(d)   := $(d)/../feyncop_built.tar.gz
+PACKAGE_BUILT_$(d) := $(d)/../feyncop_built.tar.gz
+PACKAGE_$(d) := $(d)/../feyncop.tar.gz
+
+TGTS_$(d)   := $(PACKAGE_BUILT_$(d)) $(PACKAGE_$(d))
 
 pack : $(TGTS_$(d))
 
 SRCS_$(d)   := $(addprefix $(d)/, graph.py weighted_graph.py hopf_graph.py phi_k_gen.py phi_34_gen.py qed_gen.py qcd_gen.py combinatorics.py powerseries.py stuff.py nauty_ctrl.py feyncop feyngen)
 
-MISC_$(d)   := $(addprefix $(d)/, nauty_wrapper.so geng multig README)
+EXTRA_SRCS_$(d) := $(addprefix $(d)/, nauty_wrapper.c Makefile)
 
-$(TGTS_$(d)) : $(SRCS_$(d)) $(MISC_$(d))
+MISC_$(d)   := $(addprefix $(d)/, README)
+
+BINARIES_$(d)   := $(addprefix $(d)/, nauty_wrapper.so geng multig)
+
+$(PACKAGE_BUILT_$(d)) : $(SRCS_$(d)) $(MISC_$(d)) $(BINARIES_$(d))
 		tar czf $@ $^
 
-DEPS_$(d)	:= $(TGTS_$(d):%.pdf=%.d)
-SRCS_$(d)   := $(TGTS_$(d):%.pdf=%.tex)
+$(PACKAGE_$(d)) : $(SRCS_$(d)) $(MISC_$(d)) $(EXTRA_SRCS_$(d))
+		tar czf $@ $^
 
 CLEAN		:= $(CLEAN) $(TGTS_$(d))
 
