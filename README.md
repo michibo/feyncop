@@ -8,9 +8,9 @@ feyncop is a program to calculate the coproduct of Feynman graphs in the
 scope of the Hopf algebra of Feynman graphs. 
 
 The source code for both programs can be downloaded from 
-[https://github.com/michibo/feyncop](github). 
+[github](https://github.com/michibo/feyncop). 
 
-A [http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz](prebuilt package) is also available on [http://people.physik.hu-berlin.de/~borinsky/](my website).
+A [pre built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is also available on [my website](http://people.physik.hu-berlin.de/~borinsky/).
 
 
 Prerequisites
