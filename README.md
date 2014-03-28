@@ -1,3 +1,7 @@
+Feyngen and Feyncop
+===================
+
+
 What is it? 
 -----------
 
@@ -7,11 +11,19 @@ calculations of quantum field theory.
 feyncop is a program to calculate the coproduct of Feynman graphs in the 
 scope of the Hopf algebra of Feynman graphs. 
 
+Both programs are designed to be used at relatively high loop orders where 
+traditional programs like [QGRAF](http://cfif.ist.utl.pt/~paulo/qgraf.html) are 
+not applicable. 
+For instance the established [nauty package](http://pallini.di.uniroma1.it/) is 
+used to ensure high performance. 
+
 The source code for both programs can be downloaded from 
 [github](https://github.com/michibo/feyncop). 
+A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is also available on [my website](http://people.physik.hu-berlin.de/~borinsky/).
 
-A [pre built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is also available on [my website](http://people.physik.hu-berlin.de/~borinsky/).
+The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://arxiv.org/abs/1402.2613) and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
 
+Please cite [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://arxiv.org/abs/1402.2613) if you want to refer to the programs. 
 
 Prerequisites
 -------------
@@ -24,14 +36,15 @@ http://www.python.org/
 
 .
 
-Additionally, the nauty package by Brendan McKay is needed. The newest 
-version can be downloaded from:
+Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from:
 
 http://pallini.di.uniroma1.it/
 
 
 Installation
 ------------
+
+This step can be skipped if you want to use the pre-built version. 
 
 Copy the feyncop and nauty archives into the same directory and extract them:
 
@@ -75,7 +88,7 @@ To test feyngen run,
 
     $ ./feyngen 2 -j2
 
-in the feyncop directory.
+in the feyncop/ directory.
 
 The output should be: 
 
