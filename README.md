@@ -11,6 +11,8 @@ scope of the Hopf algebra of Feynman graphs.
 Included files
 --------------
 
+File                  | Description
+----------------------|------------------------------------------------------
 feyngen               | Main program code for "feyngen" A program to generate 
                         | Feynman graphs.
 feyncop               | Main program code for "feyncop" A program to calculate 
