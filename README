@@ -4,6 +4,17 @@ feyngen and feyncop
 Author: Michael Borinsky
 Email: borinsky@physik.hu-berlin.de
 
+
+What is it? 
+-----------
+
+feyngen is a program to generate Feynman graphs for the use in perturbative 
+calculations of quantum field theory.
+
+feyncop is a program to calculate the coproduct of Feynman graphs in the 
+scope of the Hopf algebra of Feynman graphs. 
+
+
 Included files
 --------------
 
@@ -28,15 +39,6 @@ nauty_ctrl.py       Wrapper code for the graph generation using geng and
 nauty_wrapper.c     Wrapper code for the nauty canonical labeling function. 
 Makefile            Installation Makefile.
 README              This file.
-
-
-What is it? 
------------
-feyngen is a program to generate Feynman graphs for the use in perturbative 
-calculations of quantum field theory.
-
-feyncop is a program to calculate the coproduct of Feynman graphs in the 
-scope of the Hopf algebra of Feynman graphs. 
 
 
 Prerequisites
