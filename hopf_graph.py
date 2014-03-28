@@ -1,26 +1,45 @@
 
-import collections
+"""hopf_graph.py: Implements the HopfGraph class. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
+
+
 import itertools
 from weighted_graph import WeightedGraph
 from graph import Graph
 import copy
 
 class HopfGraph(WeightedGraph):
+    """This class incorporates all the tools necessary for 
+        the treatment of graphs in the scope of the 
+        Hopf algebra of Feynman graphs."""
+
     def get_graph_str( self, ym=False ):
+        """Get the string representation of the graph either as 
+            Yang-Mills/QED or phi^k graph."""
+
         if ym:
             return str( self )
         else:
             return str( Graph( self.edges, self.symmetry_factor ) )
 
     def is_primitive( self, dimension, ym=False ):
+        """True if the graph is primitive."""
+
         try:
             sg = next( self.reduced_coproduct( dimension, ym ) )
         except StopIteration:
+            # True if the reduced coproduct is 0.
             return True
 
         return False
 
     def reduced_coproduct( self, dimension, ym=False ):
+        """Calculate the reduced coproduct of the graph in the given 
+            dimension."""
+
         if not self.is_edge_2_connected:
             print "Warning: Calculation of non 1PI graph coproduct omitted:", self
             return
@@ -29,6 +48,9 @@ class HopfGraph(WeightedGraph):
             yield sub_edges_list
 
     def reduced_coproduct_with_residue_graph( self, dimension, ym=False ):
+        """Calculate the reduced coproduct of the graph in the given 
+            dimension and the corresponding cograph."""
+
         for sub_edges_list in self.reduced_coproduct( dimension, ym ):
             sub_edges_set = frozenset( e for sub_edges in sub_edges_list for e in sub_edges )
             residue_edges = self.calc_residue_edges( self.edges_set, sub_edges_set )
@@ -40,6 +62,9 @@ class HopfGraph(WeightedGraph):
             yield sub_edges_list, residue_graph
     
     def eval_subedges_for_reduced_coproduct( self, sub_edges, dimension, sub_edges_list, ym=False ):
+        """Helper function: Evaluates omega_D on a given subgraph and checks if it is 
+            superficially divergent."""
+
         for component in self.cntd_components_sub_edges( sub_edges ):
             num_vtcs = len(self.vtcs_set_sub_edges( component ))
 
@@ -48,6 +73,7 @@ class HopfGraph(WeightedGraph):
             denom = sum( w if w != 3 else 2 for w in edge_weights )
             if ym:
                 vtx_types = ( self.get_vtx_type(v) for v in self.vtcs_set_sub_edges( component ) )
+                # The ghost vertices and the triple gluon vertices get an extra -1.
                 denom -= sum( 1 for t in vtx_types if (t == (2,2,2)) or (t == (-3,2,3)) )
                 
             dim_int = dimension*num_loops
@@ -64,6 +90,9 @@ class HopfGraph(WeightedGraph):
         return True
 
     def reduced_coproduct_on_edges( self, dimension, edges_set, ym=False ):
+        """Calculate the reduced coproduct in the given dimension 
+            only including edgers in edges_set."""
+
         for i in range(1,len(edges_set)):
             for sub_edges in itertools.combinations(edges_set, i):
                 sub_edges_list = []
@@ -71,6 +100,9 @@ class HopfGraph(WeightedGraph):
                     yield sub_edges_list
  
     def reduced_coproduct_unlabeled( self, dimension, ym=False ):
+        """Calculate the reduced coproduct and give the result 
+            as tensor products of unlabeled graphs."""
+
         for sub_edges_list, residue_graph in self.reduced_coproduct_with_residue_graph( dimension, ym ):
             sub_graphs = collections.Counter()
             for sub_edges in sub_edges_list:
@@ -85,36 +117,10 @@ class HopfGraph(WeightedGraph):
 
             yield sub_graphs, residue_graph.unlabeled_graph
 
-    def double_coproduct_left( self, dimension ):
-        for sub_edges_list, residue_edges in self.coproduct( dimension ):
-            def gen_left_coproducts( ):
-                if not sub_edges_list:
-                    yield list(self.coproduct_on_edges( dimension, set() ))
-
-                for sub_edges in sub_edges_list:
-                    yield list(self.coproduct_on_edges( dimension, sub_edges ))
-
-            coproducts = tuple(gen_left_coproducts())
-            for t in itertools.product( *coproducts ):
-                lX = ( x1 for x1,x2 in t )
-                rX = ( x2 for x1,x2 in t )
-
-                lX = ( x for SetX in lX for x in SetX )
-
-                yield lX,rX,residue_edges
-
-    def double_coproduct_right( self, dimension ):
-        for sub_edges_list, residue_edges in self.coproduct( dimension ):
-            sub_edges_set = set( [ e for sub_edges in sub_edges_list for e in sub_edges ] ) 
-            residue_edges_set = self.internal_edges_set - sub_edges_set
-            residue_graph = HopfGraph( residue_edges, 0 )
-
-            for s_e_l_2, r_e_2 in residue_graph.coproduct_on_edges( dimension, residue_edges_set ):
-                ses_set = set([ e for ses in s_e_l_2 for e in ses ])
-                residue_list_2 = [ [ residue_graph.edges[e] if e in ses_set else (-1,-1) for e in self.edges_set ] ]
-                yield sub_edges_list, residue_list_2, r_e_2
-
     def calc_residue_edges( self, edges_set, sub_edges ):
+        """Helper function: Calculates the residue edges corresponding to a 
+            certain subgraph."""
+
         residue_edges = list(self.edges) 
 
         m = dict( (v,v) for v in frozenset( v for edge in self.edges for v in edge if v != -1 ) )
@@ -133,6 +139,8 @@ class HopfGraph(WeightedGraph):
         return residue_edges
 
     def sub_graph_with_legs( self, sub_edges ):
+        """Helper function: Adds legs to a given subgraph in a canonical way."""
+            
         not_edges = self.edges_set - sub_edges
         vtcs = self.vtcs_set_sub_edges( sub_edges )
         not_vtcs = self.vtcs_set_sub_edges( not_edges )
@@ -158,6 +166,8 @@ class HopfGraph(WeightedGraph):
         return sub_graph
 
     def clean_of_val2_vtcs( self ):
+        """Helper function: Removes the valency 2 vertices in the graph."""
+
         while True:
             bad_vtcs = [ v for v in self.internal_vtcs_set if self.vtx_valence(v, self.edges_set) == 2 and (v,v) not in self.edges ]
             if not bad_vtcs:

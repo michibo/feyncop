@@ -46,7 +46,7 @@ def write_maple_graphs( graphs ):
     graphs_yielded = False
     for g in graphs:
         graphs_yielded = True
-        sign = '+' #if g.get_graph_sign() > 0 else "-"
+        sign = '+' 
         print "%s%s" % (sign, str(g))
 
     return graphs_yielded

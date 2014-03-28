@@ -1,48 +1,60 @@
 
+"""weighted_graph.py: Implements the WeightedGraph class. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
+
 from math import *
 import copy, itertools
-import collections
 
 from stuff import *
 from graph import Graph
 
 class WeightedGraph(Graph):
+    """This class extends the basic utilities in the Graph class by the tools 
+        to handle QED and Yang-Mills graphs."""
+
     def __init__( self, edges, edge_weights, symmetry_factor=0 ):
+        """Initializes the WeightedGraph class. Edges, edge_weights and 
+            symmetry_factor can be provided."""
+
         if len(edges) != len(edge_weights):
             raise
         
         super(WeightedGraph, self).__init__( edges, symmetry_factor )
         self.edge_weights = edge_weights
 
-    def sub_edges_by_weight( self, weight ):
-        return frozenset( e for e,w in enumerate(self.edge_weights) if w == weight )
-
-    def graph_from_sub_edges( self, sub_edges ):
-        sub_graph = super(WeightedGraph, self).graph_from_sub_edges( sub_edges )
-        sub_graph.edge_weights = tuple( self.edge_weights[e] for e in sorted(sub_edges) )
-
-        return sub_graph
-
-    def get_edges_tuple( self ):
-        return tuple( sorted( ( tuple( sorted(edge) if w==2 else edge ), w) for edge,w in zip(self.edges,self.edge_weights) ) )
-
     def get_edge_str( self, e ):
-        #if all( w == 2 for w in self.edge_weights ):
-        #    return super(WeightedGraph, self).get_edge_str(e)
+        """Return a readable string of the edges of the graph."""
 
         v1,v2 = self.edges[e]
         w = self.edge_weights[e]
         wDict = [ '0', 'f', 'A', 'c' ]
         return "[%d,%d,%c]" % (v1,v2,wDict[w])
 
-    def get_graph_sign( self ):
-        fermion_edges_set = self.sub_edges_by_weight(1)
-        cycles, cycles_edges = self.cycle_decomposition( fermion_edges_set )
+    def get_edges_tuple( self ):
+        """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
 
-        return (-1)**(len(cycles))
+        return tuple( sorted( ( tuple( sorted(edge) if w==2 else edge ), w) for edge,w in zip(self.edges,self.edge_weights) ) )
+
+    def graph_from_sub_edges( self, sub_edges ):
+        """Create a new graph from a sub set of its edges."""
+
+        sub_graph = super(WeightedGraph, self).graph_from_sub_edges( sub_edges )
+        sub_graph.edge_weights = tuple( self.edge_weights[e] for e in sorted(sub_edges) )
+
+        return sub_graph
+
+    def sub_edges_by_weight( self, weight ):
+        """Returns all subedges with a certain weight."""
+
+        return frozenset( e for e,w in enumerate(self.edge_weights) if w == weight )
 
     @property
     def residue_type( self ):
+        """Returns the residue type of the graph."""
+
         def dir_e(e, v):
             if self.edge_weights[e] == 2:   return 1
             if v == self.edges[e][0]:       return -1
@@ -52,6 +64,9 @@ class WeightedGraph(Graph):
         return tuple(sorted(ext_types))
 
     def get_vtx_type( self, v ):
+        """Returns the type of the vertex v in the same format as 
+            residue_type."""
+
         def dir1(e, v):
             if self.edge_weights[e] == 2:   return 1
             if v == self.edges[e][0]:       return -1
@@ -68,18 +83,29 @@ class WeightedGraph(Graph):
         return tuple(sorted(adj_types))
 
     def get_vtcs_coloring( self ):
+        """Helper function: Calculate the vertex coloring in a format suitable 
+            for the canonical labeling calculation."""
+
+        # All vertices with different numbers of selfloops of different type 
+        # are colored in another way. 
         dictWeights = { edge : self.edge_weights[e] for e,edge in enumerate(self.edges) }
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
         selfloop_degree_list = [ (edge_degree_counter[(v,v)],dictWeights[(v,v)] if edge_degree_counter[(v,v)] else 2) for v in self.internal_vtcs_set ]
 
+        # Sorting is important for the v even for all similar mul!
         selfloop_multiplicity_list = sorted( (mul,v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list) )
         ( ( max_selfloop_multiplicity, _), _ ) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else ((0,2), 0)
 
         self_loop_list = [ frozenset( vtx for mul, vtx in filter( lambda ((mul, we), vtx) : mul == i and we == w, selfloop_multiplicity_list ) ) for i in range( max_selfloop_multiplicity+1 ) for w in (1,2,3) ]
         
+        # External vertices all have the same color still. 
         return self_loop_list + [ self.external_vtcs_set ]
 
     def get_edges_coloring( self, edges_set ):
+        """Helper function: Calculate the edge coloring in a format suitable 
+            for the canonical labeling calculation."""
+            
+        # Fermions, bosons and ghosts need different color classes.
         fermion_edges_set = self.sub_edges_by_weight(1) & edges_set
         boson_edges_set = self.sub_edges_by_weight(2) & edges_set
         ghost_edges_set = self.sub_edges_by_weight(3) & edges_set
@@ -88,6 +114,9 @@ class WeightedGraph(Graph):
         ghost_edges = frozenset( self.edges[i] for i in ghost_edges_set if not self.is_selfloop(self.edges[i]) )
         boson_edges = frozenset( self.edges[i] for i in boson_edges_set )
 
+        # Fermions and ghosts need orientation. Bosons not!
+        # For higher performance some special cases of boson-fermion-ghost 
+        # edge combinations are included. 
         normalize = lambda edge : (max(edge),min(edge))
         flip = lambda (x,y) : (y,x)
         fermion_loops = frozenset( normalize(edge) for edge in fermion_edges if flip(edge) in fermion_edges )
@@ -106,6 +135,7 @@ class WeightedGraph(Graph):
             print dbl_boson_edges, reduced_fermion_edges
             raise
 
+        # Calculate the boson coloring as in the Graph class.
         boson_coloring = super( WeightedGraph, self).get_edges_coloring( boson_edges_set )
 
         return [ dbl_boson_edges | reduced_fermion_edges | reduced_ghost_edges, 
@@ -113,6 +143,9 @@ class WeightedGraph(Graph):
             reduced_ghost_edges - boson_ghost_loops ] + boson_coloring[1:]
 
     def get_trivial_symmetry_factor( self ):
+        """Calculates the trivial factor in the symmetry factor. Only 
+            considers edge multiplicity and self loops."""
+
         grpSize = 1
         boson_edges = self.sub_edges_by_weight(2)
         edge_degree_counter = self.edge_degree_counter(boson_edges)
@@ -124,6 +157,8 @@ class WeightedGraph(Graph):
         return grpSize
 
     def permute_external_edges( self ):
+        """Generate all possible graphs with fixed external legs from the 
+            graph provided that the graph is non-leg-fixed."""
         class FixedGraph( type(self) ):
             def get_vtcs_coloring( self ):
                 vtcs_coloring = super(FixedGraph, self).get_vtcs_coloring()
@@ -178,6 +213,8 @@ class WeightedGraph(Graph):
 
     @property
     def clean_graph( self ):
+        """Orders the edge- and weight list of the graph in a transparent manner."""
+
         ext_sorter = ( e in self.external_edges_set for e,edge in enumerate(self.edges) )
 
         norm = lambda (edge) : (max(edge),min(edge))

@@ -1,14 +1,18 @@
 
-import collections
+"""combinatorics.py: Collection of subroutines for the combinatorial calculation of zero dimensional field theories."""
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
+
 from stuff import *
 from fractions import Fraction
 from powerseries import lLog
 
-def phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
-    L = num_loops
-    m = num_ext_edges
-    k = vtx_degree
-
+def phi_k_class_coeff( L, m, k ):
+    """Calculate the sum of the symmetry factors of all phi^k diagrams 
+        with L loops, m external edges and valency k."""
+    
     s_tkm2 = m + 2*(L - 1)
     if s_tkm2 % (k-2) != 0: return 0 
     s = s_tkm2/(k-2)
@@ -18,23 +22,9 @@ def phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
 
     return phi_k_cc( s, m, k )
 
-def cntd_phi_k_class_coeff( num_loops, num_ext_edges, vtx_degree ):
-    L = num_loops
-    m = num_ext_edges
-    k = vtx_degree
-
-    s_tkm2 = m + 2*(L - 1)
-    if s_tkm2 % (k-2) != 0: return 0 
-    s = s_tkm2/(k-2)
-
-    if s<0:
-        return 0
-
-    return cntd_phi_k_cc( s, m, k )
-   
-def phi34_class_coeff( num_loops, num_ext_edges ):
-    L = num_loops
-    m = num_ext_edges
+def phi34_class_coeff( L, m ):
+    """Calculate the sum of the symmetry factors of all (phi^3 + phi^4)
+        diagrams with L loops, m external edges."""
 
     s = 2*(L-1) + m
 
@@ -43,12 +33,14 @@ def phi34_class_coeff( num_loops, num_ext_edges ):
 
     return phi34_cc( s, m )
 
-def qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
+def qed_class_coeff( L, rt2, m ):
+    """Calculate the sum of the symmetry factors of all QED diagrams 
+        with L loops, rt2 external fermions and m external bosons."""
+
+    if rt2 % 2 != 0:
         return 0
-    L = num_loops
-    r = num_ext_fermions/2
-    m = num_ext_bosons
+    
+    r = rt2/2
     s = m + 2*r + 2*(L - 1)
     
     if s<0:
@@ -56,15 +48,18 @@ def qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons ):
 
     return qed_cc(s,m,r)
 
-def qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
+def qcd_class_coeff( L, rt2, ut2, m ): 
+    """Calculate the sum of the symmetry factors of all QCD diagrams 
+       with L loops, rt2 external fermions, ut2 external ghosts and 
+       m external bosons."""
+
+    if rt2 % 2 != 0:
         return 0
-    if num_ext_ghosts % 2 != 0:
+    if ut2 % 2 != 0:
         return 0
-    L = num_loops
-    r = num_ext_fermions/2
-    u = num_ext_ghosts/2
-    m = num_ext_bosons
+    
+    r = rt2/2
+    u = ut2/2
     s = m + 2*r + 2*u + 2*(L - 1)
 
     if s<0:
@@ -72,55 +67,97 @@ def qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons
 
     return qcd_cc(s,m,r,u)
 
-def cntd_qed_class_coeff( num_loops, num_ext_fermions, num_ext_bosons):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    L = num_loops
-    r = num_ext_fermions/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*(L - 1)
+def cntd_phi_k_class_coeff( L, m, k ):
+    """Calculate the sum of the symmetry factors of all connected phi^k 
+        diagrams with L loops, m external edges and valency k."""
+    
+    s_tkm2 = m + 2*(L - 1)
+    if s_tkm2 % (k-2) != 0: return 0 
+    s = s_tkm2/(k-2)
 
     if s<0:
         return 0
 
-    return cntd_qed_cc(s,m,r)
+    A = [ [ phi_k_cc(sp, mp, k) for mp in range(m+1) ] for sp in range(s+1) ]
+    Alog = lLog( A )
+    
+    return Alog[s][m]
 
-def cntd_qcd_class_coeff( num_loops, num_ext_fermions, num_ext_ghosts, num_ext_bosons ):
-    if num_ext_fermions % 2 != 0:
-        return 0
-    l = num_loops
-    r = num_ext_fermions/2
-    u = num_ext_ghosts/2
-    m = num_ext_bosons
-    s = m + 2*r + 2*u + 2*(l - 1)
+def cntd_phi34_class_coeff( L, m ):
+    """Calculate the sum of the symmetry factors of all connected 
+        (phi^3 + phi^4) diagrams with L loops, m external edges."""
 
-    if s<0:
-        return 0
-
-    return cntd_qcd_cc( s, m, r, u )
-
-def cntd_phi34_class_coeff( num_loops, num_ext_bosons ):
-    L = num_loops
-    m = num_ext_bosons
     s = m + 2*(L - 1)
 
     if s<0:
         return 0
 
-    return cntd_phi34_cc( s, m )
+    A = [ [ phi34_cc( sp, mp ) for mp in range(m+1) ] for sp in range(s+1) ]
+
+    Alog = lLog( A )
+    return Alog[s][m]
+
+def cntd_qed_class_coeff( L, rt2, m):
+    """Calculate the sum of the symmetry factors of all connected 
+        QED diagrams with L loops, rt2 external fermions and 
+        m external bosons."""
+
+    if rt2 % 2 != 0:
+        return 0
+    
+    r = rt2/2
+    s = m + 2*r + 2*(L - 1)
+
+    if s<0:
+        return 0
+
+    A = [ [ [ qed_cc(sp, mp, rp) for mp in range(m+1) ] for rp in range(r+1) ] for sp in range(s+1) ]
+    Alog = lLog( A )
+    
+    return Alog[s][r][m]
+
+def cntd_qcd_class_coeff( L, rt2, ut2, m ):
+    """Calculate the sum of the symmetry factors of all connected QCD 
+        diagrams with L loops, rt2 external fermions, ut2 external ghosts 
+        and m external bosons."""
+
+    if rt2 % 2 != 0:
+        return 0
+    
+    r = rt2/2
+    u = ut2/2
+    s = m + 2*r + 2*u + 2*(L - 1)
+
+    if s<0:
+        return 0
+
+    A = [ [ [ [ qcd_cc( sp, mp, rp, up ) for rp in range(r+1) ] for up in range(u+1) ] for mp in range(m+1) ] for sp in range(s+1) ] 
+
+    Alog = lLog( A )
+    return Alog[s][m][u][r]
 
 def phi_k_cc( s, m, k ):
+    """Helper function which evaluates the relevant term in the 
+        generating function(al) of a zero dimensional phi^k theory. 
+        s corresponds to the power in the coupling constant and 
+        m to the power of the field sources."""
+        
     l_t2 = m + s * k
 
     if l_t2 % 2 != 0:
         return 0
     
     denom = factorial(s) * factorial(m) * factorial( k ) ** s
-    nom = double_factorial( l_t2- 1 )
+    nom = double_factorial( l_t2 - 1 )
 
     return Fraction( nom, denom )
 
 def phi34_cc( s, m ):
+    """Helper function which evaluates the relevant term in the 
+        generating function(al) of a zero dimensional (phi^3+phi^4) theory. 
+        s corresponds to the power in the coupling constant and 
+        m to the power of the field sources."""
+
     l_min = max(0, (m + 2*s + 1)/2)
     l_max = ( 3*s + m ) / 2 
     S = 0
@@ -140,6 +177,12 @@ def phi34_cc( s, m ):
     return S
 
 def qed_cc( s, m, r):
+    """Helper function which evaluates the relevant term in the 
+        generating function(al) of zero dimensional QED. 
+        s corresponds to the power in the coupling constant, 
+        m to the power of the photon field sources and r to 
+        the power of the absolute squared fermion sources."""
+
     l1_t2 = s + m
     l2 = r + s
 
@@ -152,6 +195,12 @@ def qed_cc( s, m, r):
     return Fraction( nom, denom )
 
 def qcd_cc( s, m, r, u ):
+    """Helper function which evaluates the relevant term in the 
+        generating function(al) of zero dimensional QCD. 
+        s corresponds to the power in the coupling constant, 
+        m to the power of the photon field sources and r/u to 
+        the power of the absolute squared fermion/ghost sources."""
+
     l2_min = r
     l3_min = u
     l1_min = (m+1)/2
@@ -177,27 +226,3 @@ def qcd_cc( s, m, r, u ):
                 S+= Fraction(nom, denom)
 
     return S
-
-def cntd_phi_k_cc( s, m, k ):
-    A = [ [ phi_k_cc(sp, mp, k) for mp in range(m+1) ] for sp in range(s+1) ]
-    Alog = lLog( A )
-    
-    return Alog[s][m]
-
-def cntd_phi34_cc( s, m ):
-    A = [ [ phi34_cc( sp, mp ) for mp in range(m+1) ] for sp in range(s+1) ]
-
-    Alog = lLog( A )
-    return Alog[s][m]
-
-def cntd_qed_cc( s, m, r ):
-    A = [ [ [ qed_cc(sp, mp, rp) for mp in range(m+1) ] for rp in range(r+1) ] for sp in range(s+1) ]
-    Alog = lLog( A )
-    
-    return Alog[s][r][m]
-
-def cntd_qcd_cc( s, m, r, u ):
-    A = [ [ [ [ qcd_cc( sp, mp, rp, up ) for rp in range(r+1) ] for up in range(u+1) ] for mp in range(m+1) ] for sp in range(s+1) ] 
-
-    Alog = lLog( A )
-    return Alog[s][m][u][r]

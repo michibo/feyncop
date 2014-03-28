@@ -1,22 +1,36 @@
 
+"""qed_gen.py: Implements functions to generate QED graphs. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
+
+
 import itertools
 from weighted_graph import WeightedGraph
 
 import phi_k_gen
 
-def gen_graphs( num_loops, num_ext_flegs, num_ext_blegs, cntd, edge2cntd, vtx2cntd, notadpoles ):
+def gen_graphs( L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
+    """Generate QED graphs with the desired parameters and properties. 
+        L: Loop number
+        r_t2: Ext. fermion number
+        m: Ext. boson number"""
     
-    phi3_graphs = ( phi_k_gen.gen_graphs( num_loops, 3, num_ext_flegs + num_ext_blegs, cntd, edge2cntd, vtx2cntd, notadpoles) )
+    phi3_graphs = ( phi_k_gen.gen_graphs( L, 3, r_t2 + m, cntd, edge2cntd, vtx2cntd, notadpoles) )
 
     for g_phi3 in phi3_graphs:
-        gen_qed_graphs = ( g.unlabeled_graph for g in gen_from_phi3_g( g_phi3, num_ext_flegs, num_ext_blegs ) )
+        gen_qed_graphs = ( g.unlabeled_graph for g in gen_from_phi3_g( g_phi3, r_t2, m ) )
 
         qed_graphs = frozenset( gen_qed_graphs )
 
         for g in qed_graphs:
             yield g
 
-def gen_from_phi3_g( fg, num_ext_flegs, num_ext_blegs ):
+def gen_from_phi3_g( fg, r_t2, m ):
+    """Helper function: Generate full fledged QED graphs from the bulk output of 
+        phi_k_gen.gen_graphs."""
+
     ext_vtcs = fg.external_vtcs_set
     int_vtcs = fg.internal_vtcs_set
 
@@ -38,12 +52,12 @@ def gen_from_phi3_g( fg, num_ext_flegs, num_ext_blegs ):
 
         fermion_legs = sum( 1 for adj in ext_adj for e in adj if weights[e] == 1 )
 
-        if fermion_legs != num_ext_flegs:
+        if fermion_legs != r_t2:
             continue
 
         boson_legs = sum( 1 for adj in ext_adj for e in adj if weights[e] == 2 )
 
-        if boson_legs != num_ext_blegs:
+        if boson_legs != m:
             continue
 
         for fermion_weights in itertools.product( (-1,1), repeat=len(fermion_edges)):

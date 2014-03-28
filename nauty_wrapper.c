@@ -1,13 +1,22 @@
+
+// nauty_wrapper.c: A wrapper for the nauty "nauty" routine to calculate 
+// the canonical labeling of a graph. 
+
+// Author: Michael Borinsky
+// Email: borinsky@physik.hu-berlin.de
+
 #include <python2.7/Python.h>
 #include "../nauty/nauty.h"
 
 unsigned long long g_GroupSize;
 
+// Callback function used to calculate the group order.
 static void grouplevelproc(int* p1,int* p2,int i1,int* p3,statsblk* s1,int i2,int index,int i3,int i4,int i5,int i6)
 {
     g_GroupSize*= index;
 }
 
+// Function to calculate the canonical labeling of a simple graph.
 static PyObject*
 get_canonical_labeling(PyObject *self, PyObject *args)
 {
@@ -20,6 +29,7 @@ get_canonical_labeling(PyObject *self, PyObject *args)
         return NULL;
     }
 
+    // Setting the nauty parameters.
     int n = num_vtcs;
 
     DYNALLSTAT(graph,g,g_sz);
@@ -70,6 +80,7 @@ get_canonical_labeling(PyObject *self, PyObject *args)
     PyObject* partition_iter = PyObject_GetIter(py_partition_list);
     PyObject* partition;
 
+    // Reading the initial partition for nauty from the python parameters.
     int num_vtcs2 = 0;
     while( (partition = PyIter_Next(partition_iter)) )
     {
@@ -128,10 +139,12 @@ get_canonical_labeling(PyObject *self, PyObject *args)
 
     g_GroupSize = 1;
 
+    // Calling nauty.
     nauty(g, lab, ptn, NULL, orbits, &options, &stats, workspace, 500*m, m, n, cg);
  
     int i;
 
+    // Reading the canonical labeling and the orbits.
     PyObject* py_lab= PyList_New(num_vtcs);
     for ( i=0; i < num_vtcs; i++ )
     {

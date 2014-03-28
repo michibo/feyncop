@@ -1,24 +1,37 @@
 
+"""qcd_gen.py: Implements functions to generate QCD graphs. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
+
 
 import itertools
 from weighted_graph import WeightedGraph
 
 import phi_34_gen
 
-
-def gen_graphs( num_loops, num_ext_flegs, num_ext_glegs, num_ext_blegs, cntd, edge2cntd, vtx2cntd, notadpoles ):
+def gen_graphs( L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
+    """Generate QCD graphs with the desired parameters and properties.
+        L: Loop number
+        r_t2: Ext. fermion number
+        u_t2: Ext. ghost number
+        m: Ext. boson number"""
     
-    phi34_graphs = ( phi_34_gen.gen_graphs( num_loops, num_ext_flegs + num_ext_blegs + num_ext_glegs, cntd, edge2cntd, vtx2cntd, notadpoles) )
+    phi34_graphs = ( phi_34_gen.gen_graphs( L, r_t2 + m + u_t2, cntd, edge2cntd, vtx2cntd, notadpoles) )
 
     for g_phi34 in phi34_graphs:
-        gen_qed_graphs = ( g.unlabeled_graph for g in gen_from_phi34_g( g_phi34, num_ext_flegs, num_ext_glegs, num_ext_blegs ) )
+        gen_qed_graphs = ( g.unlabeled_graph for g in gen_from_phi34_g( g_phi34, r_t2, u_t2, m ) )
 
         qed_graphs = frozenset( gen_qed_graphs )
 
         for g in qed_graphs:
             yield g
 
-def gen_from_phi34_g( fg, num_ext_flegs, num_ext_glegs, num_ext_blegs ):
+def gen_from_phi34_g( fg, r_t2, u_t2, m ):
+    """Helper function: Generate full fledged QCD graphs from the bulk output of 
+        phi_34_gen.gen_graphs."""
+
     ext_vtcs = fg.external_vtcs_set
     int_vtcs = fg.internal_vtcs_set
 
@@ -41,12 +54,12 @@ def gen_from_phi34_g( fg, num_ext_flegs, num_ext_glegs, num_ext_blegs ):
 
         fermion_legs = sum( 1 for adj in ext_adj for e in adj if weights[e] == 1 )
 
-        if fermion_legs != num_ext_flegs + num_ext_glegs:
+        if fermion_legs != r_t2 + u_t2:
             continue
 
         boson_legs = sum( 1 for adj in ext_adj for e in adj if weights[e] == 2 )
 
-        if boson_legs != num_ext_blegs:
+        if boson_legs != m:
             continue
 
         for fermion_weights in itertools.product( (-1,1), repeat=len(fermion_edges)):
@@ -78,6 +91,6 @@ def gen_from_phi34_g( fg, num_ext_flegs, num_ext_glegs, num_ext_blegs ):
                             ghost_weights[e] = 3
 
                 gw = WeightedGraph( tuple(edges), tuple(ghost_weights) )
-                if len(gw.external_vtcs_set&gw.vtcs_set_sub_edges( gw.sub_edges_by_weight(3)&gw.external_edges_set)) == num_ext_glegs:
+                if len(gw.external_vtcs_set&gw.vtcs_set_sub_edges( gw.sub_edges_by_weight(3)&gw.external_edges_set)) == u_t2:
                     yield gw
 
