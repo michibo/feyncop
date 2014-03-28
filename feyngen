@@ -1,17 +1,14 @@
 #!/usr/bin/env python2.7
-# - Main program code for "feyngen" - 
-# A program to generate Feynman graphs suitable
-# for Hopf algebra calculations.
-# Please consult my Master thesis: 
-# "Algorithmization of the Hopf algebra of Feynman graphs" 
-# for details. 
-#
-# Author: Michael Borinsky
-# Email : borinsky@physik.hu-berlin.de
-#
+""" - Main program code for "feyngen" - A program to generate Feynman graphs 
+suitable for Hopf algebra calculations. """
+
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
 # If you have problems using this program, 
 # please feel free to contact me!
-# August 2013
+# March 2014
 
 import sys
 import argparse
@@ -23,6 +20,9 @@ import phi_k_gen, qed_gen, qcd_gen, phi_34_gen
 from fractions import Fraction
 
 def gen_and_count( gen_graphs, non_leg_fixed, test_sums ):
+    """Generates the graphs and sums the symmetry factors for the obligatory 
+        cross check with the zero-dimensional field theory terms."""
+
     sym_fac_non_fixed = Fraction(0,1)
     sym_fac_fixed = Fraction(0,1)
 
@@ -43,6 +43,8 @@ def gen_and_count( gen_graphs, non_leg_fixed, test_sums ):
     test_sums['non-fixed'] = sym_fac_non_fixed
 
 def write_maple_graphs( graphs ):
+    """Prints the graphs in a format compatible to maple."""
+
     graphs_yielded = False
     for g in graphs:
         graphs_yielded = True
@@ -52,6 +54,10 @@ def write_maple_graphs( graphs ):
     return graphs_yielded
  
 def compare_sym_factors( num_loops, test_sums, args ):
+    """Compares the sum of the symmetry factors to the corresponding 
+        combinatorial calculations using generating functions. 
+        Returns False if a discrepancy is found."""
+
     test_sum_a = 0
     test_sum_af = 0
     fix_factor = 0
@@ -94,6 +100,9 @@ def compare_sym_factors( num_loops, test_sums, args ):
     return True
 
 def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
+
     parser = argparse.ArgumentParser(description='Generate non-isomorphic feynman diagrams with their corresponding symmetry-factors.')
     parser.add_argument('loops', metavar='#loops', type=int, nargs='+', help='Loop number(s) to generate or order in h-bar for non connected graphs')
     

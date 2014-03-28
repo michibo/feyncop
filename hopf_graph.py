@@ -6,7 +6,7 @@ __email__ = "borinsky@physik.hu-berlin.de"
 
 
 
-import itertools
+import itertools,collections
 from weighted_graph import WeightedGraph
 from graph import Graph
 import copy

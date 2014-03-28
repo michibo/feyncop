@@ -1,17 +1,13 @@
 #!/usr/bin/env python2.7
-# - Main program code for "feyncop" - 
-# A program to calculate the coproduct on the 
-# Hopf algebra of Feynman graphs. 
-# Please consult my Master thesis: 
-# "Algorithmization of the Hopf algebra of Feynman graphs" 
-# for details. 
-#
-# Author: Michael Borinsky
-# Email : borinsky@physik.hu-berlin.de
-#
+""" - Main program code for "feyncop" - A program to calculate the coproduct 
+on the Hopf algebra of Feynman graphs. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+
 # If you have problems using this program, 
 # please feel free to contact me!
-# August 2013
+# March 2014
 
 from fractions import *
 import copy
@@ -27,6 +23,8 @@ from hopf_graph import HopfGraph
 
 var_name_ptrn = re.compile( "^(\S+)\s*:=\s*" )
 def parse_var_name( string ):
+    """Parses the name of a input graph sum."""
+
     m = var_name_ptrn.search( string )
 
     if m:
@@ -36,6 +34,8 @@ def parse_var_name( string ):
 
 fraction_pattern = re.compile(r"^(\d*)(/?)(\d*)$")
 def parse_fraction( s ):
+    """Parses a fraction encoded in a string s."""
+
     if not s:
         return Fraction( 1, 1 )
 
@@ -58,6 +58,8 @@ def parse_fraction( s ):
 graph_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?G\[([0-9,\[\]\sAfc]*)\]\*?(\d*/?\d*)?\s*")
 edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
 def get_graph_from_match( m ):
+    """Helper function: Parses a graph from a match."""
+
     edges_string = m.group(3)
     
     dict_W = { 'A' : 2, 'f' : 1, 'c' : 3 }
@@ -87,6 +89,7 @@ def get_graph_from_match( m ):
     return HopfGraph( edges, weights, 0 ), sign*f1*f2, ym
  
 def parse_sum_of_graphs( string ):
+    """Parses a graph sum."""
     for m in graph_pattern.finditer( string ):
         yield get_graph_from_match(m), m.start(), m.end()
 
@@ -98,6 +101,8 @@ def not_parsable_check( s ):
 
 end_pattern = re.compile(r";\s*(.*)$")
 def parse_input_lines( instream, outstream, string ):
+    """Parses a stream of input."""
+        
     for line in instream:
         string += line
         for g_fac,strbeg,strend in parse_sum_of_graphs( string ):
@@ -120,10 +125,12 @@ def parse_input_lines( instream, outstream, string ):
             not_parsable_check( m.group(1) )
 
 def get_sub_graph_str( sub_graphs ):
+    """Creates an output string for a list of subgraphs."""
     sub_graph_strs = [ "{" + ",".join([ "%d" % e for e in sg ] ) + "}" for sg in sub_graphs ]
     return "{" + ",".join( sub_graph_strs ) + "}"
 
 def get_coproduct_str( g, dimension, ym ):
+    """Creates an output string for the coproduct."""
     sum_str = []
     for sub_graphs in g.reduced_coproduct(dimension, ym):
         sub_graph_str = get_sub_graph_str( sub_graphs )
@@ -133,6 +140,8 @@ def get_coproduct_str( g, dimension, ym ):
     return "D[%s,\n[%s]]" % ( g.get_graph_str(ym), ", ".join(sum_str) )
 
 def get_coproduct_with_residues_str( g, dimension, ym ):
+    """Creates an output string for the coproduct with cographs."""
+
     sum_str = []
     for sub_graphs, residue_graph in g.reduced_coproduct_with_residue_graph(dimension, ym):
         sub_graph_str = get_sub_graph_str( sub_graphs )
@@ -142,6 +151,9 @@ def get_coproduct_with_residues_str( g, dimension, ym ):
     return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
 
 def get_tensor_product_str( tp, ym ):
+    """Creates an output string for the coproduct in the unlabeled tensor 
+        product form."""
+
     sum_str = []
     sub_graphs, residue_graph = tp
     def nosymfac( g ):
@@ -159,12 +171,17 @@ def get_tensor_product_str( tp, ym ):
     return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
 
 def get_primitive_str( g, dimension, ym ):
+    """Creates an output string for the graph it is primitive."""
+
     if g.is_primitive( dimension ):
         return g.get_graph_str(ym)
     else:
         return ""
 
 def get_element_str( element, fac ):
+    """Helper function: Adds a factor to a string representation of an object 
+        if it is not trivial."""
+
     sign = "-" if fac < 0 else "+"
     if abs(fac) == Fraction(1,1): 
         return "%s %s" % (sign, element)
@@ -172,6 +189,9 @@ def get_element_str( element, fac ):
         return "%s %d/%d * %s" % (sign, fac.numerator, fac.denominator, element)
 
 def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
+
     parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the Hopf algebra of Feynman graphs')
     parser.add_argument('-D', '--dimension', dest='dimension', type=int, default=4, help='Dimension of the theory (default: 4)')
     parser.add_argument('-c', '--cographs', dest='cographs', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
@@ -215,6 +235,7 @@ def main():
                 tp_str = get_tensor_product_str( tp, ym_glob )
                 print get_element_str( tp_str, fac )
         else:
+# Code for the check! 
             for tensor_product, factor in coproducts.items():
                 sub_graphs, residue_graph = tensor_product
                 print " --- "
