@@ -1,8 +1,11 @@
 
 feyngen and feyncop 
+===================
 
 Author: Michael Borinsky
 Email: borinsky@physik.hu-berlin.de
+
+Website: http://people.physik.hu-berlin.de/~borinsky/feyncop.html
 
 
 What is it? 
@@ -13,6 +16,26 @@ calculations of quantum field theory.
 
 feyncop is a program to calculate the coproduct of Feynman graphs in the 
 scope of the Hopf algebra of Feynman graphs. 
+
+Both programs are designed to be used at relatively high loop orders where 
+traditional programs like QGRAF are not applicable.  For instance the 
+established nauty package is used to ensure high performance. 
+
+The source code for both programs can be downloaded from github: 
+https://github.com/michibo/feyncop
+.
+
+A pre-built version is available on my website, where you can also find a 
+seperate manual for both programs.
+
+The theoretical background to the programs with details to validation and 
+implementation is outlined in my paper on "Feynman graph generation and 
+calculations in the Hopf algebra of Feynman graphs" 
+(http://arxiv.org/abs/1402.2613) and in my master's thesis on the 
+"Algorithmization of the Hopf algebra of Feynman graphs".
+
+Please cite "Feynman graph generation and calculations in the Hopf algebra 
+of Feynman graphs" if you want to refer to the programs. 
 
 
 Included files

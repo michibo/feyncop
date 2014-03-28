@@ -19,7 +19,7 @@ used to ensure high performance.
 
 The source code for both programs can be downloaded from 
 [github](https://github.com/michibo/feyncop). 
-A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is also available on [my website](http://people.physik.hu-berlin.de/~borinsky/).
+A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is available on [my website](http://people.physik.hu-berlin.de/~borinsky/feyncop.html), where you can also find a seperate [manual for both programs](http://people.physik.hu-berlin.de/~borinsky/feyngencop_manual.pdf).
 
 The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://arxiv.org/abs/1402.2613) and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
 
