@@ -13,10 +13,8 @@ Included files
 
 File                  | Description
 ----------------------|------------------------------------------------------
-feyngen               | Main program code for "feyngen" A program to generate 
-                        | Feynman graphs.
-feyncop               | Main program code for "feyncop" A program to calculate 
-                        | the coproduct of Feynman graphs.
+feyngen               | A program to generate Feynman graphs.
+feyncop               | A program to calculate the coproduct of Feynman graphs.
 graph.py              | Implements basic graph handling and algorithms.
 weighted_graph.py     | Implements handling of QED and QCD graphs.
 hopf_graph.py         | Implements the Hopf algebra properties of graphs.
@@ -24,13 +22,10 @@ phi_k_gen.py          | Code for the phi^k-theory graph generation.
 phi_34_gen.py         | Code for the phi^3+phi^4-theory graph generation.
 qed_gen.py            | Code for the QED graph generation.
 qcd_gen.py            | Code for the QCD graph generation.
-combinatorics.py      | Implementation of the generating function evaluations 
-                        | of the zero dimensional QFTs.
-powerseries.py        | Implementation of basic calculations on the ring of 
-                        | truncated power series.
+combinatorics.py      | Zero dimensional QFT calculations.
+powerseries.py        | Ring of truncated power series calculations.
 stuff.py              | Additional combinatorial helper functions.
-nauty_ctrl.py         | Wrapper code for the graph generation using geng and 
-                        | multig.
+nauty_ctrl.py         | Wrapper for the graph generation using geng and multig.
 nauty_wrapper.c       | Wrapper code for the nauty canonical labeling function. 
 Makefile              | Installation Makefile.
 README                | This file.
