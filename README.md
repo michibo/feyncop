@@ -30,15 +30,9 @@ Prerequisites
 
 To use either of the programs Python 2.7 with development files must be 
 installed on your machine. For information on how to install Python please 
-consult 
+consult http://www.python.org/ .
 
-http://www.python.org/
-
-.
-
-Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from:
-
-http://pallini.di.uniroma1.it/
+Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
 
 
 Installation
