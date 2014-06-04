@@ -21,11 +21,11 @@ def gen_graphs( L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
     phi34_graphs = ( phi_34_gen.gen_graphs( L, r_t2 + m + u_t2, cntd, edge2cntd, vtx2cntd, notadpoles) )
 
     for g_phi34 in phi34_graphs:
-        gen_qed_graphs = ( g.unlabeled_graph for g in gen_from_phi34_g( g_phi34, r_t2, u_t2, m ) )
+        gen_qcd_graphs = ( g.unlabeled_graph for g in gen_from_phi34_g( g_phi34, r_t2, u_t2, m ) )
 
-        qed_graphs = frozenset( gen_qed_graphs )
+        qcd_graphs = frozenset( gen_qcd_graphs )
 
-        for g in qed_graphs:
+        for g in qcd_graphs:
             yield g
 
 def gen_from_phi34_g( fg, r_t2, u_t2, m ):

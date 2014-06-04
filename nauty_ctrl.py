@@ -7,6 +7,7 @@ __email__ = "borinsky@physik.hu-berlin.de"
 
 
 import subprocess as sp
+import os
 from graph import Graph
 
 def get_geng_obj( num_vtcs, cntd, max_degree ):
@@ -14,13 +15,15 @@ def get_geng_obj( num_vtcs, cntd, max_degree ):
 
     cntd_param = ["-c"] if cntd else []
 
-    geng_obj = sp.Popen([ "./geng", "%d" % num_vtcs, "-D%d" % max_degree, "-q" ] + cntd_param, stdout=sp.PIPE, stderr=None, stdin=None)
+    geng_path = os.path.join( os.path.dirname(os.path.realpath(__file__)), "geng" )
+    geng_obj = sp.Popen([ geng_path, "%d" % num_vtcs, "-D%d" % max_degree, "-q" ] + cntd_param, stdout=sp.PIPE, stderr=None, stdin=None)
     return geng_obj
 
 def get_multig_obj( geng_stream, min_edges, max_edges, max_degree ):
     """Calls multig with desired range of edges and max degree."""
 
-    multig_obj = sp.Popen([ "./multig", "-e%d:%d" % (min_edges, max_edges), "-D%d" % max_degree, "-T", "-q" ], stdout=sp.PIPE, stderr=None, stdin=geng_stream)
+    multig_path = os.path.join( os.path.dirname(os.path.realpath(__file__)), "multig" )
+    multig_obj = sp.Popen([ multig_path, "-e%d:%d" % (min_edges, max_edges), "-D%d" % max_degree, "-T", "-q" ], stdout=sp.PIPE, stderr=None, stdin=geng_stream)
     return multig_obj
 
 def multig_to_graph( multig_line ):
