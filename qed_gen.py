@@ -11,7 +11,7 @@ from weighted_graph import WeightedGraph
 
 import phi_k_gen
 
-def gen_graphs( L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
+def gen_graphs( L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry ):
     """Generate QED graphs with the desired parameters and properties. 
         L: Loop number
         r_t2: Ext. fermion number
@@ -25,6 +25,10 @@ def gen_graphs( L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
         qed_graphs = frozenset( gen_qed_graphs )
 
         for g in qed_graphs:
+            if furry:
+                _, cycles = g.cycle_decomposition( g.sub_edges_by_weight( 1 ) )
+                if any( len(c) % 2 != 0 for c in cycles ):
+                    continue
             yield g
 
 def gen_from_phi3_g( fg, r_t2, m ):

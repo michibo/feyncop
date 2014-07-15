@@ -7,7 +7,7 @@ __email__ = "borinsky@physik.hu-berlin.de"
 
 from stuff import *
 from fractions import Fraction
-from powerseries import lLog
+from powerseries import lLog,lConvolute
 
 def phi_k_class_coeff( L, m, k ):
     """Calculate the sum of the symmetry factors of all phi^k diagrams 
@@ -47,6 +47,22 @@ def qed_class_coeff( L, rt2, m ):
         return 0
 
     return qed_cc(s,m,r)
+
+def qed_furry_class_coeff( L, rt2, m ):
+    """Calculate the sum of the symmetry factors of all QED diagrams 
+        respecting Furry's theorem
+        with L loops, rt2 external fermions and m external bosons."""
+
+    if rt2 % 2 != 0:
+        return 0
+    
+    r = rt2/2
+    s = m + 2*r + 2*(L - 1)
+    
+    if s<0:
+        return 0
+
+    return qed_furry_cc(s,m,r)
 
 def qcd_class_coeff( L, rt2, ut2, m ): 
     """Calculate the sum of the symmetry factors of all QCD diagrams 
@@ -116,6 +132,25 @@ def cntd_qed_class_coeff( L, rt2, m):
     
     return Alog[s][r][m]
 
+def cntd_qed_furry_class_coeff( L, rt2, m):
+    """Calculate the sum of the symmetry factors of all connected 
+        QED diagrams respecting Furry's theorem
+        with L loops, rt2 external fermions and 
+        m external bosons."""
+
+    if rt2 % 2 != 0:
+        return 0
+    
+    r = rt2/2
+    s = m + 2*r + 2*(L - 1)
+
+    if s<0:
+        return 0
+
+    A = [ [ [ qed_furry_cc(sp, mp, rp) for mp in range(m+1) ] for rp in range(r+1) ] for sp in range(s+1) ]
+    Alog = lLog( A )
+    
+    return Alog[s][r][m]
 def cntd_qcd_class_coeff( L, rt2, ut2, m ):
     """Calculate the sum of the symmetry factors of all connected QCD 
         diagrams with L loops, rt2 external fermions, ut2 external ghosts 
@@ -193,6 +228,31 @@ def qed_cc( s, m, r):
     nom = double_factorial( l1_t2 - 1 ) * factorial( l2 )
 
     return Fraction( nom, denom )
+
+def qed_furry_cc( s, m, r):
+    """Helper function which evaluates the relevant term in the 
+        generating function(al) of zero dimensional QED respecting 
+        Furry's theorem. 
+        s corresponds to the power in the coupling constant, 
+        m to the power of the photon field sources and r to 
+        the power of the absolute squared fermion sources."""
+    
+    S1 = [ binomial( r + n - 1, n ) for n in range(s+1) ]
+    S2 = [ Fraction(binomial(2*n,n), 4**n) for n in range(s+1) ]
+    S3 = [ (-1)**n * Fraction(binomial(2*n,n), 4**n) for n in range(s+1) ]
+
+    C = lConvolute(lConvolute( S1, S2 ), S3)
+
+    l1_t2 = s + m
+    l2 = r + s
+
+    if l1_t2 % 2 != 0:
+        return 0
+
+    denom = factorial(m) * factorial(r)
+    nom = double_factorial( l1_t2 - 1 )
+
+    return Fraction( nom * C[s], denom )
 
 def qcd_cc( s, m, r, u ):
     """Helper function which evaluates the relevant term in the 

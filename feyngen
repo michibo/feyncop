@@ -68,6 +68,12 @@ def compare_sym_factors( num_loops, test_sums, args ):
             test_sum_a = combinatorics.cntd_qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs )
         else:
             test_sum_a = combinatorics.qcd_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs )
+    elif args.qed_furry:
+        fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
+        if args.connected:   
+            test_sum_a = combinatorics.cntd_qed_furry_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
+        else:
+            test_sum_a = combinatorics.qed_furry_class_coeff( num_loops, args.num_ext_flegs, args.num_ext_blegs )
     elif args.qed:
         fix_factor = factorial(args.num_ext_blegs)*factorial(args.num_ext_flegs/2)**2
         if args.connected:   
@@ -114,7 +120,8 @@ def main():
     parser.add_argument('-k', '--valence', dest='valence', type=int, default=4, help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
     parser.add_argument('--phi34', dest='phi34', action='store_true', help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
     
-    parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs. -k is ignored. (default: false)')
+    parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs (with neglect of Furry\'s theorem). -k is ignored. (default: false)')
+    parser.add_argument('--qed_furry', dest='qed_furry', action='store_true', help='Generate QED graphs (respecting Furry\'s theorem). -k is ignored. (default: false)')
     parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
 
     parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='Set the number of external legs in scalar phi^k-QFT. (default: 0)')
@@ -126,7 +133,7 @@ def main():
 
     args = parser.parse_args()
 
-    qed = args.qed
+    qed = args.qed or args.qed_furry
 
     if qed or args.ym:
         if args.num_ext_legs:
@@ -147,7 +154,9 @@ def main():
         loops_str = "(%s)" % ",".join(["%d" % l for l in args.loops])
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
-    if qed:
+    if args.qed_furry:
+        print "qed_with_furry_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+    elif qed:
         print "qed_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
     elif args.ym:
         print "ym_f%d_g%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, loops_str, unlabeled_str )
@@ -165,7 +174,7 @@ def main():
 
         if qed:
             ext_legs_total = args.num_ext_flegs + args.num_ext_blegs
-            gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
+            gen_graphs = qed_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles, args.qed_furry )
         elif args.ym:
             ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
             gen_graphs = qcd_gen.gen_graphs( num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles )
