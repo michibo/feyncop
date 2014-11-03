@@ -1,0 +1,269 @@
+#!/usr/bin/env python2.7
+
+""" - Main program code for "feyncop" - A program to calculate the coproduct 
+on the Hopf algebra of Feynman graphs. """
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+__copyright__ = "Copyright (C) 2014 Michael Borinsky"
+__license__ = "MIT License"
+__version__ = "1.0"
+
+# Copyright (c) 2014 Michael Borinsky
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy 
+# of this software and associated documentation files (the "Software"), to 
+# deal in the Software without restriction, including without limitation the 
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+# sell copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in 
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+# IN THE SOFTWARE.
+
+# If you have problems using this program, 
+# please feel free to contact me!
+# March 2014
+
+from fractions import *
+import copy
+import argparse
+import re
+import sys
+import collections
+from math import *
+from stuff import *
+
+from graph import Graph
+from hopf_graph import HopfGraph
+
+var_name_ptrn = re.compile( "^(\S+)\s*:=\s*" )
+def parse_var_name( string ):
+    """Parses the name of a input graph sum."""
+
+    m = var_name_ptrn.search( string )
+
+    if m:
+        return m.group(1), m.end(1), m.end()
+    else:
+        return "", 0, 0
+
+fraction_pattern = re.compile(r"^(\d*)(/?)(\d*)$")
+def parse_fraction( s ):
+    """Parses a fraction encoded in a string s."""
+
+    if not s:
+        return Fraction( 1, 1 )
+
+    m = fraction_pattern.match( s )
+
+    n = 1
+    try:
+        n = int(m.group(1))
+    except ValueError:
+        pass
+
+    d=1
+    try:
+        d = int(m.group(3))
+    except ValueError:
+        pass
+
+    return Fraction(n,d)
+        
+graph_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?G\[([0-9,\[\]\sAfc]*)\]\*?(\d*/?\d*)?\s*")
+edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
+def get_graph_from_match( m ):
+    """Helper function: Parses a graph from a match."""
+
+    edges_string = m.group(3)
+    
+    dict_W = { 'A' : 2, 'f' : 1, 'c' : 3 }
+    global ym 
+    ym = False
+    def gen_edges():
+        for m_e in edge_pattern.finditer( edges_string ):
+            v1 = int(m_e.group(1))
+            v2 = int(m_e.group(2))
+            w = dict_W[m_e.group(4)] if m_e.group(3)=="," else 2
+
+            if m_e.group(3) == ",":
+                global ym
+                ym = True
+
+            yield (v1,v2,w)
+
+    edges_weights = tuple(gen_edges())
+
+    edges = [ (v1,v2) for v1,v2,w in edges_weights ]
+    weights = [ w for v1,v2,w in edges_weights ]
+
+    f1 = parse_fraction( m.group(2) )
+    f2 = parse_fraction( m.group(4) )
+    sign = -1 if "-" in m.group(1) else 1
+
+    return HopfGraph( edges, weights, 0 ), sign*f1*f2, ym
+ 
+def parse_sum_of_graphs( string ):
+    """Parses a graph sum."""
+    for m in graph_pattern.finditer( string ):
+        yield get_graph_from_match(m), m.start(), m.end()
+
+def not_parsable_check( s ):
+    if s:
+        print "\n********************************"
+        print "Warning: Could not parse this: %s" % s
+        print "********************************"
+
+end_pattern = re.compile(r";\s*(.*)$")
+def parse_input_lines( instream, outstream, string ):
+    """Parses a stream of input."""
+        
+    for line in instream:
+        string += line
+        for g_fac,strbeg,strend in parse_sum_of_graphs( string ):
+            not_parsable_check( string[:strbeg] )
+            string = string[strend:]
+
+            yield g_fac
+    else:
+        for g_fac,strbeg,strend in parse_sum_of_graphs( string ):
+            not_parsable_check( string[:strbeg] )
+            string = string[strend:]
+
+            yield g_fac
+
+    if string:
+        m = end_pattern.match(string)
+        if not m:
+            not_parsable_check( string )
+        else:
+            not_parsable_check( m.group(1) )
+
+def get_sub_graph_str( sub_graphs ):
+    """Creates an output string for a list of subgraphs."""
+    sub_graph_strs = [ "{" + ",".join([ "%d" % e for e in sg ] ) + "}" for sg in sub_graphs ]
+    return "{" + ",".join( sub_graph_strs ) + "}"
+
+def get_coproduct_str( g, dimension, ym ):
+    """Creates an output string for the coproduct."""
+    sum_str = []
+    for sub_graphs in g.reduced_coproduct(dimension, ym):
+        sub_graph_str = get_sub_graph_str( sub_graphs )
+
+        sum_str+= [ "%s" % (sub_graph_str) ]
+
+    return "D[%s,\n[%s]]" % ( g.get_graph_str(ym), ", ".join(sum_str) )
+
+def get_coproduct_with_residues_str( g, dimension, ym ):
+    """Creates an output string for the coproduct with cographs."""
+
+    sum_str = []
+    for sub_graphs, residue_graph in g.reduced_coproduct_with_residue_graph(dimension, ym):
+        sub_graph_str = get_sub_graph_str( sub_graphs )
+
+        sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph.get_graph_str(ym)) ]
+
+    return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
+
+def get_tensor_product_str( tp, ym ):
+    """Creates an output string for the coproduct in the unlabeled tensor 
+        product form."""
+
+    sum_str = []
+    sub_graphs, residue_graph = tp
+    def nosymfac( g ):
+        gp = copy.copy(g)
+        gp.prepare_graph()
+        gp.symmetry_factor = 0
+        return gp
+    def get_sg_str( g, m ):
+        if m == 1:
+            return "%s" % nosymfac(g).get_graph_str(ym)
+        else:
+            return "(%s)^%d" % (nosymfac(g).get_graph_str(ym),m)
+
+    sub_graphs_str = "*".join( [ get_sg_str(g, m) for g,m in sub_graphs ] )
+    return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
+
+def get_primitive_str( g, dimension, ym ):
+    """Creates an output string for the graph it is primitive."""
+
+    if g.is_primitive( dimension ):
+        return g.get_graph_str(ym)
+    else:
+        return ""
+
+def get_element_str( element, fac, fl=-1 ):
+    """Helper function: Adds a factor to a string representation of an object 
+        if it is not trivial."""
+
+    sign = "-" if fac < 0 else "+"
+    if fl != -1:
+        sign = "(-)^%d *" % fl
+    if abs(fac) == Fraction(1,1): 
+        return "%s %s" % (sign, element)
+    else:
+        return "%s %d/%d * %s" % (sign, fac.numerator, fac.denominator, element)
+
+def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
+
+    parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the Hopf algebra of Feynman graphs')
+    parser.add_argument('-D', '--dimension', dest='dimension', type=int, default=4, help='Dimension of the theory (default: 4)')
+    parser.add_argument('-c', '--cographs', dest='cographs', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
+    parser.add_argument('-u', '--unlabeled', dest='unlabeled', action='store_true', help='Calculate the coproduct of a sum of graphs with unlabeled subgraphs and cographs. (default: false)')
+    parser.add_argument('-p', '--primitives', dest='primitives', action='store_true', help='Filter graphs for primitive/skeleton graphs. (default: false)')
+
+    parser.add_argument('-k', '--check', dest='check', action='store_true', help='Check the sum of 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
+    args = parser.parse_args()
+        
+    string = ""
+    try:
+        string = next(sys.stdin)
+    except StopIteration:
+        return
+
+    var_name,ev,el = parse_var_name(string)
+    if var_name:
+        if args.unlabeled:
+            sys.stdout.write("%s_red_cop_unlab%s" % (var_name, string[ev:]))
+        elif args.primitives:
+            sys.stdout.write("%s_proj_to_prim%s" % (var_name, string[ev:]))
+        else:
+            sys.stdout.write("%s_red_cop%s" % (var_name, string[ev:]))
+        string = string[el:]
+
+    def fermion_loops( g ):
+        f_l, f_l_edges = g.cycle_decomposition( g.sub_edges_by_weight(1) )
+
+        return len( f_l_edges )
+
+    graphs_fac = frozenset((fermion_loops(g),g.unlabeled_graph,fac,ym) for g,fac,ym in parse_input_lines( sys.stdin, None, string ))
+
+    graph_counter = collections.Counter()
+    for fl, g, fac, ym in sorted(graphs_fac):
+        graph_counter[fl] += 1
+        g_str = g.get_graph_str( ym )
+        if g_str:
+            print get_element_str( g_str, fac, fl )
+
+    print ";"
+    for fl, number in graph_counter.iteritems():
+        print "%d graphs with %d fermion loops" % (number, fl)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"
