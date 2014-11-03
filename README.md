@@ -17,13 +17,16 @@ not applicable.
 For instance the established [nauty package](http://pallini.di.uniroma1.it/) is 
 used to ensure high performance. 
 
-The source code for both programs can be downloaded from 
-[github](https://github.com/michibo/feyncop). 
-A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/feyncop_built.tar.gz) is available on [my website](http://people.physik.hu-berlin.de/~borinsky/feyncop.html), where you can also find a seperate [manual for both programs](http://people.physik.hu-berlin.de/~borinsky/feyngencop_manual.pdf).
+The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg] and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
 
-The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://arxiv.org/abs/1402.2613) and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
+Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs. 
+[fcg]: http://dx.doi.org/10.1016/j.cpc.2014.07.023
 
-Please cite [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://arxiv.org/abs/1402.2613) if you want to refer to the programs. 
+Download & Manual
+-----------------
+
+The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
+A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/misc/feyncop_built.tar.gz) and a seperate [manual](http://people.physik.hu-berlin.de/~borinsky/misc/feyngencop_manual.pdf) for both programs are available on my webpage: http://people.physik.hu-berlin.de/~borinsky/
 
 Prerequisites
 -------------
@@ -33,7 +36,6 @@ installed on your machine. For information on how to install Python please
 consult http://www.python.org/ .
 
 Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
-
 
 Installation
 ------------

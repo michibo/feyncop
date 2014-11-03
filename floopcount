@@ -1,7 +1,12 @@
 #!/usr/bin/env python2.7
 
-""" - Main program code for "feyncop" - A program to calculate the coproduct 
-on the Hopf algebra of Feynman graphs. """
+""" - Main program code for "floopcount" - A program to count the number of 
+Fermion loops of Feynman graphs. 
+
+This program is part of the feyncop/feyngen package.
+"""
+
+# See also: http://people.physik.hu-berlin.de/~borinsky/
 
 __author__ = "Michael Borinsky"
 __email__ = "borinsky@physik.hu-berlin.de"

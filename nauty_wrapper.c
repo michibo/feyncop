@@ -1,5 +1,6 @@
 
 // nauty_wrapper.c: A wrapper for the nauty "nauty" routine to calculate 
+// This file is part of the feyncop/feyngen package.
 // the canonical labeling of a graph. 
 
 // Author: Michael Borinsky
@@ -10,13 +11,11 @@
 
 unsigned long long g_GroupSize;
 
-// Callback function used to calculate the group order.
 static void grouplevelproc(int* p1,int* p2,int i1,int* p3,statsblk* s1,int i2,int index,int i3,int i4,int i5,int i6)
 {
     g_GroupSize*= index;
 }
 
-// Function to calculate the canonical labeling of a simple graph.
 static PyObject*
 get_canonical_labeling(PyObject *self, PyObject *args)
 {
@@ -29,7 +28,6 @@ get_canonical_labeling(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    // Setting the nauty parameters.
     int n = num_vtcs;
 
     DYNALLSTAT(graph,g,g_sz);
@@ -43,30 +41,16 @@ get_canonical_labeling(PyObject *self, PyObject *args)
 
     options.userlevelproc = grouplevelproc;
 
-    /* Default options are set by the DEFAULTOPTIONS_GRAPH macro above.
-     * Here we change those options that we want to be different from the
-     * defaults.  writeautoms=TRUE causes automorphisms to be written.     */
 
     options.getcanon = TRUE;
     options.defaultptn = FALSE; 
     options.digraph = TRUE;
 
-    /* The nauty parameter m is a value such that an array of
-     * m setwords is sufficient to hold n bits.  The type setword
-     * is defined in nauty.h.  The number of bits in a setword is
-     * WORDSIZE, which is 16, 32 or 64.  Here we calculate
-     * m = ceiling(n/WORDSIZE).                                  */
 
     int m = (n + WORDSIZE - 1) / WORDSIZE;
 
-    /* The following optional call verifies that we are linking
-     * to compatible versions of the nauty routines.            */
 
     nauty_check(WORDSIZE,m,n,NAUTYVERSIONID);
-
-    /* Now that we know how big the graph will be, we allocate
-     * space for the graph and the other arrays we need.   */
-
     DYNALLOC2(graph, g, g_sz, m, n, "malloc");
     DYNALLOC2(graph, cg, cg_sz, m, n, "malloc");
     DYNALLOC1(setword, workspace, workspace_sz, 500*m, "malloc");
@@ -80,7 +64,6 @@ get_canonical_labeling(PyObject *self, PyObject *args)
     PyObject* partition_iter = PyObject_GetIter(py_partition_list);
     PyObject* partition;
 
-    // Reading the initial partition for nauty from the python parameters.
     int num_vtcs2 = 0;
     while( (partition = PyIter_Next(partition_iter)) )
     {
@@ -104,7 +87,6 @@ get_canonical_labeling(PyObject *self, PyObject *args)
         Py_DECREF( partition );
     }
     Py_DECREF( partition_iter );
-//    Py_DECREF( py_partition_list );
 
     if ( num_vtcs != num_vtcs2 )
     {
@@ -132,10 +114,8 @@ get_canonical_labeling(PyObject *self, PyObject *args)
         Py_DECREF( edge );
 
         ADDELEMENT((GRAPHROW(g, iv1, m)), iv2);
-    //    ADDELEMENT((GRAPHROW(g, iv2, m)), iv1);
     }
     Py_DECREF( edges_iter );
-//    Py_DECREF( py_edges_list );
 
     g_GroupSize = 1;
 
@@ -156,18 +136,6 @@ get_canonical_labeling(PyObject *self, PyObject *args)
     {
         PyList_SET_ITEM( py_orbits, i, Py_BuildValue("i", (int)orbits[i]) );
     }
-/*
-    PyObject* py_gens = PyList_New(g->no_generators);
-    for( int i=0; i < g->no_generators; i++ )
-    {
-        PyObject* py_perm = PyList_New(g->no_vertices);
-        for (int j=0; j < g->no_vertices; j++)
-        {
-            PyList_SetItem( py_perm, j, Py_BuildValue("i", (int)g->generator[i][j]) );
-        }
-        PyList_SetItem(py_gens, i, py_perm);
-    }
-*/
     DYNFREE(g, g_sz);
     DYNFREE(cg, cg_sz);
     DYNFREE(workspace, workspace_sz);
@@ -179,7 +147,6 @@ get_canonical_labeling(PyObject *self, PyObject *args)
     PyTuple_SET_ITEM( pyret, 0, py_lab );
     PyTuple_SET_ITEM( pyret, 1, Py_BuildValue("K", g_GroupSize ) );
     PyTuple_SET_ITEM( pyret, 2, py_orbits );
-//    PyTuple_SetItem( pyret, 3, py_gens );
 
     return pyret;
 }
