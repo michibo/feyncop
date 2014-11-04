@@ -1,7 +1,6 @@
 #!/usr/bin/env python2.7
 
-""" - Main program code for "floopcount" - A program to count the number of 
-Fermion loops of Feynman graphs. 
+""" - Main program code for "S_phi". 
 
 This program is part of the feyncop/feyngen package.
 """
@@ -46,7 +45,7 @@ import collections
 from math import *
 from stuff import *
 
-import parsefg, outputfg
+import parsefg
 
 from graph import Graph
 from hopf_graph import HopfGraph
@@ -55,11 +54,9 @@ def main():
     """Main program section. Reads the options and parameters and starts the 
         relevant subroutines."""
 
-    parser = argparse.ArgumentParser(description='Count the number of Fermion loops for each graph')
-    parser.add_argument('-f', '--filter', dest='fermion_loops', type=int, default=-1, help='Filter for diagrams with # fermion loops')
+    parser = argparse.ArgumentParser(description='')
     args = parser.parse_args()
         
-    filt = -1 != args.fermion_loops
     string = ""
     try:
         string = next(sys.stdin)
@@ -68,29 +65,10 @@ def main():
 
     var_name,ev,el = parsefg.parse_var_name(string)
     if var_name:
-        if filt:
-            sys.stdout.write("%s_flc%s" % (var_name, string[ev:]))
         string = string[el:]
 
-    def fermion_loops( g ):
-        f_l, f_l_edges = g.cycle_decomposition( g.sub_edges_by_weight(1) )
-
-        return len( f_l_edges )
-
-    graphs_fac = frozenset((fermion_loops(g),g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
-
-    graph_counter = collections.Counter()
-    for fl, g, fac, ym in sorted(graphs_fac):
-        graph_counter[fl] += 1
-        g_str = g.get_graph_str( ym )
-        if g_str and filt and args.fermion_loops == fl:
-            print outputfg.get_element_str( g_str, fac, fl )
-
-    if filt:
-        print ";"
-    else:
-        for fl, number in graph_counter.iteritems():
-            print "%d graphs with %d fermion loops" % (number, fl)
+    for tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_tensor_products ):
+        print tp, fac
 
 if __name__ == "__main__":
     try:
