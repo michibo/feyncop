@@ -111,6 +111,7 @@ def main():
     parser.add_argument('-D', '--dimension', dest='dimension', type=int, default=4, help='Dimension of the theory (default: 4)')
     parser.add_argument('-c', '--cographs', dest='cographs', action='store_true', help='Also print the cographs corresponding to the subgraphs. (default: false)')
     parser.add_argument('-u', '--unlabeled', dest='unlabeled', action='store_true', help='Calculate the coproduct of a sum of graphs with unlabeled subgraphs and cographs. (default: false)')
+    parser.add_argument('-v', '--unlab_per_graph', dest='unlab_per_graph', action='store_true', help='Calculate the coproduct of a sum of graphs with unlabeled subgraphs and cographs. And give the output as a formal power series in graphs. (default: false)')
     parser.add_argument('-p', '--primitives', dest='primitives', action='store_true', help='Filter graphs for primitive/skeleton graphs. (default: false)')
 
     parser.add_argument('-k', '--check', dest='check', action='store_true', help='Check the sum of 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
@@ -128,6 +129,8 @@ def main():
             sys.stdout.write("%s_red_cop_unlab%s" % (var_name, string[ev:]))
         elif args.primitives:
             sys.stdout.write("%s_proj_to_prim%s" % (var_name, string[ev:]))
+        elif args.unlab_per_graph:
+            sys.stdout.write("%s_red_cop_unlab_pg%s" % (var_name, string[ev:]))
         else:
             sys.stdout.write("%s_red_cop%s" % (var_name, string[ev:]))
         string = string[el:]
@@ -135,8 +138,9 @@ def main():
     if args.unlabeled or args.check:
         graphs_fac = frozenset((g.unlabeled_graph,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
 
-        coproducts = dict()
         ym_glob = False
+
+        coproducts = dict()
         for g,fac,ym in graphs_fac:
             for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ):
                 tensor_product = (tuple(sorted(sub_graphs.items())), residue_graph)
@@ -159,6 +163,12 @@ def main():
                 prim_str = get_primitive_str( g, args.dimension, ym )
                 if prim_str:
                     print outputfg.get_element_str( prim_str, fac )
+            elif args.unlab_per_graph:
+                tps = collections.Counter( (tuple(sorted(sub_graphs.items())), residue_graph) for  sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ) )
+                tps_str = " + ".join( "%d*%s" % ( fac, get_tensor_product_str(e , ym )) if fac != 1 else get_tensor_product_str(e , ym ) for e, fac in tps.items()  )
+                t_str = "%s*(%s)" % ( g.get_graph_str(ym), tps_str )
+
+                print outputfg.get_element_str( t_str, fac )
             else:
                 cop_str = ""
                 if args.cographs:

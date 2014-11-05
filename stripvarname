@@ -1,6 +1,9 @@
+#!/usr/bin/env python2.7
 
-""" outputfg.py: This file is part of the feyncop/feyngen package.
-    Implements graph output helper functions. """
+""" - Main program code for "stripvarname" - A program to strip the varname.
+
+This program is part of the feyncop/feyngen package.
+"""
 
 # See also: http://people.physik.hu-berlin.de/~borinsky/
 
@@ -10,10 +13,7 @@ __copyright__ = "Copyright (C) 2014 Michael Borinsky"
 __license__ = "MIT License"
 __version__ = "1.0"
 
-
 # Copyright (c) 2014 Michael Borinsky
-
-# This program is distributed under the MIT License:
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy 
 # of this software and associated documentation files (the "Software"), to 
@@ -33,14 +33,43 @@ __version__ = "1.0"
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 # IN THE SOFTWARE.
 
+# If you have problems using this program, 
+# please feel free to contact me!
+# March 2014
 
-from fractions import *
+import argparse
+import sys
+import re
 
-def get_element_str( element, fac ):
-    """Helper function: Adds a factor to a string representation of an object 
-        if it is not trivial."""
+import parsefg
 
-    sign = "-" if fac < 0 else "+"
-    return "%s %d/%d * %s" % (sign, abs(fac.numerator), fac.denominator, element)
+def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
 
+    parser = argparse.ArgumentParser(description='Strips varname and semicolon.')
+    args = parser.parse_args()
+        
+    string = ""
+    try:
+        string = next(sys.stdin)
+    except StopIteration:
+        return
 
+    var_name,ev,el = parsefg.parse_var_name(string)
+    if var_name:
+        string = string[el:]
+
+    for line in sys.stdin:
+        if ';' not in line:
+            print line,
+        else:
+            if not re.match(r"\s*;.*", line):
+                print line[:line.find(';')],
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"

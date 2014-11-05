@@ -35,7 +35,7 @@ __version__ = "1.0"
 
 import re
 from fractions import *
-import collections
+import collections, sys
 
 from hopf_graph import HopfGraph
 
@@ -76,6 +76,7 @@ def parse_fraction( s ):
 edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
 graph_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*G\[([0-9,\[\]\sAfc]*)\]\*?(\d*/?\d*)?\s*")
 tensor_product_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*T\[\s*(?:\(?(G\[[0-9,\[\]\sAfc]*\])\)?\^?(\d*)\s*\*?\s*)+\s*,\s*(G\[[0-9,\[\]\sAfc]*\])\s*\]\s*")
+graph_with_tp_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*(G\[[0-9,\[\]\sAfc]*\])\s*\*\s*\(\s*(\s*\+?-?\s*\d*/?\d*\s*\*?\s*T\[\s*(?:\(?(?:G\[[0-9,\[\]\sAfc]*\])\)?\^?\d*\s*\*?\s*)+\s*,\s*G\[[0-9,\[\]\sAfc]*\]\s*\])*\)\s*")
 def get_graph_from_match( m ):
     """Helper function: Parses a graph from a match."""
 
@@ -118,6 +119,7 @@ def get_tensor_product_from_match( m ):
     res_graph, res_fac, res_ym = get_graph_from_match( graph_pattern.match( res_str ) )
     if res_fac != 1:
         print "Warning strange input: %s", m.group(0)
+        return
 
     def gen_sgs():
         sbgrs = gprs[2:-1]
@@ -125,13 +127,42 @@ def get_tensor_product_from_match( m ):
             sg, sg_fac, sg_ym = get_graph_from_match( graph_pattern.match( res_str ) )
             if sg_fac != 1 or sg_ym != res_ym:
                 print "Warning strange input: %s", m.group(0)
+                continue
 
             p = 1 if '' == exp_str else int(exp_str)
 
             yield sg, p
 
     sgs = collections.Counter( dict( (sg, p) for sg, p in gen_sgs() ) )
-    return (sgs, res_graph), f1, ym
+    return (tuple(sorted(sgs.items())), res_graph), f1, ym
+
+def get_graph_with_tp_from_match( m ):
+    gprs = m.groups()
+    f1 = parse_fraction( gprs[1] )
+    sign = -1 if "-" in m.group(0) else 1
+    
+    g, g_fac, g_ym = get_graph_from_match( graph_pattern.match( gprs[2] ) )
+    if g_fac != 1:
+        print "Warning strange input: %s", m.group(0)
+
+    tps_str = gprs[3:]
+
+    def gen_tps():
+        for tp_str in tps_str:
+            tp_m = tensor_product_pattern.match(tp_str)
+            if not tp_m:
+                print "Warning strange input: %s", m.group(0)
+                continue
+            tp, fac, ym = get_tensor_product_from_match(tp_m)
+
+            if ym != g_ym:
+                print "Warning strange input: %s", m.group(0)
+                continue
+
+            yield tp, fac
+    
+    tp_sum = collections.Counter( dict( gen_tps() ) if tps_str != (None,) else dict() )
+    return g, tp_sum, f1, g_ym
 
 def parse_sum_of_graphs( string ):
     """Parses a graph sum."""
@@ -142,6 +173,11 @@ def parse_sum_of_tensor_products( string ):
     """Parses a tensor product sum."""
     for m in tensor_product_pattern.finditer( string ):
         yield get_tensor_product_from_match(m), m.start(), m.end()
+
+def parse_sum_of_graph_with_tp( string ):
+    """Parses a graph with tensor product sum."""
+    for m in graph_with_tp_pattern.finditer( string ):
+        yield get_graph_with_tp_from_match(m), m.start(), m.end()
 
 def not_parsable_check( s ):
     if s:
@@ -155,17 +191,21 @@ def parse_input_lines( instream, outstream, string, parser_fun=parse_sum_of_grap
         
     for line in instream:
         string += line
+        oldend = 0
         for g_fac,strbeg,strend in parser_fun( string ):
-            not_parsable_check( string[:strbeg] )
-            string = string[strend:]
+            not_parsable_check( string[oldend:strbeg] )
+            oldend = strend
 
             yield g_fac
+        string = string[oldend:]
     else:
+        oldend = 0
         for g_fac,strbeg,strend in parser_fun( string ):
-            not_parsable_check( string[:strbeg] )
-            string = string[strend:]
+            not_parsable_check( string[oldend:strbeg] )
+            oldend = strend
 
             yield g_fac
+        string = string[oldend:]
 
     if string:
         m = end_pattern.match(string)

@@ -56,6 +56,7 @@ class Graph(object):
             return "G[%s]/%d" % ( g_string, self.symmetry_factor )
         else:
             return "G[%s]" % ( g_string )
+    __repr__ = __str__
 
     def __cmp__( self, other ):
         """Compare two graphs. Only the labelings are compared. To check 

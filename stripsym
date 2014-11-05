@@ -1,6 +1,10 @@
+#!/usr/bin/env python2.7
 
-""" outputfg.py: This file is part of the feyncop/feyngen package.
-    Implements graph output helper functions. """
+""" - Main program code for "stripsym" - A program to set the symmetry factors 
+of graphs in a graph sum to 1.
+
+This program is part of the feyncop/feyngen package.
+"""
 
 # See also: http://people.physik.hu-berlin.de/~borinsky/
 
@@ -10,10 +14,7 @@ __copyright__ = "Copyright (C) 2014 Michael Borinsky"
 __license__ = "MIT License"
 __version__ = "1.0"
 
-
 # Copyright (c) 2014 Michael Borinsky
-
-# This program is distributed under the MIT License:
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy 
 # of this software and associated documentation files (the "Software"), to 
@@ -33,14 +34,52 @@ __version__ = "1.0"
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 # IN THE SOFTWARE.
 
+# If you have problems using this program, 
+# please feel free to contact me!
+# March 2014
 
 from fractions import *
+import copy
+import argparse
+import sys
+import collections
+from math import *
+from stuff import *
 
-def get_element_str( element, fac ):
-    """Helper function: Adds a factor to a string representation of an object 
-        if it is not trivial."""
+import parsefg, outputfg
 
-    sign = "-" if fac < 0 else "+"
-    return "%s %d/%d * %s" % (sign, abs(fac.numerator), fac.denominator, element)
+from graph import Graph
+from hopf_graph import HopfGraph
 
+def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
 
+    parser = argparse.ArgumentParser(description='Gives all the graphs without prefactors.')
+    args = parser.parse_args()
+        
+    string = ""
+    try:
+        string = next(sys.stdin)
+    except StopIteration:
+        return
+
+    var_name,ev,el = parsefg.parse_var_name(string)
+    if var_name:
+        sys.stdout.write("%s_1%s" % (var_name, string[ev:]))
+        string = string[el:]
+
+    graphs_fac = ( (g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
+
+    for g, fac, ym in graphs_fac:
+        g_str = g.get_graph_str( ym )
+        print outputfg.get_element_str( g_str, 1 )
+
+    print ";"
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-""" - Main program code for "S_phi". 
+""" - Main program code for "Sphi". 
 
 This program is part of the feyncop/feyngen package.
 """
@@ -41,11 +41,11 @@ from fractions import *
 import copy
 import argparse
 import sys
-import collections
+import collections, operator
 from math import *
 from stuff import *
 
-import parsefg
+import parsefg, outputfg
 
 from graph import Graph
 from hopf_graph import HopfGraph
@@ -64,11 +64,23 @@ def main():
         return
 
     var_name,ev,el = parsefg.parse_var_name(string)
+    endsc = False
     if var_name:
+        sys.stdout.write("%s_Sphi%s" % (var_name, string[ev:]))
         string = string[el:]
+        endsc = True
 
-    for tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_tensor_products ):
-        print tp, fac
+    S_g = dict()
+    for g, tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_graph_with_tp ):
+        gu = g.unlabeled_graph
+        if gu in S_g: continue
+
+        S_g[gu] = -1 - sum( m*reduce(operator.mul, ( S_g[sg.unlabeled_graph]**p for sg, p in sgs )) for (sgs,r_g), m in tp.items() )
+
+        g_str = g.get_graph_str(ym)
+        print outputfg.get_element_str( g_str, fac*S_g[gu])
+    if endsc:
+        print ";"
 
 if __name__ == "__main__":
     try:
