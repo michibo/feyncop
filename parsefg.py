@@ -76,7 +76,7 @@ def parse_fraction( s ):
 edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
 graph_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*G\[([0-9,\[\]\sAfc]*)\]\*?(\d*/?\d*)?\s*")
 tensor_product_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*T\[\s*(?:\(?(G\[[0-9,\[\]\sAfc]*\])\)?\^?(\d*)\s*\*?\s*)+\s*,\s*(G\[[0-9,\[\]\sAfc]*\])\s*\]\s*")
-graph_with_tp_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*(G\[[0-9,\[\]\sAfc]*\])\s*\*\s*\(\s*(\s*\+?-?\s*\d*/?\d*\s*\*?\s*T\[\s*(?:\(?(?:G\[[0-9,\[\]\sAfc]*\])\)?\^?\d*\s*\*?\s*)+\s*,\s*G\[[0-9,\[\]\sAfc]*\]\s*\])*\)\s*")
+graph_with_tp_pattern = re.compile(r"\s*(\+?-?)\s*(\d*/?\d*)\s*\*?\s*(G\[[0-9,\[\]\sAfc]*\])\s*\*\s*\(((?:\s*\+?-?\s*\d*/?\d*\s*\*?\s*T\[\s*(?:\(?(?:G\[[0-9,\[\]\sAfc]*\])\)?\^?\d*\s*\*?\s*)+\s*,\s*G\[[0-9,\[\]\sAfc]*\]\s*\])*)\s*\)\s*")
 def get_graph_from_match( m ):
     """Helper function: Parses a graph from a match."""
 
@@ -124,7 +124,7 @@ def get_tensor_product_from_match( m ):
     def gen_sgs():
         sbgrs = gprs[2:-1]
         for sg_str, exp_str in zip( sbgrs[::2], sbgrs[1::2] ):
-            sg, sg_fac, sg_ym = get_graph_from_match( graph_pattern.match( res_str ) )
+            sg, sg_fac, sg_ym = get_graph_from_match( graph_pattern.match( sg_str ) )
             if sg_fac != 1 or sg_ym != res_ym:
                 print "Warning strange input: %s", m.group(0)
                 continue
@@ -145,11 +145,10 @@ def get_graph_with_tp_from_match( m ):
     if g_fac != 1:
         print "Warning strange input: %s", m.group(0)
 
-    tps_str = gprs[3:]
+    tps_str = gprs[3]
 
     def gen_tps():
-        for tp_str in tps_str:
-            tp_m = tensor_product_pattern.match(tp_str)
+        for tp_m in tensor_product_pattern.finditer(tps_str):
             if not tp_m:
                 print "Warning strange input: %s", m.group(0)
                 continue
