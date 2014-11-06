@@ -75,6 +75,11 @@ def main():
         gu = g.unlabeled_graph
         if gu in S_g: continue
 
+#        for (sgs, r_g), m in tp.items():
+#            print m, sgs, r_g
+#            for sg,p in sgs:
+#                print sg, "%d^%d = %d" % (S_g[sg.unlabeled_graph],p,S_g[sg.unlabeled_graph]**p)
+
         S_g[gu] = -1 - sum( m*reduce(operator.mul, ( S_g[sg.unlabeled_graph]**p for sg, p in sgs )) for (sgs,r_g), m in tp.items() )
 
         g_str = g.get_graph_str(ym)
