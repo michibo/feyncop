@@ -71,19 +71,41 @@ def main():
         endsc = True
 
     S_g = dict()
+    corad_g = dict()
     for g, tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_graph_with_tp ):
         gu = g.unlabeled_graph
         if gu in S_g: continue
 
-#        for (sgs, r_g), m in tp.items():
-#            print m, sgs, r_g
-#            for sg,p in sgs:
-#                print sg, "%d^%d = %d" % (S_g[sg.unlabeled_graph],p,S_g[sg.unlabeled_graph]**p)
+        maxf_count = 0
+        if len(tp) == 0:
+            corad_g[gu] = 1
+            S_g[gu] = -1
+        else:
+            max_corad = 0
+            S_g[gu] = -1
+            for (sgs, r_g), m in tp.items():
+                ru = r_g.unlabeled_graph
+                r_cr = corad_g[ru]
+                if r_cr == 1:
+                    maxf_count+=m
+                print "%d*(" % m,
+                for sg,e in sgs:
+                    res_type = "e^%d" % e if sg.residue_type == (2,2) else "v^%d" % e
+                    print res_type,
+                print ")",
 
-        S_g[gu] = -1 - sum( m*reduce(operator.mul, ( S_g[sg.unlabeled_graph]**p for sg, p in sgs )) for (sgs,r_g), m in tp.items() )
+
+                max_corad = max(max_corad, r_cr)
+                S_g[gu] += -m*S_g[ru]
+
+            corad_g[gu] = max_corad + 1
 
         g_str = g.get_graph_str(ym)
-        print outputfg.get_element_str( g_str, fac*S_g[gu])
+        res_type = "e" if g.residue_type == (2,2) else "v"
+        ce, _ = g.cycle_decomposition( g.edges_set )
+        
+        print "\t",
+        print res_type, len(ce), maxf_count, corad_g[gu], outputfg.get_element_str( g_str, fac*S_g[gu])
     if endsc:
         print ";"
 
