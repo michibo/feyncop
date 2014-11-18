@@ -1,3 +1,7 @@
+INSTALL_PATH?=${HOME}
+
+INSTALL_FILES=nauty_wrapper.so geng multig graph.py weighted_graph.py hopf_graph.py phi_k_gen.py phi_34_gen.py qed_gen.py qcd_gen.py combinatorics.py powerseries.py stuff.py nauty_ctrl.py feyncop feyngen
+
 
 all : nauty_wrapper.so geng multig
 
@@ -9,6 +13,15 @@ geng : ../nauty/geng
 
 multig : ../nauty/multig
 	cp $^ $@
+
+install : ${INSTALL_FILES}
+	rm -f $(addsuffix c, $(filter %.py, ${INSTALL_FILES}))
+	cp ${INSTALL_FILES} ${INSTALL_PATH}/bin
+
+.PHONY: uninstall clean
+uninstall:
+	rm -f $(addsuffix c, $(filter %.py, ${INSTALL_FILES}))
+	rm -f $(addprefix ${INSTALL_PATH}/bin/, ${INSTALL_FILES})
 
 clean:
 	rm -f multig geng nauty_wrapper.so *.pyc
