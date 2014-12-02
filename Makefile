@@ -1,6 +1,6 @@
 INSTALL_PATH?=${HOME}
 
-INSTALL_FILES=nauty_wrapper.so geng multig graph.py weighted_graph.py hopf_graph.py phi_k_gen.py phi_34_gen.py qed_gen.py qcd_gen.py combinatorics.py powerseries.py stuff.py nauty_ctrl.py feyncop feyngen
+INSTALL_FILES=nauty_wrapper.so geng multig graph.py weighted_graph.py hopf_graph.py phi_k_gen.py phi_34_gen.py qed_gen.py qcd_gen.py combinatorics.py powerseries.py stuff.py nauty_ctrl.py parsefg.py outputfg.py feyncop feyngen
 
 
 all : nauty_wrapper.so geng multig
