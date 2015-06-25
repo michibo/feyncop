@@ -309,11 +309,8 @@ class Graph(object):
 
         cps0_len = sum( 1 for comp in self.cntd_components )
         for v in self.internal_vtcs_set:
-            sub_edges = self.edges_set - set(self.adj_edges(v, self.edges_set))
+            sub_edges = self.edges_set - set(self.adj_edges(v, self.edges_set)) 
             components = list(self.cntd_components_sub_edges(sub_edges) )
-
-            if len(components) <= cps0_len: # to allow vacuum non-tadpole graphs
-                continue
 
             for comp in components:
                 if all( e not in self.external_edges_set for e in comp ):
