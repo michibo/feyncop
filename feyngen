@@ -175,22 +175,19 @@ def main():
         return
 
     loops_str =  ""
-    if len(args.loops) == 1:
-        loops_str = "%d" % args.loops[0]
-    else:
-        loops_str = "(%s)" % ",".join(["%d" % l for l in args.loops])
+    loops_str = "%s" % "_".join(["h%d" % l for l in args.loops])
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
-        print "qed_with_furry_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+        print "qed_with_furry_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str )
     elif qed:
-        print "qed_f%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, loops_str, unlabeled_str )
+        print "qed_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str )
     elif args.ym:
-        print "ym_f%d_g%d_b%d_h%s%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, loops_str, unlabeled_str )
+        print "ym_f%d_g%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, unlabeled_str, loops_str )
     elif args.phi34:
-        print "phi3_4_j%d_h%s%s :=" % ( args.num_ext_legs, loops_str, unlabeled_str )
+        print "phi3_4_j%d%s_%s :=" % ( args.num_ext_legs, unlabeled_str, loops_str )
     else:
-        print "phi%d_j%d_h%s%s :=" % ( args.valence, args.num_ext_legs, loops_str, unlabeled_str )
+        print "phi%d_j%d%s_%s :=" % ( args.valence, args.num_ext_legs, unlabeled_str, loops_str )
 
     ext_legs_total = 0 
     possible_emptyness = not args.connected and not args.edge2cntd and not args.vtx2cntd
