@@ -1,0 +1,84 @@
+#!/usr/bin/env python2.7
+
+""" - Main program code for "tplisttop". 
+
+This program is part of the feyncop/feyngen package.
+"""
+
+# See also: http://people.physik.hu-berlin.de/~borinsky/
+
+__author__ = "Michael Borinsky"
+__email__ = "borinsky@physik.hu-berlin.de"
+__copyright__ = "Copyright (C) 2014 Michael Borinsky"
+__license__ = "MIT License"
+__version__ = "1.0"
+
+# Copyright (c) 2014 Michael Borinsky
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy 
+# of this software and associated documentation files (the "Software"), to 
+# deal in the Software without restriction, including without limitation the 
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+# sell copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in 
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+# IN THE SOFTWARE.
+
+# If you have problems using this program, 
+# please feel free to contact me!
+# March 2014
+
+from fractions import *
+import copy
+import argparse
+import sys
+import collections, operator
+from math import *
+from stuff import *
+
+import parsefg, outputfg
+
+from graph import Graph
+from hopf_graph import HopfGraph
+
+def main():
+    """Main program section. Reads the options and parameters and starts the 
+        relevant subroutines."""
+
+    parser = argparse.ArgumentParser(description='')
+    args = parser.parse_args()
+        
+    string = ""
+    try:
+        string = next(sys.stdin)
+    except StopIteration:
+        return
+
+    var_name,ev,el = parsefg.parse_var_name(string)
+    endsc = False
+    if var_name:
+        sys.stdout.write("%s_Sphi%s" % (var_name, string[ev:]))
+        string = string[el:]
+        endsc = True
+
+    for g, tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_graph_with_tp ):
+        if not tp:
+            print outputfg.get_element_str( g.get_graph_str(ym), fac )
+
+    print ";"
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ""
+        print "Cancelled"
