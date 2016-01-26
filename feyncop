@@ -115,6 +115,7 @@ def main():
     parser.add_argument('-p', '--primitives', dest='primitives', action='store_true', help='Filter graphs for primitive/skeleton graphs. (default: false)')
 
     parser.add_argument('-k', '--check', dest='check', action='store_true', help='Check the sum of 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
+    parser.add_argument('-m', '--check_tadpoles', dest='check_tadpoles', action='store_true', help='Check the sum of non-tadpole 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
     args = parser.parse_args()
         
     string = ""
@@ -135,7 +136,7 @@ def main():
             sys.stdout.write("%s_red_cop%s" % (var_name, string[ev:]))
         string = string[el:]
 
-    if args.unlabeled or args.check:
+    if args.unlabeled or args.check or args.check_tadpoles:
         graphs_fac = frozenset((g.unlabeled_graph,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
 
         ym_glob = False
@@ -153,6 +154,10 @@ def main():
             for tp, fac in coproducts.items():
                 tp_str = get_tensor_product_str( tp, ym_glob )
                 print outputfg.get_element_str( tp_str, fac )
+        elif args.check_tadpoles:
+            tensor_check(coproducts, tadpoles=False)
+            print "Check successful!"
+            return
         else:
             tensor_check(coproducts)
             print "Check successful!"
@@ -180,10 +185,14 @@ def main():
 
     print ";"
 
-def tensor_check(coproducts):
+def tensor_check(coproducts, tadpoles=True):
     """Performs non trivial check on given sum of 1PI diagrams. """
     for tensor_product, factor in coproducts.items():
         sub_graphs, residue_graph = tensor_product
+        if not tadpoles:
+            if any(sg.is_tadpole for sg,m in sub_graphs) or residue_graph.is_tadpole:
+                continue
+
         print " --- "
         print "\t",
         for g, fac in sub_graphs:
