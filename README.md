@@ -26,7 +26,7 @@ Download & Manual
 -----------------
 
 The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
-A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/misc/feyncop_built.tar.gz) and a seperate [manual](http://people.physik.hu-berlin.de/~borinsky/misc/feyngencop_manual.pdf) for both programs are available on my webpage: http://people.physik.hu-berlin.de/~borinsky/
+A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/static/feyncop_built.tar.gz) and a seperate [manual](http://people.physik.hu-berlin.de/~borinsky/static/feyngencop_manual.pdf) for both programs are available on my webpage: http://people.physik.hu-berlin.de/~borinsky/
 
 Prerequisites
 -------------
