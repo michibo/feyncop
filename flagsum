@@ -39,6 +39,7 @@ __version__ = "1.0"
 # March 2014
 
 from fractions import *
+from fractions import Fraction as F
 import copy
 import argparse
 import sys
@@ -56,6 +57,7 @@ def main():
         relevant subroutines."""
 
     parser = argparse.ArgumentParser(description='Count the number of flags for each graph')
+    parser.add_argument('-w', '--weighted', dest='weighted', action='store_true', help='Calc weights')
     args = parser.parse_args()
         
     string = ""
@@ -68,10 +70,15 @@ def main():
     if var_name:
         string = string[el:]
 
-    def numberofflags( g ):
+    def numberofflags( g, weighted ):
         _, cycles_edges = g.cycle_decomposition( g.edges_set )
 
-        return numberofflags_int( g, g.internal_edges_set, cycles_edges )
+
+        if weighted:
+            return numberofflags_int_weighted( g, g.internal_edges_set, cycles_edges )
+        else:
+            return numberofflags_int( g, g.internal_edges_set, cycles_edges )
+
     def numberofflags_int( g, sub_edges, cycles_edges ):
         if len(cycles_edges) == 1:
             return 1
@@ -87,7 +94,30 @@ def main():
                 
         return res
 
-    graphs_fac = ( (numberofflags(g),g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
+    def numberofflags_int_weighted( g, sub_edges, cycles_edges ):
+        E = len(sub_edges)
+        if len(cycles_edges) == 1:
+            if E-2 <= 0:
+                return 0
+            else:
+                return F(1,E -2)
+
+        res = 0
+        for l in range(1, E):
+            for se in itertools.combinations(sub_edges, l):
+                subsub_edges = frozenset(se)
+                _, sub_cycles = g.cycle_decomposition( subsub_edges )
+                if len(sub_cycles) == len(cycles_edges)-1 and g.is_edge_2_connected_sub_edges(subsub_edges):
+                    res+= numberofflags_int_weighted( g, subsub_edges, sub_cycles )
+
+        if sub_edges == g.internal_edges_set:
+            return res
+        elif (len(sub_edges)-2*len(cycles_edges)) == 0:
+            return 0
+        else:
+            return F(res,(len(sub_edges)-2*len(cycles_edges))) 
+
+    graphs_fac = ( (numberofflags(g, args.weighted),g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
 
     for flags, g, fac, ym in sorted(graphs_fac):
         g_str = g.get_graph_str( ym )

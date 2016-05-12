@@ -57,6 +57,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Sum the symmetry factors of a list of diagrams')
     parser.add_argument('-u', '--non_leg_fixed', dest='non_leg_fixed', action='store_true', help='Input non-leg-fixed graphs. I.e. external legs of graphs are not given with leg labels. (default: false)')
+    parser.add_argument('-w', '--no_warning', dest='no_warning', action='store_true', help='Do not print warnings. (default: false)')
     args = parser.parse_args()
         
     string = ""
@@ -79,7 +80,7 @@ def main():
         else:
             g_sym = g.unlabeled_graph.symmetry_factor
             
-        if Fraction(1,g_sym) != Fraction(fac,1):
+        if Fraction(1,g_sym) != Fraction(fac,1) and not args.no_warning:
              sys.stderr.write("Warning: %s doen't have symmetry factor %s. It has %s. (Non-)Fixed legs?\n" % (g, fac, Fraction(1,g_sym)))
         sum_fac += fac
 
