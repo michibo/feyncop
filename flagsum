@@ -89,8 +89,15 @@ def main():
             for se in itertools.combinations(sub_edges, l):
                 subsub_edges = frozenset(se)
                 _, sub_cycles = g.cycle_decomposition( subsub_edges )
-                if len(sub_cycles) == len(cycles_edges)-1 and g.is_edge_2_connected_sub_edges(subsub_edges):
-                    res+= numberofflags_int( g, subsub_edges, sub_cycles )
+                #if len(sub_cycles) == len(cycles_edges)-1 and g.is_edge_2_connected_sub_edges(subsub_edges):
+                if len(sub_cycles) == len(cycles_edges)-1 and \
+                    all( g.is_edge_2_connected_sub_edges(c) for c in g.cntd_components_sub_edges(subsub_edges)):
+                    c_res = 1
+                    for c in g.cntd_components_sub_edges(subsub_edges):
+                        _, c_sub_cycles = g.cycle_decomposition( c )
+                        c_res*= numberofflags_int( g, c, c_sub_cycles )
+
+                    res+= c_res
                 
         return res
 
@@ -107,8 +114,16 @@ def main():
             for se in itertools.combinations(sub_edges, l):
                 subsub_edges = frozenset(se)
                 _, sub_cycles = g.cycle_decomposition( subsub_edges )
-                if len(sub_cycles) == len(cycles_edges)-1 and g.is_edge_2_connected_sub_edges(subsub_edges):
-                    res+= numberofflags_int_weighted( g, subsub_edges, sub_cycles )
+
+                #if len(sub_cycles) == len(cycles_edges)-1 and g.is_edge_2_connected_sub_edges(subsub_edges):
+                if len(sub_cycles) == len(cycles_edges)-1 and \
+                    all( g.is_edge_2_connected_sub_edges(c) for c in g.cntd_components_sub_edges(subsub_edges)):
+                    c_res = 1
+                    for c in g.cntd_components_sub_edges(subsub_edges):
+                        _, c_sub_cycles = g.cycle_decomposition( c )
+                        c_res*= numberofflags_int_weighted( g, c, c_sub_cycles )
+
+                    res+= c_res
 
         if sub_edges == g.internal_edges_set:
             return res
