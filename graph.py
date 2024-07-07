@@ -38,7 +38,7 @@ from stuff import *
 import collections, itertools, copy
 import nauty_wrapper
 
-class Graph(object):
+class Graph:
     """This class incorporates all the graph theoretic tools necessary for basic 
         Feynman graph handling."""
 
@@ -113,8 +113,9 @@ class Graph(object):
         """Return the adjacent edges to vertex v. Only consider edges in 
             sub_edges"""
 
-        is_adj = lambda (x,y) : (x == v) or (y == v)
-        return ( e for e,edge in enumerate(self.edges) if e in sub_edges and is_adj(edge) )
+        is_adj = lambda x, y: (x == v) or (y == v)
+        return (e for e, edge in enumerate(self.edges)
+                if e in sub_edges and is_adj(edge))
 
     def vtx_valence( self, v, sub_edges ):
         """Return the valence of vertex v. Only consider edges in sub_edges as 
@@ -137,7 +138,8 @@ class Graph(object):
     def edge_degree_counter( self, sub_edges ):
         """Return a counter of edge multiplicity."""
 
-        norm = lambda (x,y) : (x,y) if x>y else (y,x)
+        norm = lambda x, y: (x, y) if x > y else (y, x)
+
         return collections.Counter( norm(self.edges[e]) for e in sub_edges )
 
     def dfs( self, v, sub_edges, back_edge_visitor, forward_edge_visitor, discovered = set(), forward_edges = set(), back_edges = set(), trace=(), trace_edges=() ):
@@ -148,7 +150,7 @@ class Graph(object):
 
         discovered|= set( [v] )
         adj_edges = frozenset(self.adj_edges(v, sub_edges))
-        get_adj = lambda (x,y) : y if x == v else x
+        get_adj = lambda x, y: y if x == v else x
 
         for i in adj_edges:
             if i in forward_edges or i in back_edges:
@@ -209,7 +211,7 @@ class Graph(object):
         try:
             v,_ = self.edges[iter(sub_edges).next()]
         except StopIteration:
-            print "Error: Graph is not connected?"
+            print("Error: Graph is not connected?")
             raise
 
         # Connectedness is checked using the dfs algorithm.
@@ -237,7 +239,7 @@ class Graph(object):
             self.dfs( v, sub_edges, None, None, discovered, f_edges, b_edges )
 
             if discovered & pre_discovered:
-                print "Warning: Connected components error"
+                print("Warning: Connected components error")
                 raise
             pre_discovered |= discovered
 
@@ -250,8 +252,7 @@ class Graph(object):
     def cntd_components( self ):
         """Generates the connected components of the graph."""
 
-        for component_edges in self.cntd_components_sub_edges(self.edges_set):
-            yield component_edges
+        yield from self.cntd_components_sub_edges(self.edges_set)
 
     def is_edge_2_connected_sub_edges( self, sub_edges ): 
         """True if the subgraph consisting of sub_edges is edge-2-connected."""
@@ -331,8 +332,11 @@ class Graph(object):
         selfloop_multiplicity_list = sorted( (mul,v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list) )
         ( max_selfloop_multiplicity, _ ) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else (0, 0)
 
-        self_loop_list = [ frozenset( vtx for mul, vtx in filter( lambda (mul, vtx) : mul == i, selfloop_multiplicity_list ) ) for i in range( max_selfloop_multiplicity+1 ) ]
-        
+        self_loop_list = [frozenset(vtx
+                                    for mul, vtx in selfloop_multiplicity_list
+                                    if mul == i)
+                          for i in range( max_selfloop_multiplicity + 1)]
+
         # External vertices all have the same color still. 
         return self_loop_list + [ self.external_vtcs_set ]
 
@@ -349,10 +353,12 @@ class Graph(object):
         edge_multiplicity_list = sorted( (mul, edge) for edge, mul in edge_degree_counter.iteritems() )
         ( max_edge_multiplicity, _ ) = edge_multiplicity_list[-1] if edge_multiplicity_list else ( 0, 0 )
 
-        edge_coloring = [ [ edge for mul, edge in filter( lambda (mul, edge) : mul == i, edge_multiplicity_list ) ] for i in range( 1, max_edge_multiplicity+1 ) ]
+        edge_coloring = [[edge for mul, edge in edge_multiplicity_list
+                         if mul == i]
+                         for i in range( 1, max_edge_multiplicity + 1)]
 
         if edge_coloring:
-            flip = lambda (x,y) : (y,x)
+            flip = lambda x, y: (y, x)
             edge_coloring[0] += [ flip(edge) for edge in edge_coloring[0] ]
 
         return edge_coloring
@@ -404,8 +410,9 @@ class Graph(object):
         vtx_list = [ v for part in ny_colored_vtcs for v in part ]
         m = dict( (old, new) for old,new in zip( lab, vtx_list ) )
 
-        def relabel_edge( (v1,v2) ):
-            return (m[ny_lab[v1]],m[ny_lab[v2]])
+        def relabel_edge(v12):
+            v1, v2 = v12
+            return (m[ny_lab[v1]], m[ny_lab[v2]])
 
         # Relabel the edges according to the canonical labeling.
         canonical_edges = tuple(relabel_edge(edge) for edge in self.edges )
@@ -447,7 +454,7 @@ class Graph(object):
         # canonical labeling calculation must be altered.
         class FixedGraph( type(self) ):
             def get_vtcs_coloring( self ):
-                vtcs_coloring = super(FixedGraph, self).get_vtcs_coloring()
+                vtcs_coloring = super().get_vtcs_coloring()
 
                 vtcs_coloring = [ c - self.external_vtcs_set for c in vtcs_coloring]
                 vtcs_coloring.extend( frozenset([v]) for v in sorted(self.external_vtcs_set) )
@@ -457,11 +464,12 @@ class Graph(object):
         for perm in itertools.permutations( sorted(self.external_vtcs_set) ):
             m = tuple(self.internal_vtcs_set) + perm
 
-            def relabel_edge( (v1,v2) ):
+            def relabel_edge(v12):
+                v1, v2 = v12
                 return (m[v1], m[v2])
 
             yield FixedGraph( 
-                    [ relabel_edge(edge) for edge in self.edges ], 0 )
+                [ relabel_edge(edge) for edge in self.edges ], 0 )
 
     @property
     def clean_graph( self ):
@@ -469,7 +477,7 @@ class Graph(object):
 
         ext_sorter = ( e in self.external_edges_set for e,edge in enumerate(self.edges) )
 
-        norm = lambda (edge) : (max(edge),min(edge))
+        norm = lambda edge: (max(edge), min(edge))
         edges = [ norm(edge) for edge in self.edges ]
         xe_list = list(sorted(zip(ext_sorter, edges)))
         edges = [ edge for x,edge in xe_list ]

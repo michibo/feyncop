@@ -49,7 +49,7 @@ class WeightedGraph(Graph):
         if len(edges) != len(edge_weights):
             raise
         
-        super(WeightedGraph, self).__init__( edges, symmetry_factor )
+        super().__init__( edges, symmetry_factor )
         self.edge_weights = edge_weights
 
     def get_edge_str( self, e ):
@@ -68,7 +68,7 @@ class WeightedGraph(Graph):
     def graph_from_sub_edges( self, sub_edges ):
         """Create a new graph from a sub set of its edges."""
 
-        sub_graph = super(WeightedGraph, self).graph_from_sub_edges( sub_edges )
+        sub_graph = super().graph_from_sub_edges( sub_edges )
         sub_graph.edge_weights = tuple( self.edge_weights[e] for e in sorted(sub_edges) )
 
         return sub_graph
@@ -123,8 +123,12 @@ class WeightedGraph(Graph):
         selfloop_multiplicity_list = sorted( (mul,v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list) )
         ( ( max_selfloop_multiplicity, _), _ ) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else ((0,2), 0)
 
-        self_loop_list = [ frozenset( vtx for mul, vtx in filter( lambda ((mul, we), vtx) : mul == i and we == w, selfloop_multiplicity_list ) ) for i in range( max_selfloop_multiplicity+1 ) for w in (1,2,3) ]
-        
+        self_loop_list = [frozenset(vtx
+                                    for (mul, we), vtx in selfloop_multiplicity_list
+                                    if  mul == i and we == w)
+                          for i in range(max_selfloop_multiplicity+1)
+                          for w in (1, 2, 3)]
+
         # External vertices all have the same color still. 
         return self_loop_list + [ self.external_vtcs_set ]
 
@@ -145,7 +149,10 @@ class WeightedGraph(Graph):
         # For higher performance some special cases of boson-fermion-ghost 
         # edge combinations are included. 
         normalize = lambda edge : (max(edge),min(edge))
-        flip = lambda (x,y) : (y,x)
+
+        def flip(x, y):
+            return (y, x)
+
         fermion_loops = frozenset( normalize(edge) for edge in fermion_edges if flip(edge) in fermion_edges )
         ghost_loops = frozenset( normalize(edge) for edge in ghost_edges if flip(edge) in ghost_edges )
         reduced_fermion_edges = fermion_edges - fermion_loops - frozenset( flip(edge) for edge in fermion_loops )
@@ -159,11 +166,11 @@ class WeightedGraph(Graph):
 
         if len(dbl_boson_edges&reduced_fermion_edges) != 0 or \
             len(dbl_boson_edges&reduced_ghost_edges) != 0:
-            print dbl_boson_edges, reduced_fermion_edges
+            print(dbl_boson_edges, reduced_fermion_edges)
             raise
 
         # Calculate the boson coloring as in the Graph class.
-        boson_coloring = super( WeightedGraph, self).get_edges_coloring( boson_edges_set )
+        boson_coloring = super().get_edges_coloring( boson_edges_set )
 
         return [ dbl_boson_edges | reduced_fermion_edges | reduced_ghost_edges, 
             fermion_loops, boson_fermion_loops, ghost_loops, boson_ghost_loops, 
@@ -188,7 +195,7 @@ class WeightedGraph(Graph):
             graph provided that the graph is non-leg-fixed."""
         class FixedGraph( type(self) ):
             def get_vtcs_coloring( self ):
-                vtcs_coloring = super(FixedGraph, self).get_vtcs_coloring()
+                vtcs_coloring = super().get_vtcs_coloring()
 
                 vtcs_coloring = [ c - self.external_vtcs_set for c in vtcs_coloring]
                 vtcs_coloring.extend( frozenset([v]) for v in sorted(self.external_vtcs_set) )
@@ -232,7 +239,8 @@ class WeightedGraph(Graph):
                                             perm0 + perm1 + perm2 + perm3 + perm4
                             m = dict( zip( vtcs_list, new_vtcs_list ) )
 
-                            def relabel_edge( (v1,v2) ):
+                            def relabel_edge(v12):
+                                v1, v2 = v12
                                 return (m[v1], m[v2])
 
                             yield FixedGraph( 
@@ -244,7 +252,7 @@ class WeightedGraph(Graph):
 
         ext_sorter = ( e in self.external_edges_set for e,edge in enumerate(self.edges) )
 
-        norm = lambda (edge) : (max(edge),min(edge))
+        norm = lambda edge: (max(edge), min(edge))
         edges = [ norm(edge) if w == 2 else edge for w,edge in zip(self.edge_weights, self.edges) ]
         xwe_list = list(sorted(zip(ext_sorter, self.edge_weights, edges)))
         edges = [ edge for x,w,edge in xwe_list ]

@@ -51,8 +51,7 @@ def gen_graphs( L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
 
         qcd_graphs = frozenset( gen_qcd_graphs )
 
-        for g in qcd_graphs:
-            yield g
+        yield from qcd_graphs
 
 def gen_from_phi34_g( fg, r_t2, u_t2, m ):
     """Helper function: Generate full fledged QCD graphs from the bulk output of 
@@ -101,7 +100,9 @@ def gen_from_phi34_g( fg, r_t2, u_t2, m ):
             if any( res != 0 for res in fermion_res ):
                 continue
 
-            flip = lambda (v1,v2) : (v2,v1)
+            def flip(v1, v2):
+                return (v2, v1)
+
             edges = tuple( edge if w == 1 or w == 2 else flip(edge) for edge, w in zip(fg.edges, dir_weights) )
             translated_weights = tuple( 2 if w == 2 else 1 for w in weights )
             

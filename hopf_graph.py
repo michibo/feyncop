@@ -68,11 +68,10 @@ class HopfGraph(WeightedGraph):
             dimension."""
 
         if not self.is_edge_2_connected:
-            print "Warning: Calculation of non 1PI graph coproduct omitted:", self
+            print("Warning: Calculation of non 1PI graph coproduct omitted:", self)
             return
         
-        for sub_edges_list in self.reduced_coproduct_on_edges( dimension, self.internal_edges_set, ym ):
-            yield sub_edges_list
+        yield from self.reduced_coproduct_on_edges( dimension, self.internal_edges_set, ym )
 
     def reduced_coproduct_with_residue_graph( self, dimension, ym=False ):
         """Calculate the reduced coproduct of the graph in the given 
@@ -172,8 +171,12 @@ class HopfGraph(WeightedGraph):
         vtcs = self.vtcs_set_sub_edges( sub_edges )
         not_vtcs = self.vtcs_set_sub_edges( not_edges )
         ext_vtcs = vtcs & not_vtcs
-        adj_vtx = lambda ((x,y),v) : y if x == v else x
-        adj_vtx_e = lambda (e,v) : adj_vtx((self.edges[e],v))
+
+        def adj_vtx(xy, v):
+            x, y = xy
+            return y if x == v else x
+
+        adj_vtx_e = lambda e, v: adj_vtx((self.edges[e], v))
 
         ext_edges = [ (adj_vtx_e((e,v)),v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) ]
         ext_edges+= [ (v,v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) if adj_vtx_e((e,v)) == v ]
@@ -205,7 +208,7 @@ class HopfGraph(WeightedGraph):
             
             def gen_new_edges():
                 for v, edges in pre_bad_edges.items():
-                    adj_v = lambda (x,y) : x if y == v else y
+                    adj_v = lambda x, y: x if y == v else y
                     e1,e2 = edges
                     w1,w2 = self.edge_weights[e1], self.edge_weights[e2]
                     if w1 != w2:    raise

@@ -35,11 +35,13 @@ __version__ = "1.0"
 
 import re
 from fractions import *
-import collections, sys
+import collections
+import sys
 
 from hopf_graph import HopfGraph
 
-var_name_ptrn = re.compile( "^(\S+)\s*:=\s*" )
+var_name_ptrn = re.compile(r"^(\S+)\s*:=\s*")
+
 def parse_var_name( string ):
     """Parses the name of a input graph sum."""
 
@@ -119,7 +121,7 @@ def get_tensor_product_from_match( m ):
     res_str = gprs[-1]
     res_graph, res_fac, res_ym = get_graph_from_match( graph_pattern.match( res_str ) )
     if res_fac != 1:
-        print "Warning strange input: %s", m.group(0)
+        print("Warning strange input: %s", m.group(0))
         return
 
     def gen_sgs():
@@ -129,7 +131,7 @@ def get_tensor_product_from_match( m ):
             exp_str = sg_m.group(2)
             sg, sg_fac, sg_ym = get_graph_from_match( graph_pattern.match( sg_str ) )
             if sg_fac != 1 or sg_ym != res_ym:
-                print "Warning strange input: %s", m.group(0)
+                print("Warning strange input: %s", m.group(0))
                 continue
 
             p = 1 if '' == exp_str else int(exp_str)
@@ -146,19 +148,19 @@ def get_graph_with_tp_from_match( m ):
     
     g, g_fac, g_ym = get_graph_from_match( graph_pattern.match( gprs[2] ) )
     if g_fac != 1:
-        print "Warning strange input: %s", m.group(0)
+        print("Warning strange input: %s", m.group(0))
 
     tps_str = gprs[3]
 
     def gen_tps():
         for tp_m in tensor_product_pattern.finditer(tps_str):
             if not tp_m:
-                print "Warning strange input: %s", m.group(0)
+                print("Warning strange input: %s", m.group(0))
                 continue
             tp, fac, ym = get_tensor_product_from_match(tp_m)
 
             if ym != g_ym:
-                print "Warning strange input: %s", m.group(0)
+                print("Warning strange input: %s", m.group(0))
                 continue
 
             yield tp, fac
@@ -183,9 +185,9 @@ def parse_sum_of_graph_with_tp( string ):
 
 def not_parsable_check( s ):
     if s:
-        print "\n********************************"
-        print "Warning: Could not parse this: %s" % s
-        print "********************************"
+        print("\n********************************")
+        print("Warning: Could not parse this: %s" % s)
+        print("********************************")
 
 end_pattern = re.compile(r";\s*(.*)$")
 def parse_input_lines( instream, outstream, string, parser_fun=parse_sum_of_graphs ):

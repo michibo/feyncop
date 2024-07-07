@@ -103,7 +103,9 @@ def gen_from_phi3_g( fg, r_t2, m ):
             if any( res != 0 for res in fermion_res ):
                 continue
 
-            flip = lambda (v1,v2) : (v2,v1)
+            def flip(v1, v2):
+                return (v2, v1)
+
             edges = tuple( edge if w == 1 or w == 2 else flip(edge) for edge, w in zip(fg.edges, dir_weights) )
             translated_weights = tuple( 2 if w == 2 else 1 for w in weights )
             
