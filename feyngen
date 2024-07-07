@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 """ - Main program code for "feyngen" - A program to generate Feynman graphs 
 suitable for Hopf algebra calculations. """
@@ -76,7 +76,7 @@ def write_maple_graphs( graphs ):
     for g in graphs:
         graphs_yielded = True
         sign = '+' 
-        print "%s%s" % (sign, str(g))
+        print("%s%s" % (sign, str(g)))
 
     return graphs_yielded
  
@@ -121,13 +121,13 @@ def compare_sym_factors( num_loops, test_sums, args ):
             test_sum_a = combinatorics.phi_k_class_coeff( num_loops, args.num_ext_legs, args.valence )
 
     if test_sums['non-fixed'] != test_sum_a:
-        print test_sums['non-fixed'], test_sum_a
-        print 'nonfixed'
+        print(test_sums['non-fixed'], test_sum_a)
+        print('nonfixed')
         return False
 
     if not args.non_leg_fixed and test_sums['fixed'] != test_sum_a*fix_factor:
-        print test_sums['fixed'], test_sum_a*fix_factor
-        print 'fixed', fix_factor
+        print(test_sums['fixed'], test_sum_a*fix_factor)
+        print('fixed', fix_factor)
         return False
     
     return True
@@ -164,14 +164,14 @@ def main():
 
     if qed or args.ym:
         if args.num_ext_legs:
-            print "Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead."
+            print("Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead.")
     if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs or args.num_ext_glegs):
-        print "Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym and without -j to indicate QED or Yang Mills enumeration."
+        print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym and without -j to indicate QED or Yang Mills enumeration.")
     elif (args.num_ext_blegs or args.num_ext_flegs) and not args.ym:
         args.qed = qed = True
 
     if not qed and args.valence <= 2:
-        print "Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3"
+        print("Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3")
         return
 
     loops_str =  ""
@@ -179,15 +179,15 @@ def main():
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
-        print "qed_with_furry_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str )
+        print("qed_with_furry_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str ))
     elif qed:
-        print "qed_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str )
+        print("qed_f%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str ))
     elif args.ym:
-        print "ym_f%d_g%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, unlabeled_str, loops_str )
+        print("ym_f%d_g%d_b%d%s_%s :=" % ( args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, unlabeled_str, loops_str ))
     elif args.phi34:
-        print "phi3_4_j%d%s_%s :=" % ( args.num_ext_legs, unlabeled_str, loops_str )
+        print("phi3_4_j%d%s_%s :=" % ( args.num_ext_legs, unlabeled_str, loops_str ))
     else:
-        print "phi%d_j%d%s_%s :=" % ( args.valence, args.num_ext_legs, unlabeled_str, loops_str )
+        print("phi%d_j%d%s_%s :=" % ( args.valence, args.num_ext_legs, unlabeled_str, loops_str ))
 
     ext_legs_total = 0 
     possible_emptyness = not args.connected and not args.edge2cntd and not args.vtx2cntd
@@ -217,26 +217,23 @@ def main():
 
             testable = not args.notadpoles and not args.edge2cntd and not args.vtx2cntd
             if testable and not compare_sym_factors( num_loops, test_sums, args ):
-                print "Warning: Internal error check failed"
+                print("Warning: Internal error check failed")
         elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
-            print "+%s" % str(WeightedGraph( tuple(), tuple() ).unlabeled_graph)
+            print("+%s" % str(WeightedGraph( tuple(), tuple() ).unlabeled_graph))
             graphs_yielded = True
             
             test_sums['fixed'] = test_sums['non-fixed'] = 1
             if not compare_sym_factors( num_loops, test_sums, args ):
-                print "Warning: Internal error check failed"
-
+                print("Warning: Internal error check failed")
 
     if graphs_yielded:
-        print ";"
+        print(";")
     else:
-        print "0;"
+        print("0;")
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
-        
-
+        print("")
+        print("Cancelled")
