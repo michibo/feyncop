@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 """ - Main program code for "weightsum" - A program to sum the 
 combinatorial weights of a list of Feynman diagrams. 
@@ -83,10 +83,10 @@ def main():
              sys.stderr.write("Warning: %s doen't have symmetry factor %s. It has %s. (Non-)Fixed legs?\n" % (g, fac, Fraction(1,g_sym)))
         sum_fac += fac
 
-    print "%s" % sum_fac
+    print("%s" % sum_fac)
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
+        print("")
+        print("Cancelled")

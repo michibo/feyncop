@@ -6,7 +6,7 @@ INSTALL_FILES=nauty_wrapper.so geng multig graph.py weighted_graph.py hopf_graph
 all : nauty_wrapper.so geng multig
 
 nauty_wrapper.so : nauty_wrapper.c ../nauty/nautil.c ../nauty/nauty.c ../nauty/naugraph.c ../nauty/schreier.c ../nauty/naurng.c
-	gcc -shared -O2 -lpython2.7 -fPIC $^ -o $@
+	gcc -shared -O2 -lpython3 -fPIC $^ -o $@
 
 geng : ../nauty/geng
 	cp $^ $@

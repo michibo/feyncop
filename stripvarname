@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 """ - Main program code for "stripvarname" - A program to strip the varname.
 
@@ -43,6 +43,7 @@ import re
 
 import parsefg
 
+
 def main():
     """Main program section. Reads the options and parameters and starts the 
         relevant subroutines."""
@@ -62,14 +63,15 @@ def main():
 
     for line in sys.stdin:
         if ';' not in line:
-            print line,
+            print(line,)
         else:
             if not re.match(r"\s*;.*", line):
-                print line[:line.find(';')],
+                print(line[:line.find(';')],)
+
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
+        print("")
+        print("Cancelled")

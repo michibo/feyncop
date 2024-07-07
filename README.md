@@ -31,7 +31,7 @@ A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/static/feyncop
 Prerequisites
 -------------
 
-To use either of the programs Python 2.7 with development files must be 
+To use either of the programs Python 3 with development files must be 
 installed on your machine. For information on how to install Python please 
 consult http://www.python.org/ .
 

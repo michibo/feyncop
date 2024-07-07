@@ -6,7 +6,7 @@
 // Author: Michael Borinsky
 // Email: borinsky@physik.hu-berlin.de
 
-#include <python2.7/Python.h>
+#include <python3/Python.h>
 #include "../nauty/nauty.h"
 
 unsigned long long g_GroupSize;
