@@ -138,7 +138,9 @@ class Graph:
     def edge_degree_counter( self, sub_edges ):
         """Return a counter of edge multiplicity."""
 
-        norm = lambda x, y: (x, y) if x > y else (y, x)
+        def norm(xy):
+            x, y = xy
+            return xy if x > y else (y, x)
 
         return collections.Counter( norm(self.edges[e]) for e in sub_edges )
 
@@ -350,7 +352,7 @@ class Graph:
         edge_degree_counter = self.edge_degree_counter(non_selfloop_edges_set)
    
         # Edges with different multiplicity get different colors.
-        edge_multiplicity_list = sorted( (mul, edge) for edge, mul in edge_degree_counter.iteritems() )
+        edge_multiplicity_list = sorted( (mul, edge) for edge, mul in edge_degree_counter.items() )
         ( max_edge_multiplicity, _ ) = edge_multiplicity_list[-1] if edge_multiplicity_list else ( 0, 0 )
 
         edge_coloring = [[edge for mul, edge in edge_multiplicity_list
@@ -358,7 +360,9 @@ class Graph:
                          for i in range( 1, max_edge_multiplicity + 1)]
 
         if edge_coloring:
-            flip = lambda x, y: (y, x)
+            def flip(xy):
+                x, y = xy
+                return (y, x)
             edge_coloring[0] += [ flip(edge) for edge in edge_coloring[0] ]
 
         return edge_coloring
@@ -424,10 +428,10 @@ class Graph:
 
         grpSize = 1
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
-        for mul_edge_deg in ( m for edge, m in edge_degree_counter.iteritems() if not self.is_selfloop(edge) ):
+        for mul_edge_deg in ( m for edge, m in edge_degree_counter.items() if not self.is_selfloop(edge) ):
             grpSize*= factorial(mul_edge_deg)
 
-        for selfloop_deg in ( m for edge, m in edge_degree_counter.iteritems() if self.is_selfloop(edge) ):
+        for selfloop_deg in ( m for edge, m in edge_degree_counter.items() if self.is_selfloop(edge) ):
             grpSize*= double_factorial(2*selfloop_deg)
         return grpSize
 

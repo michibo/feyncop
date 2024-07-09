@@ -39,10 +39,10 @@ def double_factorial( k ):
     if k == -1:
         return 1
     if k % 2 == 1:
-        n = (k - 1) / 2 
-        return factorial( 2*n + 1 ) / 2**n / factorial(n)
+        n = (k - 1) // 2 
+        return factorial( 2*n + 1 ) // 2**n // factorial(n)
     else:
-        n = k / 2
+        n = k // 2
         return factorial( n ) * 2**n
 
 def binomial( n, k ):
@@ -55,6 +55,5 @@ def binomial( n, k ):
     b = 1
     for i in range(k):
         b *= (n-i)
-        b /= (1+i)
+        b //= (1+i)
     return b
-

@@ -183,10 +183,10 @@ class WeightedGraph(Graph):
         grpSize = 1
         boson_edges = self.sub_edges_by_weight(2)
         edge_degree_counter = self.edge_degree_counter(boson_edges)
-        for mul_edge_deg in ( m for edge, m in edge_degree_counter.iteritems() if not self.is_selfloop(edge) ):
+        for mul_edge_deg in ( m for edge, m in edge_degree_counter.items() if not self.is_selfloop(edge) ):
             grpSize*= factorial(mul_edge_deg)
 
-        for selfloop_deg in ( m for edge, m in edge_degree_counter.iteritems() if self.is_selfloop(edge) ):
+        for selfloop_deg in ( m for edge, m in edge_degree_counter.items() if self.is_selfloop(edge) ):
             grpSize*= double_factorial(2*selfloop_deg)
         return grpSize
 

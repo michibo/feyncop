@@ -49,8 +49,8 @@ def calc_gen_params( L, k, m, cntd, notadpoles ):
     if l % D != 0 or n % D != 0:
         return ( 0, 0, 0 )
 
-    n /= D
-    l /= D
+    n //= D
+    l //= D
     bulk_n = n + m
     bulk_l = l + m
 
@@ -62,9 +62,9 @@ def calc_gen_params( L, k, m, cntd, notadpoles ):
     elif cntd:
         min_edges = bulk_n - 1
     elif k % 2 == 1:
-        min_edges = bulk_n / 2
+        min_edges = bulk_n // 2
     else:
-        min_edges = (m+1)/2
+        min_edges = (m + 1) // 2
 
     return bulk_n, min_edges, max_edges
 
@@ -125,8 +125,7 @@ def gen_from_bulk_g( g, vtcs_set, k, m, notadpoles ):
         if any( d % 2 != 0 or d < 0 for d in degree_defs ):
             continue
 
-        selfloop_edges = [ (v,v) for v,d in zip(int_vtcs, degree_defs) for i in range(d/2) ]
+        selfloop_edges = [ (v,v) for v,d in zip(int_vtcs, degree_defs) for i in range(d//2) ]
 
         edges = g.edges + selfloop_edges
         yield Graph( edges )
-

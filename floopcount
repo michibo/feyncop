@@ -89,7 +89,7 @@ def main():
     if filt:
         print(";")
     else:
-        for fl, number in graph_counter.iteritems():
+        for fl, number in graph_counter.items():
             print("%d graphs with %d fermion loops" % (number, fl))
 
 

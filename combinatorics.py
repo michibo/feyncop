@@ -42,7 +42,7 @@ def phi_k_class_coeff( L, m, k ):
     
     s_tkm2 = m + 2*(L - 1)
     if s_tkm2 % (k-2) != 0: return 0 
-    s = s_tkm2/(k-2)
+    s = s_tkm2//(k-2)
 
     if s<0:
         return 0
@@ -67,7 +67,7 @@ def qed_class_coeff( L, rt2, m ):
     if rt2 % 2 != 0:
         return 0
     
-    r = rt2/2
+    r = rt2//2
     s = m + 2*r + 2*(L - 1)
     
     if s<0:
@@ -83,7 +83,7 @@ def qed_furry_class_coeff( L, rt2, m ):
     if rt2 % 2 != 0:
         return 0
     
-    r = rt2/2
+    r = rt2//2
     s = m + 2*r + 2*(L - 1)
     
     if s<0:
@@ -101,8 +101,8 @@ def qcd_class_coeff( L, rt2, ut2, m ):
     if ut2 % 2 != 0:
         return 0
     
-    r = rt2/2
-    u = ut2/2
+    r = rt2//2
+    u = ut2//2
     s = m + 2*r + 2*u + 2*(L - 1)
 
     if s<0:
@@ -116,7 +116,7 @@ def cntd_phi_k_class_coeff( L, m, k ):
     
     s_tkm2 = m + 2*(L - 1)
     if s_tkm2 % (k-2) != 0: return 0 
-    s = s_tkm2/(k-2)
+    s = s_tkm2//(k-2)
 
     if s<0:
         return 0
@@ -148,7 +148,7 @@ def cntd_qed_class_coeff( L, rt2, m):
     if rt2 % 2 != 0:
         return 0
     
-    r = rt2/2
+    r = rt2//2
     s = m + 2*r + 2*(L - 1)
 
     if s<0:
@@ -168,7 +168,7 @@ def cntd_qed_furry_class_coeff( L, rt2, m):
     if rt2 % 2 != 0:
         return 0
     
-    r = rt2/2
+    r = rt2//2
     s = m + 2*r + 2*(L - 1)
 
     if s<0:
@@ -186,8 +186,8 @@ def cntd_qcd_class_coeff( L, rt2, ut2, m ):
     if rt2 % 2 != 0:
         return 0
     
-    r = rt2/2
-    u = ut2/2
+    r = rt2//2
+    u = ut2//2
     s = m + 2*r + 2*u + 2*(L - 1)
 
     if s<0:
@@ -220,8 +220,8 @@ def phi34_cc( s, m ):
         s corresponds to the power in the coupling constant and 
         m to the power of the field sources."""
 
-    l_min = max(0, (m + 2*s + 1)/2)
-    l_max = ( 3*s + m ) / 2 
+    l_min = max(0, (m + 2*s + 1)//2)
+    l_max = ( 3*s + m ) // 2 
     S = 0
     for l in range(l_min, l_max+1):
         n_1 =  2*l - 2*s - m
@@ -290,8 +290,8 @@ def qcd_cc( s, m, r, u ):
 
     l2_min = r
     l3_min = u
-    l1_min = (m+1)/2
-    l1_max = l2_max = l3_max = (3*s+m+2*r+2*u)/2
+    l1_min = (m+1)//2
+    l1_max = l2_max = l3_max = (3*s+m+2*r+2*u)//2
 
     S = 0
     for l1 in range(l1_min, l2_max+1):
@@ -303,7 +303,7 @@ def qcd_cc( s, m, r, u ):
                 n4 = l3-u
                 if n2_t2%2 != 0:
                     continue
-                n2 = n2_t2/2
+                n2 = n2_t2//2
                 if n1 < 0 or n2 < 0 or n3 < 0 or n4 < 0:
                     continue
 
