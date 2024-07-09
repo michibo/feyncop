@@ -156,7 +156,7 @@ static PyMethodDef nauty_wrapper_funcs[] = {
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef nauty_wrapper =
+static struct PyModuleDef nauty_wrapper_module =
 {
     PyModuleDef_HEAD_INIT,
     "nauty_wrapper", /* name of module */
@@ -165,7 +165,7 @@ static struct PyModuleDef nauty_wrapper =
     nauty_wrapper_funcs
 };
 
-PyMODINIT_FUNC initnauty_wrapper(void)
+PyMODINIT_FUNC PyInit_nauty_wrapper(void)
 {
-    return PyModule_Create(&nauty_wrapper);
+    return PyModule_Create(&nauty_wrapper_module);
 }
