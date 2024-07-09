@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """ - Main program code for "feyngen" - A program to generate Feynman graphs 
 suitable for Hopf algebra calculations. """

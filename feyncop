@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """ - Main program code for "feyncop" - A program to calculate the coproduct 
 on the Hopf algebra of Feynman graphs. """
