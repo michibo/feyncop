@@ -220,7 +220,7 @@ def phi34_cc( s, m ):
         s corresponds to the power in the coupling constant and 
         m to the power of the field sources."""
 
-    l_min = max(0, (m + 2*s + 1)//2)
+    l_min = max(0, (m + 2*s + 1) // 2)
     l_max = ( 3*s + m ) // 2 
     S = 0
     for l in range(l_min, l_max+1):
@@ -228,7 +228,7 @@ def phi34_cc( s, m ):
         n_2_t2 = -2*l + 3*s + m
         if n_2_t2 % 2 != 0:
             continue
-        n_2 = n_2_t2 / 2
+        n_2 = n_2_t2 // 2
 
         denom = factorial( n_1 ) * factorial( n_2 ) * \
                 factorial( m ) * factorial(3)**n_1 *  \

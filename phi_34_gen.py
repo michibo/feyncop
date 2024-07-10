@@ -38,22 +38,24 @@ import collections
 
 import nauty_ctrl
 
+
 def calc_gen_params( L, m, cntd, notadpoles ):
     """Helper function: Calculate the parameters for the call of multig."""
 
-    min_n = ( m + 2*(L - 1) + 1 ) / 2 + m
+    min_n = ( m + 2*(L - 1) + 1 ) // 2 + m
     max_n = ( m + 2*(L - 1) ) + m
 
-    min_l = ( 4*(L - 1) + m + 1) / 2 + m/2
+    min_l = ( 4*(L - 1) + m + 1) // 2 + m // 2
     max_l = 3*(L - 1) + 2*m
 
     if not notadpoles:
         if cntd:
             min_l = min_n - 1
         else:
-            min_l = (m+1)/2
+            min_l = (m+1) // 2
 
     return min_n, max_n, min_l, max_l
+
 
 def gen_graphs( L, m, cntd, edge2cntd, vtx2cntd, notadpoles ):
     """Generate phi^3 + phi^4 graphs with the desired parameters and 
@@ -115,7 +117,8 @@ def gen_from_bulk_g( g, vtcs_set, L, m, notadpoles ):
         if any( d < 0 for d in degree_defs ):
             continue
 
-        selfloop_edges = [ (v,v) for v,d in zip(int_vtcs, degree_defs) for i in range(d/2) ]
+        selfloop_edges = [(v,v) for v,d in zip(int_vtcs, degree_defs)
+                          for i in range(d // 2)]
 
         edges = g.edges + selfloop_edges
         if len( edges ) - len(vtcs_set) == L - 1:
