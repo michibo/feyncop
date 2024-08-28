@@ -236,7 +236,7 @@ class Graph:
         pre_discovered = set()
 
         left_edges = set(sub_edges)
-        while sub_edges:
+        while left_edges:
             v,_ = self.edges[next(iter(left_edges))]
             discovered, f_edges, b_edges = set(), set(), set()
             

@@ -172,15 +172,14 @@ class HopfGraph(WeightedGraph):
         not_vtcs = self.vtcs_set_sub_edges( not_edges )
         ext_vtcs = vtcs & not_vtcs
 
-        def adj_vtx(xy, v):
-            x, y = xy
+        def adj_vtx_e(e, v):
+            x, y = self.edges[e]
             return y if x == v else x
 
-        adj_vtx_e = lambda e, v: adj_vtx((self.edges[e], v))
-
-        ext_edges = [ (adj_vtx_e((e,v)),v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) ]
-        ext_edges+= [ (v,v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) if adj_vtx_e((e,v)) == v ]
+        ext_edges = [ (adj_vtx_e(e,v),v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) ]
+        ext_edges+= [ (v,v,e) for v in ext_vtcs for e in self.adj_edges( v, not_edges ) if adj_vtx_e(e,v) == v ]
         ext_vtcs_offset = max(vtcs)+1
+
         def dir_e( vn, v, e ):
             if self.edges[e][0] == v:
                 return (v, vn)
@@ -208,7 +207,7 @@ class HopfGraph(WeightedGraph):
             
             def gen_new_edges():
                 for v, edges in pre_bad_edges.items():
-                    adj_v = lambda x, y: x if y == v else y
+                    adj_v = lambda xy: xy[0] if xy[1] == v else xy[1]
                     e1,e2 = edges
                     w1,w2 = self.edge_weights[e1], self.edge_weights[e2]
                     if w1 != w2:    raise
