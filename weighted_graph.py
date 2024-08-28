@@ -148,9 +148,10 @@ class WeightedGraph(Graph):
         # Fermions and ghosts need orientation. Bosons not!
         # For higher performance some special cases of boson-fermion-ghost 
         # edge combinations are included. 
-        normalize = lambda edge : (max(edge),min(edge))
+        normalize = lambda edge : (max(edge), min(edge))
 
-        def flip(x, y):
+        def flip(xy):
+            x, y = xy
             return (y, x)
 
         fermion_loops = frozenset( normalize(edge) for edge in fermion_edges if flip(edge) in fermion_edges )

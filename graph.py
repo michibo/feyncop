@@ -155,7 +155,7 @@ class Graph:
 
         discovered|= set( [v] )
         adj_edges = frozenset(self.adj_edges(v, sub_edges))
-        get_adj = lambda xy: xy[1] if xy[0] == v else xy[1]
+        get_adj = lambda xy: xy[1] if xy[0] == v else xy[0]
 
         for i in adj_edges:
             if i in forward_edges or i in back_edges:

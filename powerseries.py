@@ -34,6 +34,8 @@ __version__ = "1.0"
 # IN THE SOFTWARE.
 
 from fractions import Fraction
+from functools import reduce
+
 
 def unary_rec_list_op( op, A ):
     """Apply an unary operation to a multivariable polynomial: op(A)"""
