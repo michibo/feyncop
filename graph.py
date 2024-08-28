@@ -58,11 +58,14 @@ class Graph:
             return "G[%s]" % ( g_string )
     __repr__ = __str__
 
-    def __cmp__( self, other ):
+    def __eq__( self, other ):
         """Compare two graphs. Only the labelings are compared. To check 
             non-isomorphy both graphs must be canonically labeled."""
 
-        return cmp( self.get_edges_tuple(), other.get_edges_tuple() )
+        return  self.get_edges_tuple() == other.get_edges_tuple()
+
+    def __ne__(self, other):
+        return not self == other
 
     def __hash__( self ):
         """Create hash from the labeling. The hash is unique for the 
@@ -89,8 +92,8 @@ class Graph:
     def get_edge_str( self, e ):
         """Return a readable string of the edges of the graph."""
             
-        v1,v2 = self.edges[e]
-        return "[%d,%d]" % (v1,v2)
+        v1, v2 = self.edges[e]
+        return "[%d,%d]" % (v1, v2)
 
     def get_edges_tuple( self ):
         """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
@@ -113,7 +116,7 @@ class Graph:
         """Return the adjacent edges to vertex v. Only consider edges in 
             sub_edges"""
 
-        is_adj = lambda x, y: (x == v) or (y == v)
+        is_adj = lambda xy: (xy[0] == v) or (xy[1] == v)
         return (e for e, edge in enumerate(self.edges)
                 if e in sub_edges and is_adj(edge))
 
@@ -152,7 +155,7 @@ class Graph:
 
         discovered|= set( [v] )
         adj_edges = frozenset(self.adj_edges(v, sub_edges))
-        get_adj = lambda x, y: y if x == v else x
+        get_adj = lambda xy: xy[1] if xy[0] == v else xy[1]
 
         for i in adj_edges:
             if i in forward_edges or i in back_edges:
@@ -191,7 +194,7 @@ class Graph:
         sub_edges_cpy = set(sub_edges)
         while sub_edges_cpy:
             discovered, f_edges, b_edges = set(), set(), set()
-            v,_ = self.edges[iter(sub_edges_cpy).next()]
+            v,_ = self.edges[next(iter(sub_edges_cpy))]
             self.dfs( v, sub_edges_cpy, back_edge_visitor, forward_edge_visitor, discovered, f_edges, b_edges ) 
             sub_edges_cpy -= f_edges | b_edges
 
@@ -211,7 +214,7 @@ class Graph:
         f_edges, b_edges = ( set(), set() )
         
         try:
-            v,_ = self.edges[iter(sub_edges).next()]
+            v,_ = self.edges[next(iter(sub_edges))]
         except StopIteration:
             print("Error: Graph is not connected?")
             raise
@@ -234,7 +237,7 @@ class Graph:
 
         left_edges = set(sub_edges)
         while sub_edges:
-            v,_ = self.edges[iter(left_edges).next()]
+            v,_ = self.edges[next(iter(left_edges))]
             discovered, f_edges, b_edges = set(), set(), set()
             
             # Use dfs iteratedly until all "islands" are identified.
