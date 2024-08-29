@@ -32,7 +32,7 @@ Download & Manual
 -----------------
 
 The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
-A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a seperate [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
+A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a seperate (also slightly outdated) [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
 
 Prerequisites
 -------------
