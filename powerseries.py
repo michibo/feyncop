@@ -14,68 +14,76 @@ from fractions import Fraction
 from functools import reduce
 
 
-def unary_rec_list_op( op, A ):
+def unary_rec_list_op(op, A):
     """Apply an unary operation to a multivariable polynomial: op(A)"""
 
     if type(A) is list:
-        return [ unary_rec_list_op( op, a ) for a in A ]
+        return [unary_rec_list_op(op, a) for a in A]
     else:
-        return op( A )
+        return op(A)
 
-def binary_rec_list_op( op, A, B ):
+
+def binary_rec_list_op(op, A, B):
     """Apply a binary operation to two multivariable polynomials: op(A,B)"""
 
     if type(A) is list and type(B) is list:
-        return [ binary_rec_list_op( op, a, b ) for a,b in zip(A,B) ]
+        return [binary_rec_list_op(op, a, b) for a,b in zip(A,B)]
     else:
-        return op( A, B )
+        return op(A, B)
 
-def lSum( A, B ):
+
+def lSum(A, B):
     """Sum two multivariable polynomials: A+B"""
 
-    def help_sum( a, b ): return a+b
+    def help_sum(a, b):
+        return a + b
 
-    return binary_rec_list_op( help_sum, A, B )
+    return binary_rec_list_op(help_sum, A, B)
 
-def lScalMult( m, A ):
+
+def lScalMult(m, A):
     """Scalar multiply a multivariable polynomials: m*A"""
 
-    def help_mul( a ): return m*a
+    def help_mul(a):
+        return m * a
 
-    return unary_rec_list_op( help_mul, A )
+    return unary_rec_list_op(help_mul, A)
 
-def lConvolute( A, B ):
+
+def lConvolute(A, B):
     """Multiply/Convolute two multivariable polynomials: A*B"""
 
     if type(A) is list and type(B) is list:
-        return [ reduce( lSum, ( lConvolute(A[k], B[n-k]) for k in range(n+1) if k < len(A) and (n-k) < len(B)) ) for n in range( len(A) + len(B) - 1) ]
+        return [reduce(lSum, (lConvolute(A[k], B[n-k]) for k in range(n+1) if k < len(A) and (n-k) < len(B))) for n in range(len(A) + len(B) - 1)]
     else:
         return A*B
 
-def lInvert( A ):
+
+def lInvert(A):
     """Calculate reciproke truncated power series: 1/A"""
 
     if type(A) is list:
         if len(A) > 1:
-            Ainv_s = lInvert( A[:-1] )
-            Ap = [ reduce( lSum, ( lConvolute( Ainv_s[k], A[n-k] ) for k in range(n) ) ) for n in range(1, len(A) ) ]
+            Ainv_s = lInvert(A[:-1])
+            Ap = [reduce(lSum, (lConvolute(Ainv_s[k], A[n-k]) for k in range(n))) for n in range(1, len(A))]
             A0rec = lInvert(A[0])
-            A0rec_neg = lScalMult( -1, A0rec )
-            return [ A0rec ] + [ lConvolute( A0rec_neg, a ) for a in Ap ]
+            A0rec_neg = lScalMult(-1, A0rec)
+            return [A0rec] + [lConvolute(A0rec_neg, a) for a in Ap]
         else:
-            return [ lInvert(A[0]) ]
+            return [lInvert(A[0])]
     else:
         return Fraction(1, A)
 
-def lLog( A ):
+
+def lLog(A):
     """Calculate the log of A: log(A)"""
 
     if type(A) is list:
-        Ainv = lInvert( A )
-        Ap = [ lScalMult(Fraction(1, n), reduce( lSum, ( lScalMult( k, lConvolute( A[k], Ainv[n-k] ) ) for k in range(1,n+1) ) ) ) for n in range(1,len(A)) ]
+        Ainv = lInvert(A)
+        Ap = [lScalMult(Fraction(1, n), reduce(lSum, (lScalMult(k, lConvolute(A[k], Ainv[n-k])) for k in range(1,n+1)))) for n in range(1,len(A))]
         return [lLog(A[0])] + Ap
     else:
         if A == 1:
             return 0
         else:
-            return log( A )
+            return log(A)

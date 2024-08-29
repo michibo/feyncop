@@ -13,11 +13,10 @@
 
 from fractions import *
 
-def get_element_str( element, fac ):
-    """Helper function: Adds a factor to a string representation of an object 
+
+def get_element_str(element, fac):
+    """Helper function: Adds a factor to a string representation of an object
         if it is not trivial."""
 
     sign = "-" if fac < 0 else "+"
     return "%s %d/%d * %s" % (sign, abs(fac.numerator), fac.denominator, element)
-
-
