@@ -24,7 +24,7 @@ Please cite Michael Borinsky, [Feynman graph generation and calculations in the 
 Acknowlegements
 ---------------
 
-Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3.
+Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3 in 2024.
 
 Bug reports or (pull) requests are always welcome.
 
