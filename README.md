@@ -17,10 +17,9 @@ not applicable.
 For instance the established [nauty package](http://pallini.di.uniroma1.it/) is 
 used to ensure high performance. 
 
-The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg] and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
+The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://dx.doi.org/10.1016/j.cpc.2014.07.023) and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
 
-Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs. 
-[fcg]: http://dx.doi.org/10.1016/j.cpc.2014.07.023
+Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://dx.doi.org/10.1016/j.cpc.2014.07.023), *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs. 
 
 Acknowlegements
 ---------------
