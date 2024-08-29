@@ -2,24 +2,24 @@ Feyngen and Feyncop
 ===================
 
 
-What is it? 
+What is it?
 -----------
 
-feyngen is a program to generate Feynman graphs for the use in perturbative 
+feyngen is a program to generate Feynman graphs for the use in perturbative
 calculations of quantum field theory.
 
-feyncop is a program to calculate the coproduct of Feynman graphs in the 
-scope of the Hopf algebra of Feynman graphs. 
+feyncop is a program to calculate the coproduct of Feynman graphs in the
+scope of the Hopf algebra of Feynman graphs.
 
-Both programs are designed to be used at relatively high loop orders where 
-traditional programs like [QGRAF](http://cfif.ist.utl.pt/~paulo/qgraf.html) are 
-not applicable. 
-For instance the established [nauty package](http://pallini.di.uniroma1.it/) is 
-used to ensure high performance. 
+Both programs are designed to be used at relatively high loop orders where
+traditional programs like [QGRAF](http://cfif.ist.utl.pt/~paulo/qgraf.html) are
+not applicable.
+For instance the established [nauty package](http://pallini.di.uniroma1.it/) is
+used to ensure high performance.
 
 The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg] and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
 
-Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs. 
+Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs.
 [fcg]: http://dx.doi.org/10.1016/j.cpc.2014.07.023
 
 Acknowlegements
@@ -32,22 +32,22 @@ Bug reports or (pull) requests are always welcome.
 Download & Manual
 -----------------
 
-The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
+The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop).
 A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a seperate [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
 
 Prerequisites
 -------------
 
-To use either of the programs Python 3 with development files must be 
-installed on your machine. For information on how to install Python please 
-consult http://www.python.org/ 
+To use either of the programs Python 3 with development files must be
+installed on your machine. For information on how to install Python please
+consult http://www.python.org/
 
 Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
 
 Installation
 ------------
 
-This step can be skipped if you want to use the pre-built version. 
+This step can be skipped if you want to use the pre-built version.
 
 Clone the feyncop repository and copy the nauty archives into the same directory and extract them:
 
@@ -71,10 +71,10 @@ Now, feyncop and feyngen can be build:
     $ cd feyncop/
     $ make
 
-The two python programs feyngen and feyncop in the feyncop/ directory should 
-know be working as expected. 
+The two python programs feyngen and feyncop in the feyncop/ directory should
+know be working as expected.
 
-An overview of the parameters of the two programs is displayed with 
+An overview of the parameters of the two programs is displayed with
 
     $ ./feyngen --help
 
@@ -93,7 +93,7 @@ To test feyngen run,
 
 in the feyncop/ directory.
 
-The output should be: 
+The output should be:
 
     phi4_j2_h2 :=
     +G[[0,0],[0,0],[1,1],[1,1],[3,2]]/128
@@ -105,10 +105,10 @@ The output should be:
     +G[[1,0],[1,0],[1,0],[2,0],[3,1]]/6
     ;
 
-Corresponding to the sum of all 2-point, 2-loop diagrams in phi^4 
-theory. 
+Corresponding to the sum of all 2-point, 2-loop diagrams in phi^4
+theory.
 
-To test feyncop run, 
+To test feyncop run,
 
     $ ./feyngen 2 -j2 -p | ./feyncop -u
 
@@ -119,7 +119,7 @@ the output should be:
     + 3/4 * T[ G[[1,0],[1,0],[2,0],[3,0],[4,1],[5,1]], G[[0,0],[1,0],[2,0]] ]
     ;
 
-This output corresponds to the coproduct of the sum of all 1PI, 
+This output corresponds to the coproduct of the sum of all 1PI,
 2-point, 2-loop diagrams in phi^4 theory.
 
 
@@ -141,7 +141,7 @@ combinatorics.py      | Zero dimensional QFT calculations.
 powerseries.py        | Ring of truncated power series calculations.
 stuff.py              | Additional combinatorial helper functions.
 nauty_ctrl.py         | Wrapper for the graph generation using geng and multig.
-nauty_wrapper.c       | Wrapper code for the nauty canonical labeling function. 
+nauty_wrapper.c       | Wrapper code for the nauty canonical labeling function.
 Makefile              | Installation Makefile.
 README                | This file.
 

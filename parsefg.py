@@ -11,9 +11,8 @@
 # For instance, via github or email
 
 import re
-from fractions import *
+from fractions import Fraction
 import collections
-import sys
 
 from hopf_graph import HopfGraph
 
@@ -48,13 +47,13 @@ def parse_fraction(s):
     except ValueError:
         pass
 
-    d=1
+    d = 1
     try:
         d = int(m.group(3))
     except ValueError:
         pass
 
-    return Fraction(n,d)
+    return Fraction(n, d)
 
 
 edge_pattern = re.compile(r"\[\s*(\d+)\s*,\s*(\d+)\s*(,?)\s*(-?\s*[Afc]+|)\s*\]")
@@ -77,24 +76,24 @@ def get_graph_from_match(m):
         for m_e in edge_pattern.finditer(edges_string):
             v1 = int(m_e.group(1))
             v2 = int(m_e.group(2))
-            w = dict_W[m_e.group(4)] if m_e.group(3)=="," else 2
+            w = dict_W[m_e.group(4)] if m_e.group(3) == "," else 2
 
             if m_e.group(3) == ",":
                 global ym
                 ym = True
 
-            yield (v1,v2,w)
+            yield (v1, v2, w)
 
     edges_weights = tuple(gen_edges())
 
-    edges = [(v1,v2) for v1,v2,w in edges_weights]
-    weights = [w for v1,v2,w in edges_weights]
+    edges = [(v1, v2) for v1, v2, w in edges_weights]
+    weights = [w for v1, v2, w in edges_weights]
 
     f1 = parse_fraction(m.group(2))
     f2 = parse_fraction(m.group(4))
     sign = -1 if "-" in m.group(1) else 1
 
-    return HopfGraph(edges, weights, 0), sign*f1*f2, ym
+    return HopfGraph(edges, weights, 0), sign * f1 * f2, ym
 
 
 def get_tensor_product_from_match(m):
@@ -103,7 +102,6 @@ def get_tensor_product_from_match(m):
     gprs = m.groups()
 
     f1 = parse_fraction(gprs[1])
-    sign = -1 if "-" in m.group(0) else 1
     res_str = gprs[-1]
     res_graph, res_fac, res_ym = get_graph_from_match(graph_pattern.match(res_str))
     if res_fac != 1:
@@ -124,14 +122,13 @@ def get_tensor_product_from_match(m):
 
             yield sg, p
 
-    sgs = collections.Counter(dict((sg, p) for sg, p in gen_sgs()))
+    sgs = collections.Counter(dict(gen_sgs()))
     return (tuple(sorted(sgs.items())), res_graph), f1, ym
 
 
 def get_graph_with_tp_from_match(m):
     gprs = m.groups()
     f1 = parse_fraction(gprs[1])
-    sign = -1 if "-" in m.group(0) else 1
 
     g, g_fac, g_ym = get_graph_from_match(graph_pattern.match(gprs[2]))
     if g_fac != 1:
@@ -152,7 +149,7 @@ def get_graph_with_tp_from_match(m):
 
             yield tp, fac
 
-    tp_sum = collections.Counter(dict(gen_tps()) if tps_str != (None,) else dict())
+    tp_sum = collections.Counter(dict(gen_tps()) if tps_str != (None,) else {})
     return g, tp_sum, f1, g_ym
 
 
@@ -177,7 +174,7 @@ def parse_sum_of_graph_with_tp(string):
 def not_parsable_check(s):
     if s:
         print("\n********************************")
-        print("Warning: Could not parse this: %s" % s)
+        print(f"Warning: Could not parse this: {s}")
         print("********************************")
 
 
@@ -190,7 +187,7 @@ def parse_input_lines(instream, outstream, string, parser_fun=parse_sum_of_graph
     for line in instream:
         string += line
         oldend = 0
-        for g_fac,strbeg,strend in parser_fun(string):
+        for g_fac, strbeg, strend in parser_fun(string):
             not_parsable_check(string[oldend:strbeg])
             oldend = strend
 
@@ -198,7 +195,7 @@ def parse_input_lines(instream, outstream, string, parser_fun=parse_sum_of_graph
         string = string[oldend:]
     else:
         oldend = 0
-        for g_fac,strbeg,strend in parser_fun(string):
+        for g_fac, strbeg, strend in parser_fun(string):
             not_parsable_check(string[oldend:strbeg])
             oldend = strend
 

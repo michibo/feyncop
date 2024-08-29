@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" - Main program code for "feyncop" - A program to calculate the coproduct 
+""" - Main program code for "feyncop" - A program to calculate the coproduct
 on the Hopf algebra of Feynman graphs. """
 
 # See also: https://github.com/michibo/feyncop
@@ -11,23 +11,26 @@ on the Hopf algebra of Feynman graphs. """
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from fractions import *
+from fractions import Fraction
 import copy
 import argparse
 import sys
 import collections
-from math import *
-from stuff import *
+from math import factorial
+from stuff import binomial
 
-import parsefg, outputfg
+import parsefg
+import outputfg
 
 from graph import Graph
 from hopf_graph import HopfGraph
 
+
 def get_sub_graph_str( sub_graphs ):
     """Creates an output string for a list of subgraphs."""
-    sub_graph_strs = [ "{" + ",".join([ "%d" % e for e in sg ] ) + "}" for sg in sub_graphs ]
+    sub_graph_strs = [ "{" + ",".join("%d" % e for e in sg) + "}" for sg in sub_graphs ]
     return "{" + ",".join( sub_graph_strs ) + "}"
+
 
 def get_coproduct_str( g, dimension, ym ):
     """Creates an output string for the coproduct."""
@@ -38,6 +41,7 @@ def get_coproduct_str( g, dimension, ym ):
         sum_str+= [ "%s" % (sub_graph_str) ]
 
     return "D[%s,\n[%s]]" % ( g.get_graph_str(ym), ", ".join(sum_str) )
+
 
 def get_coproduct_with_residues_str( g, dimension, ym ):
     """Creates an output string for the coproduct with cographs."""
@@ -50,25 +54,28 @@ def get_coproduct_with_residues_str( g, dimension, ym ):
 
     return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
 
+
 def get_tensor_product_str( tp, ym ):
-    """Creates an output string for the coproduct in the unlabeled tensor 
+    """Creates an output string for the coproduct in the unlabeled tensor
         product form."""
 
-    sum_str = []
     sub_graphs, residue_graph = tp
+
     def nosymfac( g ):
         gp = copy.copy(g)
         gp.prepare_graph()
         gp.symmetry_factor = 0
         return gp
+
     def get_sg_str( g, m ):
         if m == 1:
             return "%s" % nosymfac(g).get_graph_str(ym)
         else:
             return "(%s)^%d" % (nosymfac(g).get_graph_str(ym),m)
 
-    sub_graphs_str = "*".join( [ get_sg_str(g, m) for g,m in sub_graphs ] )
+    sub_graphs_str = "*".join(get_sg_str(g, m) for g, m in sub_graphs)
     return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
+
 
 def get_primitive_str( g, dimension, ym ):
     """Creates an output string for the graph it is primitive."""
@@ -78,8 +85,9 @@ def get_primitive_str( g, dimension, ym ):
     else:
         return ""
 
+
 def main():
-    """Main program section. Reads the options and parameters and starts the 
+    """Main program section. Reads the options and parameters and starts the
         relevant subroutines."""
 
     parser = argparse.ArgumentParser(description='Calculate the reduced coproduct of elements of the Hopf algebra of Feynman graphs')
@@ -92,7 +100,7 @@ def main():
     parser.add_argument('-k', '--check', dest='check', action='store_true', help='Check the sum of 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
     parser.add_argument('-m', '--check_tadpoles', dest='check_tadpoles', action='store_true', help='Check the sum of non-tadpole 1PI graphs identity for a certain class of graphs (all graphs of a given grade). (default: false)')
     args = parser.parse_args()
-        
+
     string = ""
     try:
         string = next(sys.stdin)
@@ -121,7 +129,7 @@ def main():
             for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ):
                 tensor_product = (tuple(sorted(sub_graphs.items())), residue_graph)
 
-                coproducts.setdefault( tensor_product, Fraction(0,1) ) 
+                coproducts.setdefault( tensor_product, Fraction(0,1) )
                 coproducts[tensor_product] += fac
                 ym_glob = ym_glob or ym
 
@@ -155,7 +163,7 @@ def main():
                     cop_str = get_coproduct_with_residues_str( g, args.dimension, ym )
                 else:
                     cop_str = get_coproduct_str( g, args.dimension, ym )
-               
+
                 print(outputfg.get_element_str( cop_str, fac ))
 
     print(";")
@@ -178,7 +186,6 @@ def tensor_check(coproducts, tadpoles=True):
         print("")
         print("\t", residue_graph)
 
-        sg_mults = [ m for g,m in sub_graphs ]
         res_structure = collections.Counter()
         sym_factor_sg = 1
         edges_permutations = 1
@@ -186,11 +193,11 @@ def tensor_check(coproducts, tadpoles=True):
         for g,m in sub_graphs:
             sym_factor_sg *= factorial(m) * g.symmetry_factor**m
 
-            r = g.residue_type 
+            r = g.residue_type
             res_cntr = collections.Counter( r )
             for s in res_cntr.values():
                 edges_permutations *= factorial(s)**m
-            
+
             res_structure[ r ] += m
 
         calc_factor = Fraction( edges_permutations, sym_factor_sg*residue_graph.symmetry_factor )
@@ -215,7 +222,7 @@ def tensor_check(coproducts, tadpoles=True):
                 calc_factor *= insertion_places_vtcs
 
         print(' ', calc_factor, factor, "******************************** BAD *************************" if calc_factor != factor else "")
-        if calc_factor != factor: 
+        if calc_factor != factor:
             print("Check failed!")
             print("Maybe not all 1PI graphs of a given loop number where piped into feyncop or the dimension is wrong?",)
             print("Please make sure that feyncop with the -u option is used! Handling of leg-fixed graphs is not possible in this check.")
