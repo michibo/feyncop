@@ -100,8 +100,9 @@ def gen_from_phi34_g( fg, r_t2, u_t2, m ):
             if any( res != 0 for res in fermion_res ):
                 continue
 
-            def flip(v1, v2):
-                return (v2, v1)
+            def flip(xy):
+                x, y = xy
+                return (y, x)
 
             edges = tuple( edge if w == 1 or w == 2 else flip(edge) for edge, w in zip(fg.edges, dir_weights) )
             translated_weights = tuple( 2 if w == 2 else 1 for w in weights )
