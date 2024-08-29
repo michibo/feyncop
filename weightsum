@@ -72,7 +72,7 @@ def main():
     graphs_fac = frozenset((g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
 
     sum_fac = Fraction(0,1)
-    for g, fac, ym in sorted(graphs_fac):
+    for g, fac, ym in graphs_fac:
         g_sym = 0
         if not args.non_leg_fixed:
             g_sym = next(g.permute_external_edges()).unlabeled_graph.symmetry_factor

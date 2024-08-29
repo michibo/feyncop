@@ -2,11 +2,13 @@ INSTALL_PATH?=${HOME}
 
 INSTALL_FILES=nauty_wrapper.so geng multig graph.py weighted_graph.py hopf_graph.py phi_k_gen.py phi_34_gen.py qed_gen.py qcd_gen.py combinatorics.py powerseries.py stuff.py nauty_ctrl.py parsefg.py outputfg.py feyncop feyngen
 
+PY_CFLAGS  := $(shell python-config --cflags)
+
 
 all : nauty_wrapper.so geng multig
 
 nauty_wrapper.so : nauty_wrapper.c ../nauty/nautil.c ../nauty/nauty.c ../nauty/naugraph.c ../nauty/schreier.c ../nauty/naurng.c
-	gcc -shared -O2 -I/usr/include/python3.10 $(python3-config --includes) -fPIC $^ -o $@
+	gcc -shared -O2 ${PY_CFLAGS} -fPIC $^ -o $@
 
 geng : ../nauty/geng
 	cp $^ $@

@@ -77,10 +77,10 @@ def main():
 
         return len( f_l_edges )
 
-    graphs_fac = ( (fermion_loops(g),g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
+    graphs_fac = frozenset( (fermion_loops(g),g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
 
     graph_counter = collections.Counter()
-    for fl, g, fac, ym in sorted(graphs_fac):
+    for fl, g, fac, ym in graphs_fac:
         graph_counter[fl] += 1
         g_str = g.get_graph_str( ym )
         if g_str and filt and args.fermion_loops == fl:
