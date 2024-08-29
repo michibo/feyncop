@@ -1,40 +1,15 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 """ - Main program code for "feyncop" - A program to calculate the coproduct 
 on the Hopf algebra of Feynman graphs. """
 
-# See also: http://people.physik.hu-berlin.de/~borinsky/
+# See also: https://github.com/michibo/feyncop
 
-__author__ = "Michael Borinsky"
-__email__ = "borinsky@physik.hu-berlin.de"
-__copyright__ = "Copyright (C) 2014 Michael Borinsky"
-__license__ = "MIT License"
-__version__ = "1.0"
+# Author: Michael Borinsky
+# Python3 port: Frédéric Chapoton
 
-# Copyright (c) 2014 Michael Borinsky
-
-# This program is distributed under the MIT License:
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy 
-# of this software and associated documentation files (the "Software"), to 
-# deal in the Software without restriction, including without limitation the 
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-# sell copies of the Software, and to permit persons to whom the Software is 
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in 
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-# IN THE SOFTWARE.
-
-# If you have problems using this program, 
-# please feel free to contact me!
+# Bugreports, comments, or suggestions are always welcome.
+# For instance, via github or email
 
 from fractions import *
 import copy
@@ -153,27 +128,27 @@ def main():
         if args.unlabeled:
             for tp, fac in coproducts.items():
                 tp_str = get_tensor_product_str( tp, ym_glob )
-                print outputfg.get_element_str( tp_str, fac )
+                print(outputfg.get_element_str( tp_str, fac ))
         elif args.check_tadpoles:
             tensor_check(coproducts, tadpoles=False)
-            print "Check successful!"
+            print("Check successful!")
             return
         else:
             tensor_check(coproducts)
-            print "Check successful!"
+            print("Check successful!")
             return
     else:
         for g, fac, ym in parsefg.parse_input_lines( sys.stdin, sys.stdout, string ):
             if args.primitives:
                 prim_str = get_primitive_str( g, args.dimension, ym )
                 if prim_str:
-                    print outputfg.get_element_str( prim_str, fac )
+                    print(outputfg.get_element_str( prim_str, fac ))
             elif args.unlab_per_graph:
                 tps = collections.Counter( (tuple(sorted(sub_graphs.items())), residue_graph) for  sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ) )
                 tps_str = " + ".join( "%d*%s" % ( fac, get_tensor_product_str(e , ym )) if fac != 1 else get_tensor_product_str(e , ym ) for e, fac in tps.items()  )
                 t_str = "%s*(%s)" % ( g.get_graph_str(ym), tps_str )
 
-                print outputfg.get_element_str( t_str, fac )
+                print(outputfg.get_element_str( t_str, fac ))
             else:
                 cop_str = ""
                 if args.cographs:
@@ -181,9 +156,10 @@ def main():
                 else:
                     cop_str = get_coproduct_str( g, args.dimension, ym )
                
-                print outputfg.get_element_str( cop_str, fac ) 
+                print(outputfg.get_element_str( cop_str, fac ))
 
-    print ";"
+    print(";")
+
 
 def tensor_check(coproducts, tadpoles=True):
     """Performs non trivial check on given sum of 1PI diagrams. """
@@ -193,14 +169,14 @@ def tensor_check(coproducts, tadpoles=True):
             if any(sg.is_tadpole for sg,m in sub_graphs) or residue_graph.is_tadpole:
                 continue
 
-        print " --- "
-        print "\t",
+        print(" --- ")
+        print("\t",)
         for g, fac in sub_graphs:
-            print '%d x' % fac, g,
+            print('%d x' % fac, g,)
         if not sub_graphs:
-            print "1 ",
-        print ""
-        print "\t", residue_graph
+            print("1 ",)
+        print("")
+        print("\t", residue_graph)
 
         sg_mults = [ m for g,m in sub_graphs ]
         res_structure = collections.Counter()
@@ -238,11 +214,11 @@ def tensor_check(coproducts, tadpoles=True):
 
                 calc_factor *= insertion_places_vtcs
 
-        print ' ', calc_factor, factor, "******************************** BAD *************************" if calc_factor != factor else ""
+        print(' ', calc_factor, factor, "******************************** BAD *************************" if calc_factor != factor else "")
         if calc_factor != factor: 
-            print "Check failed!"
-            print "Maybe not all 1PI graphs of a given loop number where piped into feyncop or the dimension is wrong?",
-            print "Please make sure that feyncop with the -u option is used! Handling of leg-fixed graphs is not possible in this check."
+            print("Check failed!")
+            print("Maybe not all 1PI graphs of a given loop number where piped into feyncop or the dimension is wrong?",)
+            print("Please make sure that feyncop with the -u option is used! Handling of leg-fixed graphs is not possible in this check.")
             sys.exit()
 
 
@@ -250,5 +226,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
+        print("")
+        print("Cancelled")

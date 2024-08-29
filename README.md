@@ -22,18 +22,25 @@ The theoretical background to the programs with details to validation and implem
 Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs. 
 [fcg]: http://dx.doi.org/10.1016/j.cpc.2014.07.023
 
+Acknowlegements
+---------------
+
+Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3.
+
+Bug reports or (pull) requests are always welcome.
+
 Download & Manual
 -----------------
 
 The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
-A [pre-built version](http://people.physik.hu-berlin.de/~borinsky/static/feyncop_built.tar.gz) and a seperate [manual](http://people.physik.hu-berlin.de/~borinsky/static/feyngencop_manual.pdf) for both programs are available on my webpage: http://people.physik.hu-berlin.de/~borinsky/
+A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a seperate [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
 
 Prerequisites
 -------------
 
-To use either of the programs Python 2.7 with development files must be 
+To use either of the programs Python 3 with development files must be 
 installed on your machine. For information on how to install Python please 
-consult http://www.python.org/ .
+consult http://www.python.org/ 
 
 Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
 
@@ -42,12 +49,12 @@ Installation
 
 This step can be skipped if you want to use the pre-built version. 
 
-Copy the feyncop and nauty archives into the same directory and extract them:
+Clone the feyncop repository and copy the nauty archives into the same directory and extract them:
 
-    $ tar xzf feyncop.tar.gz
+    $ git clone https://github.com/michibo/feyncop.git
     $ tar xzf nautyXXXX.tar.gz
 
-Where XXXX are some letters representing the current nauty version. 
+Where XXXX are some letters representing the current nauty version that can be downloaded from http://pallini.di.uniroma1.it/
 
 Next, change the name of the folder containing the nauty package:
 

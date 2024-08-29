@@ -6,7 +6,7 @@
 // Author: Michael Borinsky
 // Email: borinsky@physik.hu-berlin.de
 
-#include <python2.7/Python.h>
+#include <Python.h>
 #include "../nauty/nauty.h"
 
 unsigned long long g_GroupSize;
@@ -72,7 +72,7 @@ get_canonical_labeling(PyObject *self, PyObject *args)
         PyObject* vtx;
         while( (vtx = PyIter_Next( vtx_iter )) )
         {
-            int num = PyInt_AS_LONG( vtx );
+            int num = PyLong_AsLong( vtx );
             Py_DECREF( vtx );
 
             *(p_lab++) = num;
@@ -109,8 +109,8 @@ get_canonical_labeling(PyObject *self, PyObject *args)
     {
         PyObject* v1 = PyTuple_GetItem( edge, 0 );
         PyObject* v2 = PyTuple_GetItem( edge, 1 );
-        int iv1 = PyInt_AS_LONG( v1 );
-        int iv2 = PyInt_AS_LONG( v2 );
+        int iv1 = PyLong_AsLong( v1 );
+        int iv2 = PyLong_AsLong( v2 );
         Py_DECREF( edge );
 
         ADDELEMENT((GRAPHROW(g, iv1, m)), iv2);
@@ -156,9 +156,16 @@ static PyMethodDef nauty_wrapper_funcs[] = {
     {NULL, NULL, 0, NULL}
 };
 
+static struct PyModuleDef nauty_wrapper_module =
+{
+    PyModuleDef_HEAD_INIT,
+    "nauty_wrapper", /* name of module */
+    "",          /* module documentation, may be NULL */
+    -1,          /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    nauty_wrapper_funcs
+};
 
-PyMODINIT_FUNC
-initnauty_wrapper(void) {
-    Py_InitModule( "nauty_wrapper", nauty_wrapper_funcs );
+PyMODINIT_FUNC PyInit_nauty_wrapper(void)
+{
+    return PyModule_Create(&nauty_wrapper_module);
 }
-

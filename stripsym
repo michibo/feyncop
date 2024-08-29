@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 """ - Main program code for "stripsym" - A program to set the symmetry factors 
 of graphs in a graph sum to 1.
@@ -73,13 +73,14 @@ def main():
 
     for g, fac, ym in graphs_fac:
         g_str = g.get_graph_str( ym )
-        print outputfg.get_element_str( g_str, 1 )
+        print(outputfg.get_element_str( g_str, 1 ))
 
-    print ";"
+    print(";")
+
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
+        print("")
+        print("Cancelled")

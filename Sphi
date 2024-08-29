@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 """ - Main program code for "Sphi". 
 
@@ -88,11 +88,11 @@ def main():
                 r_cr = corad_g[ru]
                 if r_cr == 1:
                     maxf_count+=m
-                print "%d*(" % m,
+                print("%d*(" % m,)
                 for sg,e in sgs:
                     res_type = "e^%d" % e if sg.residue_type == (2,2) else "v^%d" % e
-                    print res_type,
-                print ")",
+                    print(res_type,)
+                print(")",)
 
 
                 max_corad = max(max_corad, r_cr)
@@ -104,14 +104,15 @@ def main():
         res_type = "e" if g.residue_type == (2,2) else "v"
         ce, _ = g.cycle_decomposition( g.edges_set )
         
-        print "\t",
-        print res_type, len(ce), maxf_count, corad_g[gu], outputfg.get_element_str( g_str, fac*S_g[gu])
+        print("\t",)
+        print(res_type, len(ce), maxf_count, corad_g[gu], outputfg.get_element_str( g_str, fac*S_g[gu]))
     if endsc:
-        print ";"
+        print(";")
+
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print ""
-        print "Cancelled"
+        print("")
+        print("Cancelled")
