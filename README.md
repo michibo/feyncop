@@ -17,30 +17,29 @@ not applicable.
 For instance the established [nauty package](http://pallini.di.uniroma1.it/) is
 used to ensure high performance.
 
-The theoretical background to the programs with details to validation and implementation is outlined in my paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg] and in my master's thesis on [Algorithmization of the Hopf algebra of Feynman graphs](http://www2.mathematik.hu-berlin.de/~kreimer/wp-content/uploads/BorinskyMaster.pdf).
+The theoretical background to the programs with details to validation and implementation is outlined in the paper on [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://dx.doi.org/10.1016/j.cpc.2014.07.023).
 
-Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs][fcg], *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs.
-[fcg]: http://dx.doi.org/10.1016/j.cpc.2014.07.023
+Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://dx.doi.org/10.1016/j.cpc.2014.07.023), *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs.
 
 Acknowlegements
 ---------------
 
-Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3.
+Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3 in 2024.
 
 Bug reports or (pull) requests are always welcome.
 
 Download & Manual
 -----------------
 
-The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop).
-A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a seperate [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
+The source code for both programs can be downloaded from [github](https://github.com/michibo/feyncop). 
+A [deprecated python2 pre-built version](https://michaelborinsky.com/static/feyncop_built.tar.gz) and a separate (also slightly outdated) [manual](https://michaelborinsky.com/static/feyngencop_manual.pdf) for both programs are available on my webpage: https://michaelborinsky.com
 
 Prerequisites
 -------------
 
 To use either of the programs Python 3 with development files must be
 installed on your machine. For information on how to install Python please
-consult http://www.python.org/
+consult https://www.python.org/
 
 Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
 
