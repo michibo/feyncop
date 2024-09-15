@@ -10,19 +10,20 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import *
+from math import factorial
 
 
 def double_factorial(k):
     """Calculate the double factorial of k."""
     if k == -1:
         return 1
-    if k % 2 == 1:
+
+    if k % 2:
         n = (k - 1) // 2
-        return factorial(2*n + 1) // 2**n // factorial(n)
-    else:
-        n = k // 2
-        return factorial(n) * 2**n
+        return factorial(2 * n + 1) // 2**n // factorial(n)
+
+    n = k // 2
+    return factorial(n) * 2**n
 
 
 def binomial(n, k):
@@ -32,8 +33,9 @@ def binomial(n, k):
     if n < 0:
         return binomial(-n + k - 1, k) * (-1)**k
 
-    b = 1
+    top = 1
+    bot = 1
     for i in range(k):
-        b *= (n-i)
-        b //= (1+i)
-    return b
+        top *= n - i
+        bot *= 1 + i
+    return top // bot

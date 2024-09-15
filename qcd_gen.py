@@ -44,14 +44,14 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
     for weights in itertools.product((1,2), repeat=len(fg.edges)):
-        fermion_edges = frozenset(e for e,w in enumerate(weights) if w == 1)
-        fermion_adj = [adj&fermion_edges for adj in int_adj]
+        fermion_edges = frozenset(e for e, w in enumerate(weights) if w == 1)
+        fermion_adj = [adj & fermion_edges for adj in int_adj]
         fermion_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in fermion_adj)
         if any((val != 0) and (val != 2) for val in fermion_valences):
             continue
 
-        boson_edges = frozenset(e for e,w in enumerate(weights) if w == 2)
-        boson_adj = [adj&boson_edges for adj in int_adj]
+        boson_edges = frozenset(e for e, w in enumerate(weights) if w == 2)
+        boson_adj = [adj & boson_edges for adj in int_adj]
         boson_valences = (sum(2 if is_sl[e] else 1 for e in adj)
             for adj in boson_adj)
         if any((val!=1) and (val!=3) and (val!=4) for val in boson_valences):
@@ -99,5 +99,5 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
                             ghost_weights[e] = 3
 
                 gw = WeightedGraph(tuple(edges), tuple(ghost_weights))
-                if len(gw.external_vtcs_set&gw.vtcs_set_sub_edges(gw.sub_edges_by_weight(3)&gw.external_edges_set)) == u_t2:
+                if len(gw.external_vtcs_set & gw.vtcs_set_sub_edges(gw.sub_edges_by_weight(3) & gw.external_edges_set)) == u_t2:
                     yield gw

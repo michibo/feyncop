@@ -74,7 +74,8 @@ def main():
     corad_g = dict()
     for g, tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_graph_with_tp ):
         gu = g.unlabeled_graph
-        if gu in S_g: continue
+        if gu in S_g:
+            continue
 
         maxf_count = 0
         if len(tp) == 0:

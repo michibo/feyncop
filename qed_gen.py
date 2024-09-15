@@ -48,14 +48,14 @@ def gen_from_phi3_g(fg, r_t2, m):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
     for weights in itertools.product((1,2), repeat=len(fg.edges)):
-        boson_edges = frozenset(e for e,w in enumerate(weights) if w == 2)
-        boson_adj = [adj&boson_edges for adj in int_adj]
+        boson_edges = frozenset(e for e, w in enumerate(weights) if w == 2)
+        boson_adj = [adj & boson_edges for adj in int_adj]
         boson_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in boson_adj)
         if any(val != 1 for val in boson_valences):
             continue
 
-        fermion_edges = frozenset(e for e,w in enumerate(weights) if w == 1)
-        fermion_adj = [adj&fermion_edges for adj in int_adj]
+        fermion_edges = frozenset(e for e, w in enumerate(weights) if w == 1)
+        fermion_adj = [adj & fermion_edges for adj in int_adj]
         fermion_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in fermion_adj)
         if any(val != 2 for val in fermion_valences):
             continue

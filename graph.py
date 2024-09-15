@@ -35,7 +35,8 @@ class Graph:
         if self.symmetry_factor:
             return "G[%s]/%d" % (g_string, self.symmetry_factor)
         else:
-            return "G[%s]" % (g_string)
+            return f"G[{g_string}]"
+
     __repr__ = __str__
 
     def __eq__(self, other):
@@ -133,7 +134,7 @@ class Graph:
             variables carry the standard names. See in Corman, Leiserson,
             Rivest, Stein - Algorithms for details. """
 
-        discovered|= set([v])
+        discovered |= {v}
         adj_edges = frozenset(self.adj_edges(v, sub_edges))
         get_adj = lambda xy: xy[1] if xy[0] == v else xy[0]
 
@@ -143,11 +144,11 @@ class Graph:
 
             adj_v = get_adj(self.edges[i])
             if adj_v in discovered:
-                back_edges|= set([i])
+                back_edges |= {i}
                 if back_edge_visitor:
                     back_edge_visitor(v, adj_v, i, trace, trace_edges)
             else:
-                forward_edges|= set([i])
+                forward_edges |= {i}
                 if forward_edge_visitor:
                     forward_edge_visitor(v, adj_v, i, trace, trace_edges)
 
@@ -247,11 +248,11 @@ class Graph:
 
         # Use cycle decomposition to check that no bridge-edges are in the
         # graph.
-        cycles, cycles_edges = self.cycle_decomposition(sub_edges&self.internal_edges_set)
-        loop_edges = set(e for cycle in cycles_edges for e in cycle)
-        nonloop_edges = sub_edges&self.internal_edges_set - loop_edges
+        cycles, cycles_edges = self.cycle_decomposition(sub_edges & self.internal_edges_set)
+        loop_edges = {e for cycle in cycles_edges for e in cycle}
+        nonloop_edges = sub_edges & self.internal_edges_set - loop_edges
 
-        return nonloop_edges == set() and loop_edges
+        return not nonloop_edges and loop_edges
 
     @property
     def is_edge_2_connected(self):
@@ -271,9 +272,10 @@ class Graph:
         cycles, cycles_edges = self.cycle_decomposition(self.internal_edges_set)
 
         bicntd_components = [set(cycle) for cycle in cycles_edges]
-        for i in range(len(bicntd_components)-1):
+        for i in range(len(bicntd_components) - 1):
             c = bicntd_components[i]
-            bicntd_components[i+1:] = [c|d if c&d else d for d in bicntd_components[i+1:]]
+            bicntd_components[i + 1:] = [c | d if c & d else d
+                                         for d in bicntd_components[i + 1:]]
 
         return bicntd_components and bicntd_components[-1] == self.internal_edges_set and len(bicntd_components[-1]) > 1
 
@@ -357,7 +359,7 @@ class Graph:
             suitable as input for nauty."""
 
         vp_list = [v for part in colored_vtcs for v in part]
-        ny_lab = dict((v,i) for i,v in enumerate(vp_list))
+        ny_lab = {v: i for i, v in enumerate(vp_list)}
 
         colored_vtcs = [[ny_lab[v] for v in part] for part in colored_vtcs]
         colored_edges = [[(ny_lab[v1],ny_lab[v2]) for v1,v2 in edgeset] for edgeset in colored_edges]
@@ -395,7 +397,7 @@ class Graph:
         (lab, grpSize, orbits) = nauty_wrapper.get_canonical_labeling(num_ny_vertices, ny_edges, ny_colored_vtcs)
 
         vtx_list = [v for part in ny_colored_vtcs for v in part]
-        m = dict((old, new) for old,new in zip(lab, vtx_list))
+        m = dict(zip(lab, vtx_list))
 
         def relabel_edge(v12):
             v1, v2 = v12

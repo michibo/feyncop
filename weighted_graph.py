@@ -154,17 +154,18 @@ class WeightedGraph(Graph):
 
         dbl_boson_edges = reduced_boson_edges | frozenset(flip(edge) for edge in reduced_boson_edges)
 
-        if len(dbl_boson_edges&reduced_fermion_edges) != 0 or \
-            len(dbl_boson_edges&reduced_ghost_edges) != 0:
+        if dbl_boson_edges & reduced_fermion_edges or \
+           dbl_boson_edges & reduced_ghost_edges:
             print(dbl_boson_edges, reduced_fermion_edges)
-            raise
+            raise RuntimeError
 
         # Calculate the boson coloring as in the Graph class.
         boson_coloring = super().get_edges_coloring(boson_edges_set)
 
         return [dbl_boson_edges | reduced_fermion_edges | reduced_ghost_edges,
-            fermion_loops, boson_fermion_loops, ghost_loops, boson_ghost_loops,
-            reduced_ghost_edges - boson_ghost_loops] + boson_coloring[1:]
+                fermion_loops, boson_fermion_loops,
+                ghost_loops, boson_ghost_loops,
+                reduced_ghost_edges - boson_ghost_loops] + boson_coloring[1:]
 
     def get_trivial_symmetry_factor(self):
         """Calculates the trivial factor in the symmetry factor. Only

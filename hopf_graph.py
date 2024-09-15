@@ -129,14 +129,15 @@ class HopfGraph(WeightedGraph):
 
         residue_edges = list(self.edges)
 
-        m = dict((v,v) for v in frozenset(v for edge in self.edges for v in edge if v != -1))
+        m = {v: v for v in frozenset(v for edge in self.edges for v in edge
+                                     if v != -1)}
         m[-1] = -1
         for sub_edge in sub_edges:
-            w1,w2 = self.edges[sub_edge]
+            w1, w2 = self.edges[sub_edge]
             r = m[w1], m[w2]
-            o,n = max(r), min(r)
+            o, n = max(r), min(r)
 
-            m = dict((v,n) if m[v] == o else (v,m[v]) for v in m)
+            m = {v: (n if m[v] == o else m[v]) for v in m}
 
             residue_edges[sub_edge] = (-1, -1)
             residue_edges = [(m[v1], m[v2]) for e,(v1,v2) in enumerate(residue_edges)]
@@ -182,8 +183,8 @@ class HopfGraph(WeightedGraph):
             if not bad_vtcs:
                 break
             bad_vtcs = [bad_vtcs[0]]
-            pre_bad_edges = dict((v, tuple(self.adj_edges(v, self.edges_set))) for v in bad_vtcs)
-            bad_edges = frozenset(e for v,edges in pre_bad_edges.items() for e in edges)
+            pre_bad_edges = {v: tuple(self.adj_edges(v, self.edges_set)) for v in bad_vtcs}
+            bad_edges = frozenset(e for v, edges in pre_bad_edges.items() for e in edges)
 
             def gen_new_edges():
                 for v, edges in pre_bad_edges.items():
