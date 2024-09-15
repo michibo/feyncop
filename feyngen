@@ -11,7 +11,7 @@ suitable for Hopf algebra calculations. """
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-import argparse
+import argparse, sys
 
 from stuff import factorial
 import combinatorics
@@ -171,6 +171,8 @@ def main():
     ext_legs_total = 0
     possible_emptyness = not args.connected and not args.edge2cntd and not args.vtx2cntd
 
+    errors_encountered = False
+
     graphs_yielded = False
     for num_loops in args.loops:
         gen_graphs = None
@@ -196,24 +198,31 @@ def main():
 
             testable = not args.notadpoles and not args.edge2cntd and not args.vtx2cntd
             if testable and not compare_sym_factors(num_loops, test_sums, args):
-                print("Warning: Internal error check failed")
+                errors_encountered |= True
+                print("Warning: Internal error check failed", file=sys.stderr)
+
         elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
             print("+%s" % str(WeightedGraph(tuple(), tuple()).unlabeled_graph))
             graphs_yielded = True
 
             test_sums['fixed'] = test_sums['non-fixed'] = 1
             if not compare_sym_factors(num_loops, test_sums, args):
-                print("Warning: Internal error check failed")
+                errors_encountered |= True
+                print("Warning: Internal error check failed", file=sys.stderr)
 
     if graphs_yielded:
         print(";")
     else:
         print("0;")
 
+    if errors_encountered:
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
         print("")
-        print("Cancelled")
+        print("Cancelled", file=sys.stderr)

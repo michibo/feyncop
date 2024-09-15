@@ -45,6 +45,9 @@ class Graph:
 
         return self.get_edges_tuple() == other.get_edges_tuple()
 
+    def __lt__(self, other):
+        return self.get_edges_tuple() < other.get_edges_tuple()
+
     def __ne__(self, other):
         return not self == other
 
@@ -225,7 +228,7 @@ class Graph:
             self.dfs(v, sub_edges, None, None, discovered, f_edges, b_edges)
 
             if discovered & pre_discovered:
-                print("Warning: Connected components error")
+                print("Warning: Connected components error", file=sys.stderr)
                 raise
             pre_discovered |= discovered
 

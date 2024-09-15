@@ -107,7 +107,7 @@ The output should be:
 Corresponding to the sum of all 2-point, 2-loop diagrams in phi^4
 theory.
 
-To test feyncop run,
+To quickly test feyncop run,
 
     $ ./feyngen 2 -j2 -p | ./feyncop -u
 
@@ -121,26 +121,8 @@ the output should be:
 This output corresponds to the coproduct of the sum of all 1PI,
 2-point, 2-loop diagrams in phi^4 theory.
 
+For more exhaustive tests run the scripts in the `tests` directory.
 
-Included files
---------------
-
-File                  | Description
-----------------------|------------------------------------------------------
-feyngen               | A program to generate Feynman graphs.
-feyncop               | A program to calculate the coproduct of Feynman graphs.
-graph.py              | Implements basic graph handling and algorithms.
-weighted_graph.py     | Implements handling of QED and QCD graphs.
-hopf_graph.py         | Implements the Hopf algebra properties of graphs.
-phi_k_gen.py          | Code for the phi^k-theory graph generation.
-phi_34_gen.py         | Code for the phi^3+phi^4-theory graph generation.
-qed_gen.py            | Code for the QED graph generation.
-qcd_gen.py            | Code for the QCD graph generation.
-combinatorics.py      | Zero dimensional QFT calculations.
-powerseries.py        | Ring of truncated power series calculations.
-stuff.py              | Additional combinatorial helper functions.
-nauty_ctrl.py         | Wrapper for the graph generation using geng and multig.
-nauty_wrapper.c       | Wrapper code for the nauty canonical labeling function.
-Makefile              | Installation Makefile.
-README                | This file.
+    $ ./tests/test_feyngen.sh
+    $ ./tests/test_feyncop.sh
 

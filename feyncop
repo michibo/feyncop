@@ -226,7 +226,7 @@ def tensor_check(coproducts, tadpoles=True):
             print("Check failed!")
             print("Maybe not all 1PI graphs of a given loop number where piped into feyncop or the dimension is wrong?",)
             print("Please make sure that feyncop with the -u option is used! Handling of leg-fixed graphs is not possible in this check.")
-            sys.exit()
+            sys.exit(1)
 
 
 if __name__ == "__main__":

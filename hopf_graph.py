@@ -47,7 +47,7 @@ class HopfGraph(WeightedGraph):
             dimension."""
 
         if not self.is_edge_2_connected:
-            print("Warning: Calculation of non 1PI graph coproduct omitted:", self)
+            print("Warning: Calculation of non 1PI graph coproduct omitted:", self, file=sys.stderr)
             return
 
         yield from self.reduced_coproduct_on_edges(dimension, self.internal_edges_set, ym)
