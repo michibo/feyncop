@@ -10,11 +10,11 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import *
+from math import factorial
 import copy
-import itertools
+from itertools import permutations
 
-from stuff import *
+from stuff import double_factorial
 from graph import Graph
 
 
@@ -35,15 +35,16 @@ class WeightedGraph(Graph):
     def get_edge_str(self, e):
         """Return a readable string of the edges of the graph."""
 
-        v1,v2 = self.edges[e]
+        v1, v2 = self.edges[e]
         w = self.edge_weights[e]
         wDict = ['0', 'f', 'A', 'c']
-        return "[%d,%d,%c]" % (v1,v2,wDict[w])
+        return "[%d,%d,%c]" % (v1, v2, wDict[w])
 
     def get_edges_tuple(self):
         """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
 
-        return tuple(sorted((tuple(sorted(edge) if w==2 else edge), w) for edge,w in zip(self.edges,self.edge_weights)))
+        return tuple(sorted((tuple(sorted(edge) if w == 2 else edge), w)
+                            for edge, w in zip(self.edges, self.edge_weights)))
 
     def graph_from_sub_edges(self, sub_edges):
         """Create a new graph from a sub set of its edges."""
@@ -56,7 +57,7 @@ class WeightedGraph(Graph):
     def sub_edges_by_weight(self, weight):
         """Returns all subedges with a certain weight."""
 
-        return frozenset(e for e,w in enumerate(self.edge_weights) if w == weight)
+        return frozenset(e for e, w in enumerate(self.edge_weights) if w == weight)
 
     @property
     def residue_type(self):
@@ -70,7 +71,9 @@ class WeightedGraph(Graph):
             else:
                 return 1
 
-        ext_types = [dir_e(e,v) * self.edge_weights[e] for v in self.external_vtcs_set for e in self.adj_edges(v, self.edges_set)]
+        ext_types = (dir_e(e, v) * self.edge_weights[e]
+                     for v in self.external_vtcs_set
+                     for e in self.adj_edges(v, self.edges_set))
         return tuple(sorted(ext_types))
 
     def get_vtx_type(self, v):
@@ -80,21 +83,17 @@ class WeightedGraph(Graph):
         def dir1(e, v):
             if self.edge_weights[e] == 2:
                 return 1
-            if v == self.edges[e][0]:
-                return -1
-            else:
-                return 1
+            return -1 if v == self.edges[e][0] else 1
 
         def dir2(e, v):
             if self.edge_weights[e] == 2:
                 return 1
-            if v == self.edges[e][0]:
-                return 1
-            else:
-                return -1
+            return 1 if v == self.edges[e][0] else -1
 
-        adj_types = [dir1(e,v)*self.edge_weights[e] for e in self.adj_edges(v, self.edges_set)]
-        adj_types += [dir2(e,v)*self.edge_weights[e] for e in self.edges_set if self.edges[e] == (v,v)]
+        adj_types = [dir1(e, v) * self.edge_weights[e]
+                     for e in self.adj_edges(v, self.edges_set)]
+        adj_types.extend(dir2(e, v) * self.edge_weights[e]
+                         for e in self.edges_set if self.edges[e] == (v, v))
 
         return tuple(sorted(adj_types))
 
@@ -104,18 +103,21 @@ class WeightedGraph(Graph):
 
         # All vertices with different numbers of selfloops of different type
         # are colored in another way.
-        dictWeights = {edge: self.edge_weights[e] for e,edge in enumerate(self.edges)}
+        dictWeights = {edge: self.edge_weights[e] for e, edge in enumerate(self.edges)}
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
-        selfloop_degree_list = [(edge_degree_counter[(v,v)],dictWeights[(v,v)] if edge_degree_counter[(v,v)] else 2) for v in self.internal_vtcs_set]
+        selfloop_degree_list = [(edge_degree_counter[(v, v)], dictWeights[(v, v)]
+                                 if edge_degree_counter[(v, v)] else 2)
+                                for v in self.internal_vtcs_set]
 
         # Sorting is important for the v even for all similar mul!
-        selfloop_multiplicity_list = sorted((mul,v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list))
-        ((max_selfloop_multiplicity, _), _) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else ((0,2), 0)
+        selfloop_multiplicity_list = sorted((mul, v)
+                                            for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list))
+        ((max_selfloop_multiplicity, _), _) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else ((0, 2), 0)
 
         self_loop_list = [frozenset(vtx
                                     for (mul, we), vtx in selfloop_multiplicity_list
                                     if mul == i and we == w)
-                          for i in range(max_selfloop_multiplicity+1)
+                          for i in range(max_selfloop_multiplicity + 1)
                           for w in (1, 2, 3)]
 
         # External vertices all have the same color still.
@@ -137,7 +139,8 @@ class WeightedGraph(Graph):
         # Fermions and ghosts need orientation. Bosons not!
         # For higher performance some special cases of boson-fermion-ghost
         # edge combinations are included.
-        normalize = lambda edge: (max(edge), min(edge))
+        def normalize(edge):
+            return (max(edge), min(edge))
 
         def flip(xy):
             x, y = xy
@@ -175,10 +178,10 @@ class WeightedGraph(Graph):
         boson_edges = self.sub_edges_by_weight(2)
         edge_degree_counter = self.edge_degree_counter(boson_edges)
         for mul_edge_deg in (m for edge, m in edge_degree_counter.items() if not self.is_selfloop(edge)):
-            grpSize*= factorial(mul_edge_deg)
+            grpSize *= factorial(mul_edge_deg)
 
         for selfloop_deg in (m for edge, m in edge_degree_counter.items() if self.is_selfloop(edge)):
-            grpSize*= double_factorial(2*selfloop_deg)
+            grpSize *= double_factorial(2 * selfloop_deg)
         return grpSize
 
     def permute_external_edges(self):
@@ -210,47 +213,50 @@ class WeightedGraph(Graph):
             & self.external_vtcs_set
 
         extern_vtcs_list = list(extern_boson_vtcs) + \
-                            list(extern_in_fermion_vtcs) + \
-                            list(extern_out_fermion_vtcs) + \
-                            list(extern_in_ghost_vtcs) + \
-                            list(extern_out_ghost_vtcs)
+            list(extern_in_fermion_vtcs) + \
+            list(extern_out_fermion_vtcs) + \
+            list(extern_in_ghost_vtcs) + \
+            list(extern_out_ghost_vtcs)
         if frozenset(extern_vtcs_list) != self.external_vtcs_set:
             raise
 
         vtcs_list = list(self.internal_vtcs_set) + \
-                    extern_vtcs_list
+            extern_vtcs_list
 
-        for perm0 in itertools.permutations(extern_boson_vtcs):
-            for perm1 in itertools.permutations(extern_in_fermion_vtcs):
-                for perm2 in itertools.permutations(extern_out_fermion_vtcs):
-                    for perm3 in itertools.permutations(extern_in_ghost_vtcs):
-                        for perm4 in itertools.permutations(extern_out_ghost_vtcs):
+        def relabel_edge(v12, m):
+            v1, v2 = v12
+            return (m[v1], m[v2])
+
+        for perm0 in permutations(extern_boson_vtcs):
+            for perm1 in permutations(extern_in_fermion_vtcs):
+                for perm2 in permutations(extern_out_fermion_vtcs):
+                    for perm3 in permutations(extern_in_ghost_vtcs):
+                        for perm4 in permutations(extern_out_ghost_vtcs):
 
                             new_vtcs_list = tuple(self.internal_vtcs_set) + \
-                                            perm0 + perm1 + perm2 + perm3 + perm4
+                                perm0 + perm1 + perm2 + perm3 + perm4
                             m = dict(zip(vtcs_list, new_vtcs_list))
 
-                            def relabel_edge(v12):
-                                v1, v2 = v12
-                                return (m[v1], m[v2])
-
                             yield FixedGraph(
-                                [relabel_edge(edge) for edge in self.edges], self.edge_weights, 0)
+                                [relabel_edge(edge, m) for edge in self.edges], self.edge_weights, 0)
 
     @property
     def clean_graph(self):
         """Orders the edge- and weight list of the graph in a transparent manner."""
 
-        ext_sorter = (e in self.external_edges_set for e,edge in enumerate(self.edges))
+        ext_sorter = (e in self.external_edges_set for e, edge in enumerate(self.edges))
 
-        norm = lambda edge: (max(edge), min(edge))
-        edges = [norm(edge) if w == 2 else edge for w,edge in zip(self.edge_weights, self.edges)]
+        def norm(edge):
+            return (max(edge), min(edge))
+
+        edges = [norm(edge) if w == 2 else edge
+                 for w, edge in zip(self.edge_weights, self.edges)]
         xwe_list = sorted(zip(ext_sorter, self.edge_weights, edges))
-        edges = [edge for x,w,edge in xwe_list]
-        weights = [w for x,w,edge in xwe_list]
+        edges = [edge for _, _, edge in xwe_list]
+        weights = [w for _, w, _ in xwe_list]
         g = copy.copy(self)
         g.edges = tuple(edges)
-        g.edge_weights= tuple(weights)
+        g.edge_weights = tuple(weights)
         g.prepare_graph()
 
         return g
