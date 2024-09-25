@@ -168,7 +168,7 @@ def main():
     elif args.phi34:
         print("phi3_4_j%d%s_%s :=" % (args.num_ext_legs, unlabeled_str, loops_str))
     elif args.yukawa:
-        print("yukawa+phi_4_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
+        print("yukawa_phi_4_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
     else:
         print("phi%d_j%d%s_%s :=" % (args.valence, args.num_ext_legs, unlabeled_str, loops_str))
 
