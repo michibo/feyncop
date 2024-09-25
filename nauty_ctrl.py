@@ -39,13 +39,13 @@ def multig_to_graph(multig_line):
 
     info = multig_line.split()
 
-    num_vtcs = int(info[0])
+    # num_vtcs = int(info[0])
     num_edges = int(info[1])
 
     edge_info = info[2:3 * num_edges + 2]
     edges = []
 
-    for x,y,z in zip(edge_info[::3], edge_info[1::3], edge_info[2::3]):
+    for x, y, z in zip(edge_info[::3], edge_info[1::3], edge_info[2::3]):
         v1, v2, mul = int(x), int(y), int(z)
 
         if v1 == v2:

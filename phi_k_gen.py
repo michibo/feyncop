@@ -12,7 +12,6 @@
 
 import itertools
 from graph import Graph
-import collections
 
 import nauty_ctrl
 
@@ -22,10 +21,10 @@ def calc_gen_params(L, k, m, cntd, notadpoles):
 
     D = k - 2
 
-    n = (m + 2 * (L-1))
-    l = (k * (L-1) + m)
+    n = (m + 2 * (L - 1))
+    l = (k * (L - 1) + m)
 
-    if l % D != 0 or n % D != 0:
+    if l % D or n % D:
         return (0, 0, 0)
 
     n //= D
@@ -64,10 +63,10 @@ def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles):
         return
 
     for g_bulk in nauty_ctrl.gen_nauty_graphs(
-        bulk_n, cntd, k, min_edges, max_edges):
+            bulk_n, cntd, k, min_edges, max_edges):
         labeled_graphs = (g for g in gen_from_bulk_g(
-                    g_bulk, frozenset(range(bulk_n)),
-                    k, m, notadpoles))
+            g_bulk, frozenset(range(bulk_n)),
+            k, m, notadpoles))
 
         unlabeled_graphs = frozenset(g.unlabeled_graph for g in labeled_graphs)
 
@@ -99,7 +98,7 @@ def gen_from_bulk_g(g, vtcs_set, k, m, notadpoles):
             yield leg_candidates
             return
 
-        if not notadpoles and k % 2 == 1:  # Extra legs can still be closed with self-loops!
+        if not notadpoles and k % 2:  # Extra legs can still be closed with self-loops!
             for ext_vtcs in itertools.combinations(leg_candidates, m):
                 yield frozenset(ext_vtcs)
 
@@ -110,7 +109,8 @@ def gen_from_bulk_g(g, vtcs_set, k, m, notadpoles):
         if any(d % 2 != 0 or d < 0 for d in degree_defs):
             continue
 
-        selfloop_edges = [(v,v) for v,d in zip(int_vtcs, degree_defs) for i in range(d//2)]
+        selfloop_edges = [(v, v) for v, d in zip(int_vtcs, degree_defs)
+                          for i in range(d // 2)]
 
         edges = g.edges + selfloop_edges
         yield Graph(edges)

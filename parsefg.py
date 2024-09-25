@@ -10,7 +10,8 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-import re, sys
+import re
+import sys
 from fractions import Fraction
 import collections
 
