@@ -19,6 +19,7 @@ from weighted_graph import WeightedGraph
 import phi_k_gen
 import qed_gen
 import qcd_gen
+from yukawa_phi4_gen import gen_graphs_yukawa_phi4
 import phi_34_gen
 from fractions import Fraction
 
@@ -129,6 +130,7 @@ def main():
     parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs (with neglect of Furry\'s theorem). -k is ignored. (default: false)')
     parser.add_argument('--qed_furry', dest='qed_furry', action='store_true', help='Generate QED graphs (respecting Furry\'s theorem). -k is ignored. (default: false)')
     parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
+    parser.add_argument('--yukawa', dest='yukawa', action='store_true', help='Generate Yukawa+phi^4 graphs. -k is ignored. (default: false)')
 
     parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='Set the number of external legs in scalar phi^k-QFT. (default: 0)')
     parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='Set the number of external photon/gluon legs (default: 0)')
@@ -165,6 +167,8 @@ def main():
         print("ym_f%d_g%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, unlabeled_str, loops_str))
     elif args.phi34:
         print("phi3_4_j%d%s_%s :=" % (args.num_ext_legs, unlabeled_str, loops_str))
+    elif args.yukawa:
+        print("yukawa+phi_4_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
     else:
         print("phi%d_j%d%s_%s :=" % (args.valence, args.num_ext_legs, unlabeled_str, loops_str))
 
@@ -179,13 +183,20 @@ def main():
 
         if qed:
             ext_legs_total = args.num_ext_flegs + args.num_ext_blegs
-            gen_graphs = qed_gen.gen_graphs(num_loops, args.num_ext_flegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles, args.qed_furry)
+            gen_graphs = qed_gen.gen_graphs(num_loops, args.num_ext_flegs, args.num_ext_blegs,
+                                            args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles, args.qed_furry)
+        elif args.yukawa:
+            ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
+            gen_graphs = gen_graphs_yukawa_phi4(num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs,
+                                                args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
         elif args.ym:
             ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
-            gen_graphs = qcd_gen.gen_graphs(num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
+            gen_graphs = qcd_gen.gen_graphs(num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs,
+                                            args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
         elif args.phi34:
             ext_legs_total = args.num_ext_legs
-            gen_graphs = phi_34_gen.gen_graphs(num_loops, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
+            gen_graphs = phi_34_gen.gen_graphs(num_loops, args.num_ext_legs,
+                                               args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
         else:
             ext_legs_total = args.num_ext_legs
             gen_graphs = phi_k_gen.gen_graphs(num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
