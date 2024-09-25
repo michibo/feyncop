@@ -58,7 +58,7 @@ def generating_phi_k(loops, ext_legs, valence=4, connected=False):
                                       False,
                                       False,
                                       False)
-    test_sums = dict()
+    test_sums = {}
     return gen_and_count(gen_graphs, False, test_sums)
 
 
@@ -183,7 +183,7 @@ def main():
         return
 
     loops_str = ""
-    loops_str = "%s" % "_".join(["h%d" % l for l in args.loops])
+    loops_str = "%s" % "_".join("h%d" % l for l in args.loops)
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
@@ -218,7 +218,7 @@ def main():
             ext_legs_total = args.num_ext_legs
             gen_graphs = phi_k_gen.gen_graphs(num_loops, args.valence, args.num_ext_legs, args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
 
-        test_sums = dict()
+        test_sums = {}
         gen_graphs_c = gen_and_count(gen_graphs, args.non_leg_fixed, test_sums)
 
         if sum_over_graphs(gen_graphs_c):
@@ -229,7 +229,7 @@ def main():
                 print("Warning: Internal error check failed", file=sys.stderr)
 
         elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
-            print("+%s" % str(WeightedGraph(tuple(), tuple()).unlabeled_graph))
+            print("+%s" % str(WeightedGraph((), ()).unlabeled_graph))
 
             test_sums['fixed'] = test_sums['non-fixed'] = 1
             if not compare_sym_factors(num_loops, test_sums, args):

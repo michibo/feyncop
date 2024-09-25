@@ -15,6 +15,9 @@ from weighted_graph import WeightedGraph
 
 import phi_34_gen
 
+fermion = 1
+boson = 2
+
 
 def gen_graphs(L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles):
     """Generate QCD graphs with the desired parameters and properties.
@@ -44,26 +47,27 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
     for weights in itertools.product((1, 2), repeat=len(fg.edges)):
-        fermion_edges = frozenset(e for e, w in enumerate(weights) if w == 1)
+        fermion_edges = frozenset(e for e, w in enumerate(weights)
+                                  if w == fermion)
         fermion_adj = [adj & fermion_edges for adj in int_adj]
         fermion_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in fermion_adj)
-        if any((val != 0) and (val != 2) for val in fermion_valences):
+        if any(val not in [0, 2] for val in fermion_valences):
             continue
 
-        boson_edges = frozenset(e for e, w in enumerate(weights) if w == 2)
+        boson_edges = frozenset(e for e, w in enumerate(weights) if w == boson)
         boson_adj = [adj & boson_edges for adj in int_adj]
         boson_valences = (sum(2 if is_sl[e] else 1 for e in adj)
                           for adj in boson_adj)
-        if any((val != 1) and (val != 3) and (val != 4) for val in boson_valences):
+        if any(val not in [1, 3, 4] for val in boson_valences):
             continue
 
-        fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == 1)
-
+        fermion_legs = sum(1 for adj in ext_adj for e in adj
+                           if weights[e] == fermion)
         if fermion_legs != r_t2 + u_t2:
             continue
 
-        boson_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == 2)
-
+        boson_legs = sum(1 for adj in ext_adj for e in adj
+                         if weights[e] == boson)
         if boson_legs != m:
             continue
 

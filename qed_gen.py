@@ -34,8 +34,8 @@ def gen_graphs(L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry):
 
         for g in qed_graphs:
             if furry:
-                _, cycles = g.cycle_decomposition(g.sub_edges_by_weight(1))
-                if any(len(c) % 2 != 0 for c in cycles):
+                _, cycles = g.cycle_decomposition(g.sub_edges_by_weight(fermion))
+                if any(len(c) % 2 for c in cycles):
                     continue
             yield g
 
@@ -64,12 +64,10 @@ def gen_from_phi3_g(fg, r_t2, m):
             continue
 
         fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == fermion)
-
         if fermion_legs != r_t2:
             continue
 
         boson_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == boson)
-
         if boson_legs != m:
             continue
 
@@ -82,7 +80,8 @@ def gen_from_phi3_g(fg, r_t2, m):
                 v1, v2 = fg.edges[e]
                 return 1 if v1 == v else -1
 
-            fermion_res = (sum(0 if is_sl[e] else dir(e, v) * dir_weights[e] for e in adj) for v, adj in zip(int_vtcs, fermion_adj))
+            fermion_res = (sum(0 if is_sl[e] else dir(e, v) * dir_weights[e] for e in adj)
+                           for v, adj in zip(int_vtcs, fermion_adj))
             if any(fermion_res):
                 continue
 
