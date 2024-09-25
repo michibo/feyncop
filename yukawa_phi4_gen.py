@@ -32,12 +32,9 @@ def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
     EXAMPLES::
 
         sage: from yukawa_phi4_gen import *
-        sage: gen_graphs_yukawa_phi4(0,4,True,False,False,False,False)
-        <generator object gen_graphs_yukawa_phi4 at 0x7be517dbcfb0>
-        sage: list(_)
-        [G[[2,0,A],[2,2,A],[0,4,f],[1,3,f],[6,0,f],[7,1,f],[5,1,A]]/2,
-         G[[1,0,A],[2,2,A],[0,4,f],[1,5,f],[6,0,f],[7,1,f],[3,2,A]]/4,
-         G[[2,0,A],[2,1,A],[0,3,f],[1,4,f],[6,0,f],[7,1,f],[5,2,A]]/2]
+        sage: L = gen_graphs_yukawa_phi4(3,0,0,True,False,False,True)
+        sage: list(L)
+        [G[[1,0,A],[1,0,A],[1,0,A],[1,0,A]]/48]
     """
     phi34_graphs = phi_34_gen.gen_graphs(loops, ext_fermion + ext_boson,
                                          cntd, edge2cntd, vtx2cntd, notadpoles)
