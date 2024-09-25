@@ -1,6 +1,6 @@
 
-"""qcd_gen.py: This file is part of the feyncop/feyngen package.
-    Implements functions to generate QCD graphs. """
+"""yukawa_phi4_gen.py: This file is part of the feyncop/feyngen package.
+    Implements functions to generate Yukawa+Phi4 graphs. """
 
 # See also: https://github.com/michibo/feyncop
 
@@ -55,8 +55,8 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     phi_34_gen.gen_graphs.
 
     graph: phi34 graph
-    r_t2: external fermion number
-    m: external boson number
+    ext_fermion: external fermion number
+    ext_boson: external boson number
     """
     ext_vtcs = graph.external_vtcs_set
     int_vtcs = graph.internal_vtcs_set
@@ -83,7 +83,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
         valences = ((sum(edge_valence[e] for e in adj_fermion),
                      sum(edge_valence[e] for e in adj_boson))
                     for adj_fermion, adj_boson in adjacence)
-        if any(val not in [(1, 0), (0, 1), (0, 4), (2, 1)] for val in valences):
+        if any(val not in allowed_valencies for val in valences):
             continue
 
         fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == fermion)
@@ -125,8 +125,3 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
             if any(len(c) % 2 for c in cycles):
                 continue
             yield g
-
-            # fermion_loops = list(g.cntd_components_sub_edges(g.sub_edges_by_weight(fermion)))
-
-            # if any(len(loop) % 2 for loop in fermion_loops):
-            #     continue
