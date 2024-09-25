@@ -186,8 +186,8 @@ def main():
             gen_graphs = qed_gen.gen_graphs(num_loops, args.num_ext_flegs, args.num_ext_blegs,
                                             args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles, args.qed_furry)
         elif args.yukawa:
-            ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
-            gen_graphs = gen_graphs_yukawa_phi4(num_loops, args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs,
+            ext_legs_total = args.num_ext_flegs + args.num_ext_blegs
+            gen_graphs = gen_graphs_yukawa_phi4(num_loops, args.num_ext_flegs, args.num_ext_blegs,
                                                 args.connected, args.edge2cntd, args.vtx2cntd, args.notadpoles)
         elif args.ym:
             ext_legs_total = args.num_ext_flegs + args.num_ext_blegs + args.num_ext_glegs
