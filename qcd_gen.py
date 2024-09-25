@@ -40,10 +40,10 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
     ext_vtcs = fg.external_vtcs_set
     int_vtcs = fg.internal_vtcs_set
 
-    is_sl = [fg.is_selfloop(edge) for e,edge in enumerate(fg.edges)]
+    is_sl = [fg.is_selfloop(edge) for e, edge in enumerate(fg.edges)]
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
-    for weights in itertools.product((1,2), repeat=len(fg.edges)):
+    for weights in itertools.product((1, 2), repeat=len(fg.edges)):
         fermion_edges = frozenset(e for e, w in enumerate(weights) if w == 1)
         fermion_adj = [adj & fermion_edges for adj in int_adj]
         fermion_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in fermion_adj)
@@ -53,8 +53,8 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
         boson_edges = frozenset(e for e, w in enumerate(weights) if w == 2)
         boson_adj = [adj & boson_edges for adj in int_adj]
         boson_valences = (sum(2 if is_sl[e] else 1 for e in adj)
-            for adj in boson_adj)
-        if any((val!=1) and (val!=3) and (val!=4) for val in boson_valences):
+                          for adj in boson_adj)
+        if any((val != 1) and (val != 3) and (val != 4) for val in boson_valences):
             continue
 
         fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == 1)
@@ -67,17 +67,17 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
         if boson_legs != m:
             continue
 
-        for fermion_weights in itertools.product((-1,1), repeat=len(fermion_edges)):
+        for fermion_weights in itertools.product((-1, 1), repeat=len(fermion_edges)):
             dir_weights = list(weights)
-            for i,e in enumerate(fermion_edges):
+            for i, e in enumerate(fermion_edges):
                 dir_weights[e] = fermion_weights[i]
 
             def dir(e, v):
-                v1,v2 = fg.edges[e]
+                v1, v2 = fg.edges[e]
                 return 1 if v1 == v else -1
 
-            fermion_res = (sum(0 if is_sl[e] else dir(e,v)*dir_weights[e] for e in adj) for v,adj in zip(int_vtcs,fermion_adj))
-            if any(res != 0 for res in fermion_res):
+            fermion_res = (sum(0 if is_sl[e] else dir(e, v) * dir_weights[e] for e in adj) for v, adj in zip(int_vtcs, fermion_adj))
+            if any(fermion_res):
                 continue
 
             def flip(xy):
@@ -93,7 +93,7 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
 
             for ghost_loops in itertools.product((True, False), repeat=len(fermion_loops)):
                 ghost_weights = list(g.edge_weights)
-                for gh,loop in zip(ghost_loops, fermion_loops):
+                for gh, loop in zip(ghost_loops, fermion_loops):
                     if gh:
                         for e in loop:
                             ghost_weights[e] = 3

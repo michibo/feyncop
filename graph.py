@@ -10,8 +10,9 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import *
-from stuff import *
+import sys
+from math import factorial
+from stuff import double_factorial
 import collections
 import itertools
 import copy
@@ -64,13 +65,13 @@ class Graph:
         self.edges_set = frozenset(range(len(self.edges)))
         vtcs = frozenset(v for edge in self.edges for v in edge)
         self.valency_dict = collections.defaultdict(lambda: 0)
-        for v1,v2 in self.edges:
+        for v1, v2 in self.edges:
             self.valency_dict[v1] += 1
             self.valency_dict[v2] += 1
 
         self.internal_vtcs_set = frozenset(v for v in vtcs if self.valency_dict[v] > 1)
         self.external_vtcs_set = frozenset(v for v in vtcs if self.valency_dict[v] == 1)
-        self.internal_edges_set = frozenset(e for e,(v1,v2) in enumerate(self.edges) if v1 in self.internal_vtcs_set and v2 in self.internal_vtcs_set)
+        self.internal_edges_set = frozenset(e for e, (v1, v2) in enumerate(self.edges) if v1 in self.internal_vtcs_set and v2 in self.internal_vtcs_set)
         self.external_edges_set = self.edges_set - self.internal_edges_set
 
     def get_edge_str(self, e):
@@ -100,7 +101,9 @@ class Graph:
         """Return the adjacent edges to vertex v. Only consider edges in
             sub_edges"""
 
-        is_adj = lambda xy: (xy[0] == v) or (xy[1] == v)
+        def is_adj(xy):
+            return xy[0] == v or xy[1] == v
+
         return (e for e, edge in enumerate(self.edges)
                 if e in sub_edges and is_adj(edge))
 
@@ -113,7 +116,7 @@ class Graph:
     def is_selfloop(self, edge):
         """Is the edge a selfloop?"""
 
-        x,y = edge
+        x, y = edge
         return x == y
 
     def vtcs_set_sub_edges(self, sub_edges):
@@ -139,7 +142,9 @@ class Graph:
 
         discovered |= {v}
         adj_edges = frozenset(self.adj_edges(v, sub_edges))
-        get_adj = lambda xy: xy[1] if xy[0] == v else xy[0]
+
+        def get_adj(xy):
+            return xy[1] if xy[0] == v else xy[0]
 
         for i in adj_edges:
             if i in forward_edges or i in back_edges:
@@ -168,7 +173,7 @@ class Graph:
                 cycles.append((v,))
                 cycles_edges.append((back_edge,))
             else:
-                index = next(j for j,vtx in enumerate(trace) if vtx == adj_v)
+                index = next(j for j, vtx in enumerate(trace) if vtx == adj_v)
                 cycles.append(trace[index:] + (v,))
                 cycles_edges.append(trace_edges[index:] + (back_edge,))
 
@@ -178,7 +183,7 @@ class Graph:
         sub_edges_cpy = set(sub_edges)
         while sub_edges_cpy:
             discovered, f_edges, b_edges = set(), set(), set()
-            v,_ = self.edges[next(iter(sub_edges_cpy))]
+            v, _ = self.edges[next(iter(sub_edges_cpy))]
             self.dfs(v, sub_edges_cpy, back_edge_visitor, forward_edge_visitor, discovered, f_edges, b_edges)
             sub_edges_cpy -= f_edges | b_edges
 
@@ -198,7 +203,7 @@ class Graph:
         f_edges, b_edges = (set(), set())
 
         try:
-            v,_ = self.edges[next(iter(sub_edges))]
+            v, _ = self.edges[next(iter(sub_edges))]
         except StopIteration:
             print("Error: Graph is not connected?")
             raise
@@ -221,7 +226,7 @@ class Graph:
 
         left_edges = set(sub_edges)
         while left_edges:
-            v,_ = self.edges[next(iter(left_edges))]
+            v, _ = self.edges[next(iter(left_edges))]
             discovered, f_edges, b_edges = set(), set(), set()
 
             # Use dfs iteratedly until all "islands" are identified.
@@ -291,14 +296,14 @@ class Graph:
         # vertex."""
 
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
-        selfloop_degree_list = [edge_degree_counter[(v,v)] for v in self.internal_vtcs_set]
-        if any(tp_deg>0 for tp_deg in selfloop_degree_list):
+        selfloop_degree_list = [edge_degree_counter[(v, v)] for v in self.internal_vtcs_set]
+        if any(tp_deg > 0 for tp_deg in selfloop_degree_list):
             return True
 
         if len(self.external_vtcs_set) == 1:
             return True
 
-        cps0_len = sum(1 for comp in self.cntd_components)
+        # cps0_len = sum(1 for comp in self.cntd_components)
         for v in self.internal_vtcs_set:
             sub_edges = self.edges_set - set(self.adj_edges(v, self.edges_set))
             components = list(self.cntd_components_sub_edges(sub_edges))
@@ -316,10 +321,10 @@ class Graph:
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
         # All vertices with different numbers of selfloops are colored in
         # another way.
-        selfloop_degree_list = [edge_degree_counter[(v,v)] for v in self.internal_vtcs_set]
+        selfloop_degree_list = [edge_degree_counter[(v, v)] for v in self.internal_vtcs_set]
 
         # Sorting is important for the v even for all similar mul!
-        selfloop_multiplicity_list = sorted((mul,v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list))
+        selfloop_multiplicity_list = sorted((mul, v) for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list))
         (max_selfloop_multiplicity, _) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else (0, 0)
 
         self_loop_list = [frozenset(vtx
@@ -365,7 +370,8 @@ class Graph:
         ny_lab = {v: i for i, v in enumerate(vp_list)}
 
         colored_vtcs = [[ny_lab[v] for v in part] for part in colored_vtcs]
-        colored_edges = [[(ny_lab[v1],ny_lab[v2]) for v1,v2 in edgeset] for edgeset in colored_edges]
+        colored_edges = [[(ny_lab[v1], ny_lab[v2]) for v1, v2 in edgeset]
+                         for edgeset in colored_edges]
 
         ny_edges = colored_edges[0] if colored_edges else []
 
@@ -417,10 +423,10 @@ class Graph:
         grpSize = 1
         edge_degree_counter = self.edge_degree_counter(self.edges_set)
         for mul_edge_deg in (m for edge, m in edge_degree_counter.items() if not self.is_selfloop(edge)):
-            grpSize*= factorial(mul_edge_deg)
+            grpSize *= factorial(mul_edge_deg)
 
         for selfloop_deg in (m for edge, m in edge_degree_counter.items() if self.is_selfloop(edge)):
-            grpSize*= double_factorial(2*selfloop_deg)
+            grpSize *= double_factorial(2 * selfloop_deg)
         return grpSize
 
     @property
@@ -430,7 +436,7 @@ class Graph:
         edges_coloring = self.get_edges_coloring(self.edges_set)
 
         canonical_edges, grpSize = self.get_canonical_edges(vtcs_coloring, edges_coloring)
-        grpSize*= self.get_trivial_symmetry_factor()
+        grpSize *= self.get_trivial_symmetry_factor()
 
         unlabeled_graph = copy.copy(self)
         unlabeled_graph.edges = canonical_edges
@@ -467,12 +473,14 @@ class Graph:
     def clean_graph(self):
         """Orders the edge list of the graph in a transparent manner."""
 
-        ext_sorter = (e in self.external_edges_set for e,edge in enumerate(self.edges))
+        ext_sorter = (e in self.external_edges_set for e, edge in enumerate(self.edges))
 
-        norm = lambda edge: (max(edge), min(edge))
+        def norm(edge):
+            return (max(edge), min(edge))
+
         edges = [norm(edge) for edge in self.edges]
         xe_list = sorted(zip(ext_sorter, edges))
-        edges = [edge for x,edge in xe_list]
+        edges = [edge for x, edge in xe_list]
         g = copy.copy(self)
         g.edges = tuple(edges)
 

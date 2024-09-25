@@ -12,9 +12,11 @@
 
 import itertools
 import collections
+import sys
+import copy
+
 from weighted_graph import WeightedGraph
 from graph import Graph
-import copy
 
 
 class HopfGraph(WeightedGraph):
@@ -35,7 +37,7 @@ class HopfGraph(WeightedGraph):
         """True if the graph is primitive."""
 
         try:
-            sg = next(self.reduced_coproduct(dimension, ym))
+            _ = next(self.reduced_coproduct(dimension, ym))
         except StopIteration:
             # True if the reduced coproduct is 0.
             return True
@@ -79,9 +81,9 @@ class HopfGraph(WeightedGraph):
             if ym:
                 vtx_types = (self.get_vtx_type(v) for v in self.vtcs_set_sub_edges(component))
                 # The ghost vertices and the triple gluon vertices get an extra -1.
-                denom -= sum(1 for t in vtx_types if (t == (2,2,2)) or (t == (-3,2,3)))
+                denom -= sum(1 for t in vtx_types if (t == (2, 2, 2)) or (t == (-3, 2, 3)))
 
-            dim_int = dimension*num_loops
+            dim_int = dimension * num_loops
             omega = denom - dim_int
 
             if omega > 0:
@@ -98,7 +100,7 @@ class HopfGraph(WeightedGraph):
         """Calculate the reduced coproduct in the given dimension
             only including edgers in edges_set."""
 
-        for i in range(1,len(edges_set)):
+        for i in range(1, len(edges_set)):
             for sub_edges in itertools.combinations(edges_set, i):
                 sub_edges_list = []
                 if self.eval_subedges_for_reduced_coproduct(sub_edges, dimension, sub_edges_list, ym):
@@ -140,8 +142,8 @@ class HopfGraph(WeightedGraph):
             m = {v: (n if m[v] == o else m[v]) for v in m}
 
             residue_edges[sub_edge] = (-1, -1)
-            residue_edges = [(m[v1], m[v2]) for e,(v1,v2) in enumerate(residue_edges)]
-        residue_edges = [edge for i,edge in enumerate(residue_edges)]
+            residue_edges = [(m[v1], m[v2]) for e, (v1, v2) in enumerate(residue_edges)]
+        residue_edges = [edge for i, edge in enumerate(residue_edges)]
 
         return residue_edges
 
@@ -157,9 +159,11 @@ class HopfGraph(WeightedGraph):
             x, y = self.edges[e]
             return y if x == v else x
 
-        ext_edges = [(adj_vtx_e(e,v),v,e) for v in ext_vtcs for e in self.adj_edges(v, not_edges)]
-        ext_edges+= [(v,v,e) for v in ext_vtcs for e in self.adj_edges(v, not_edges) if adj_vtx_e(e,v) == v]
-        ext_vtcs_offset = max(vtcs)+1
+        ext_edges = [(adj_vtx_e(e, v), v, e) for v in ext_vtcs
+                     for e in self.adj_edges(v, not_edges)]
+        ext_edges += [(v, v, e) for v in ext_vtcs for e in self.adj_edges(v, not_edges)
+                      if adj_vtx_e(e, v) == v]
+        ext_vtcs_offset = max(vtcs) + 1
 
         def dir_e(vn, v, e):
             if self.edges[e][0] == v:
@@ -167,10 +171,11 @@ class HopfGraph(WeightedGraph):
             else:
                 return (vn, v)
 
-        new_edges = [(dir_e(i+ext_vtcs_offset,v,e),e) for i,(vx,v,e) in enumerate(sorted(ext_edges))]
+        new_edges = [(dir_e(i + ext_vtcs_offset, v, e), e)
+                     for i, (vx, v, e) in enumerate(sorted(ext_edges))]
         sub_graph = self.graph_from_sub_edges(sub_edges)
-        sub_graph.edges = tuple(list(sub_graph.edges) + [edge for edge,e in new_edges])
-        sub_graph.edge_weights = tuple(list(sub_graph.edge_weights) + [self.edge_weights[e] for edge,e in new_edges])
+        sub_graph.edges = tuple(list(sub_graph.edges) + [edge for edge, e in new_edges])
+        sub_graph.edge_weights = tuple(list(sub_graph.edge_weights) + [self.edge_weights[e] for edge, e in new_edges])
         sub_graph.prepare_graph()
 
         return sub_graph
@@ -179,7 +184,7 @@ class HopfGraph(WeightedGraph):
         """Helper function: Removes the valency 2 vertices in the graph."""
 
         while True:
-            bad_vtcs = [v for v in self.internal_vtcs_set if self.vtx_valence(v, self.edges_set) == 2 and (v,v) not in self.edges]
+            bad_vtcs = [v for v in self.internal_vtcs_set if self.vtx_valence(v, self.edges_set) == 2 and (v, v) not in self.edges]
             if not bad_vtcs:
                 break
             bad_vtcs = [bad_vtcs[0]]
@@ -188,21 +193,22 @@ class HopfGraph(WeightedGraph):
 
             def gen_new_edges():
                 for v, edges in pre_bad_edges.items():
-                    adj_v = lambda xy: xy[0] if xy[1] == v else xy[1]
-                    e1,e2 = edges
-                    w1,w2 = self.edge_weights[e1], self.edge_weights[e2]
+                    def adj_v(xy):
+                        return xy[0] if xy[1] == v else xy[1]
+                    e1, e2 = edges
+                    w1, w2 = self.edge_weights[e1], self.edge_weights[e2]
                     if w1 != w2:
                         raise
-                    v1,v2 = adj_v(self.edges[e1]), adj_v(self.edges[e2])
+                    v1, v2 = adj_v(self.edges[e1]), adj_v(self.edges[e2])
                     if v1 != self.edges[e1][0]:
-                        v1,v2 = v2,v1
+                        v1, v2 = v2, v1
 
-                    yield (v1,v2),w1
+                    yield (v1, v2), w1
 
             good_edges_w = list(gen_new_edges())
 
-            new_edges = [self.edges[e] for e in self.edges_set - bad_edges] + [edge for edge,w in good_edges_w]
-            new_weights = [self.edge_weights[e] for e in self.edges_set - bad_edges] + [w for edge,w in good_edges_w]
+            new_edges = [self.edges[e] for e in self.edges_set - bad_edges] + [edge for edge, w in good_edges_w]
+            new_weights = [self.edge_weights[e] for e in self.edges_set - bad_edges] + [w for edge, w in good_edges_w]
             self.edges = tuple(new_edges)
             self.edge_weights = tuple(new_weights)
             self.prepare_graph()
