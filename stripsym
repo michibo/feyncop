@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" - Main program code for "stripsym" - A program to set the symmetry factors 
+""" - Main program code for "stripsym" - A program to set the symmetry factors
 of graphs in a graph sum to 1.
 
 This program is part of the feyncop/feyngen package.
@@ -16,64 +16,64 @@ __version__ = "1.0"
 
 # Copyright (c) 2014 Michael Borinsky
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy 
-# of this software and associated documentation files (the "Software"), to 
-# deal in the Software without restriction, including without limitation the 
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-# sell copies of the Software, and to permit persons to whom the Software is 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in 
+# The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-# If you have problems using this program, 
+# If you have problems using this program,
 # please feel free to contact me!
 # March 2014
 
-from fractions import *
-import copy
-import argparse
+# from fractions import *
+# import argparse
 import sys
-import collections
-from math import *
-from stuff import *
+# from math import *
+# from stuff import *
 
-import parsefg, outputfg
+import parsefg
+import outputfg
 
-from graph import Graph
-from hopf_graph import HopfGraph
+# from graph import Graph
+# from hopf_graph import HopfGraph
+
 
 def main():
-    """Main program section. Reads the options and parameters and starts the 
+    """Main program section. Reads the options and parameters and starts the
         relevant subroutines."""
 
-    parser = argparse.ArgumentParser(description='Gives all the graphs without prefactors.')
-    args = parser.parse_args()
-        
+    # parser = argparse.ArgumentParser(description='Gives all the graphs without prefactors.')
+    # args = parser.parse_args()
+
     string = ""
     try:
         string = next(sys.stdin)
     except StopIteration:
         return
 
-    var_name,ev,el = parsefg.parse_var_name(string)
+    var_name, ev, el = parsefg.parse_var_name(string)
     if var_name:
         sys.stdout.write("%s_1%s" % (var_name, string[ev:]))
         string = string[el:]
 
-    graphs_fac = ( (g,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
+    graphs_fac = iter(parsefg.parse_input_lines(sys.stdin, None, string))
 
     for g, fac, ym in graphs_fac:
-        g_str = g.get_graph_str( ym )
-        print(outputfg.get_element_str( g_str, 1 ))
+        g_str = g.get_graph_str(ym)
+        print(outputfg.get_element_str(g_str, 1))
 
     print(";")
 

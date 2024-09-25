@@ -22,65 +22,65 @@ from stuff import binomial
 import parsefg
 import outputfg
 
-from graph import Graph
-from hopf_graph import HopfGraph
+# from graph import Graph
+# from hopf_graph import HopfGraph
 
 
-def get_sub_graph_str( sub_graphs ):
+def get_sub_graph_str(sub_graphs):
     """Creates an output string for a list of subgraphs."""
-    sub_graph_strs = [ "{" + ",".join("%d" % e for e in sg) + "}" for sg in sub_graphs ]
-    return "{" + ",".join( sub_graph_strs ) + "}"
+    sub_graph_strs = ["{" + ",".join("%d" % e for e in sg) + "}" for sg in sub_graphs]
+    return "{" + ",".join(sub_graph_strs) + "}"
 
 
-def get_coproduct_str( g, dimension, ym ):
+def get_coproduct_str(g, dimension, ym):
     """Creates an output string for the coproduct."""
     sum_str = []
     for sub_graphs in g.reduced_coproduct(dimension, ym):
-        sub_graph_str = get_sub_graph_str( sub_graphs )
+        sub_graph_str = get_sub_graph_str(sub_graphs)
 
-        sum_str+= [ "%s" % (sub_graph_str) ]
+        sum_str += ["%s" % (sub_graph_str)]
 
-    return "D[%s,\n[%s]]" % ( g.get_graph_str(ym), ", ".join(sum_str) )
+    return "D[%s,\n[%s]]" % (g.get_graph_str(ym), ", ".join(sum_str))
 
 
-def get_coproduct_with_residues_str( g, dimension, ym ):
+def get_coproduct_with_residues_str(g, dimension, ym):
     """Creates an output string for the coproduct with cographs."""
 
     sum_str = []
     for sub_graphs, residue_graph in g.reduced_coproduct_with_residue_graph(dimension, ym):
-        sub_graph_str = get_sub_graph_str( sub_graphs )
+        sub_graph_str = get_sub_graph_str(sub_graphs)
 
-        sum_str+= [ "[%s,%s]" % (sub_graph_str, residue_graph.get_graph_str(ym)) ]
+        sum_str += ["[%s,%s]" % (sub_graph_str, residue_graph.get_graph_str(ym))]
 
-    return "D[%s,[\n%s]\n]" % ( g.get_graph_str(ym), ", \n".join(sum_str) )
+    return "D[%s,[\n%s]\n]" % (g.get_graph_str(ym), ", \n".join(sum_str))
 
 
-def get_tensor_product_str( tp, ym ):
+def get_tensor_product_str(tp, ym):
     """Creates an output string for the coproduct in the unlabeled tensor
         product form."""
 
     sub_graphs, residue_graph = tp
 
-    def nosymfac( g ):
+    def nosymfac(g):
         gp = copy.copy(g)
         gp.prepare_graph()
         gp.symmetry_factor = 0
         return gp
 
-    def get_sg_str( g, m ):
+    def get_sg_str(g, m):
         if m == 1:
             return "%s" % nosymfac(g).get_graph_str(ym)
         else:
-            return "(%s)^%d" % (nosymfac(g).get_graph_str(ym),m)
+            return "(%s)^%d" % (nosymfac(g).get_graph_str(ym), m)
 
     sub_graphs_str = "*".join(get_sg_str(g, m) for g, m in sub_graphs)
     return "T[ %s, %s ]" % (sub_graphs_str, nosymfac(residue_graph).get_graph_str(ym))
 
 
-def get_primitive_str( g, dimension, ym ):
+def get_primitive_str(g, dimension, ym):
     """Creates an output string for the graph it is primitive."""
 
-    if g.is_primitive( dimension ):
+    if g.is_primitive(dimension):
         return g.get_graph_str(ym)
     else:
         return ""
@@ -107,7 +107,7 @@ def main():
     except StopIteration:
         return
 
-    var_name,ev,el = parsefg.parse_var_name(string)
+    var_name, ev, el = parsefg.parse_var_name(string)
     if var_name:
         if args.unlabeled:
             sys.stdout.write("%s_red_cop_unlab%s" % (var_name, string[ev:]))
@@ -120,23 +120,23 @@ def main():
         string = string[el:]
 
     if args.unlabeled or args.check or args.check_tadpoles:
-        graphs_fac = frozenset((g.unlabeled_graph,fac,ym) for g,fac,ym in parsefg.parse_input_lines( sys.stdin, None, string ))
+        graphs_fac = frozenset((g.unlabeled_graph, fac, ym) for g, fac, ym in parsefg.parse_input_lines(sys.stdin, None, string))
 
         ym_glob = False
 
         coproducts = dict()
-        for g,fac,ym in graphs_fac:
-            for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ):
+        for g, fac, ym in graphs_fac:
+            for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled(args.dimension, ym):
                 tensor_product = (tuple(sorted(sub_graphs.items())), residue_graph)
 
-                coproducts.setdefault( tensor_product, Fraction(0,1) )
+                coproducts.setdefault(tensor_product, Fraction(0, 1))
                 coproducts[tensor_product] += fac
                 ym_glob = ym_glob or ym
 
         if args.unlabeled:
             for tp, fac in coproducts.items():
-                tp_str = get_tensor_product_str( tp, ym_glob )
-                print(outputfg.get_element_str( tp_str, fac ))
+                tp_str = get_tensor_product_str(tp, ym_glob)
+                print(outputfg.get_element_str(tp_str, fac))
         elif args.check_tadpoles:
             tensor_check(coproducts, tadpoles=False)
             print("Check successful!")
@@ -146,25 +146,27 @@ def main():
             print("Check successful!")
             return
     else:
-        for g, fac, ym in parsefg.parse_input_lines( sys.stdin, sys.stdout, string ):
+        for g, fac, ym in parsefg.parse_input_lines(sys.stdin, sys.stdout, string):
             if args.primitives:
-                prim_str = get_primitive_str( g, args.dimension, ym )
+                prim_str = get_primitive_str(g, args.dimension, ym)
                 if prim_str:
-                    print(outputfg.get_element_str( prim_str, fac ))
+                    print(outputfg.get_element_str(prim_str, fac))
             elif args.unlab_per_graph:
-                tps = collections.Counter( (tuple(sorted(sub_graphs.items())), residue_graph) for  sub_graphs, residue_graph in g.reduced_coproduct_unlabeled( args.dimension, ym ) )
-                tps_str = " + ".join( "%d*%s" % ( fac, get_tensor_product_str(e , ym )) if fac != 1 else get_tensor_product_str(e , ym ) for e, fac in tps.items()  )
-                t_str = "%s*(%s)" % ( g.get_graph_str(ym), tps_str )
+                tps = collections.Counter((tuple(sorted(sub_graphs.items())), residue_graph) for sub_graphs, residue_graph in g.reduced_coproduct_unlabeled(args.dimension, ym))
+                tps_str = " + ".join("%d*%s" % (fac, get_tensor_product_str(e, ym))
+                                     if fac != 1 else get_tensor_product_str(e, ym)
+                                     for e, fac in tps.items())
+                t_str = "%s*(%s)" % (g.get_graph_str(ym), tps_str)
 
-                print(outputfg.get_element_str( t_str, fac ))
+                print(outputfg.get_element_str(t_str, fac))
             else:
                 cop_str = ""
                 if args.cographs:
-                    cop_str = get_coproduct_with_residues_str( g, args.dimension, ym )
+                    cop_str = get_coproduct_with_residues_str(g, args.dimension, ym)
                 else:
-                    cop_str = get_coproduct_str( g, args.dimension, ym )
+                    cop_str = get_coproduct_str(g, args.dimension, ym)
 
-                print(outputfg.get_element_str( cop_str, fac ))
+                print(outputfg.get_element_str(cop_str, fac))
 
     print(";")
 
@@ -174,7 +176,7 @@ def tensor_check(coproducts, tadpoles=True):
     for tensor_product, factor in coproducts.items():
         sub_graphs, residue_graph = tensor_product
         if not tadpoles:
-            if any(sg.is_tadpole for sg,m in sub_graphs) or residue_graph.is_tadpole:
+            if any(sg.is_tadpole for sg, m in sub_graphs) or residue_graph.is_tadpole:
                 continue
 
         print(" --- ")
@@ -189,35 +191,35 @@ def tensor_check(coproducts, tadpoles=True):
         res_structure = collections.Counter()
         sym_factor_sg = 1
         edges_permutations = 1
-        calc_factor = Fraction(1,1)
-        for g,m in sub_graphs:
+        calc_factor = Fraction(1, 1)
+        for g, m in sub_graphs:
             sym_factor_sg *= factorial(m) * g.symmetry_factor**m
 
             r = g.residue_type
-            res_cntr = collections.Counter( r )
+            res_cntr = collections.Counter(r)
             for s in res_cntr.values():
                 edges_permutations *= factorial(s)**m
 
-            res_structure[ r ] += m
+            res_structure[r] += m
 
-        calc_factor = Fraction( edges_permutations, sym_factor_sg*residue_graph.symmetry_factor )
-        for r,m in res_structure.items():
+        calc_factor = Fraction(edges_permutations, sym_factor_sg * residue_graph.symmetry_factor)
+        for r, m in res_structure.items():
             if len(r) == 2:
-                w1,w2 = r
+                w1, w2 = r
                 if abs(w1) != abs(w2):
                     raise
 
                 w = abs(w1)
 
-                insert_edges = sum( 1 for e in residue_graph.internal_edges_set if residue_graph.edge_weights[e] == w )
+                insert_edges = sum(1 for e in residue_graph.internal_edges_set if residue_graph.edge_weights[e] == w)
                 if not residue_graph.internal_vtcs_set:
-                    insert_edges = sum( 1 for e in residue_graph.external_edges_set if residue_graph.edge_weights[e] == w )
-                insertion_places_edges = binomial( insert_edges + m - 1, m ) * factorial(m)
+                    insert_edges = sum(1 for e in residue_graph.external_edges_set if residue_graph.edge_weights[e] == w)
+                insertion_places_edges = binomial(insert_edges + m - 1, m) * factorial(m)
 
                 calc_factor *= insertion_places_edges
             else:
-                insert_vtcs = sum( 1 for v in residue_graph.internal_vtcs_set if residue_graph.get_vtx_type(v) == r )
-                insertion_places_vtcs = binomial( insert_vtcs, m ) * factorial(m)
+                insert_vtcs = sum(1 for v in residue_graph.internal_vtcs_set if residue_graph.get_vtx_type(v) == r)
+                insertion_places_vtcs = binomial(insert_vtcs, m) * factorial(m)
 
                 calc_factor *= insertion_places_vtcs
 
