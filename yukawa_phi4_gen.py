@@ -62,21 +62,28 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     int_vtcs = graph.internal_vtcs_set
 
     is_sl = [graph.is_selfloop(edge) for edge in graph.edges]
+    edge_valence = [2 if is_sl[e] else 1 for e, edge in enumerate(graph.edges)]
+
     ext_adj = [frozenset(graph.adj_edges(v, graph.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(graph.adj_edges(v, graph.edges_set)) for v in int_vtcs]
 
-    for weights in product((fermion, boson), repeat=len(graph.edges)):
-        fermion_edges = frozenset(e for e, w in enumerate(weights) if w == fermion)
-        fermion_adj = [adj & fermion_edges for adj in int_adj]
-        fermion_valences = (sum(2 if is_sl[e] else 1 for e in adj) for adj in fermion_adj)
-        if any(val not in [0, 2] for val in fermion_valences):
-            continue
+    allowed_valencies = {(0, 4), (2, 1)}  # phi^4 and Yukawa
+    if ext_fermion:
+        allowed_valencies.add((1, 0))
+    if ext_boson:
+        allowed_valencies.add((0, 1))
 
-        boson_edges = frozenset(e for e, w in enumerate(weights) if w == boson)
-        boson_adj = [adj & boson_edges for adj in int_adj]
-        boson_valences = (sum(2 if is_sl[e] else 1 for e in adj)
-                          for adj in boson_adj)
-        if any(val not in [1, 3, 4] for val in boson_valences):
+    for weights in product((fermion, boson), repeat=len(graph.edges)):
+        fermion_edges = frozenset(e for e, w in enumerate(weights)
+                                  if w == fermion)
+        boson_edges = frozenset(e for e, w in enumerate(weights)
+                                if w == boson)
+        adjacence = [(adj & fermion_edges, adj & boson_edges)
+                     for adj in int_adj]
+        valences = ((sum(edge_valence[e] for e in adj_fermion),
+                     sum(edge_valence[e] for e in adj_boson))
+                    for adj_fermion, adj_boson in adjacence)
+        if any(val not in [(1, 0), (0, 1), (0, 4), (2, 1)] for val in valences):
             continue
 
         fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == fermion)
@@ -87,6 +94,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
         if boson_legs != ext_boson:
             continue
 
+        fermion_adj = [a for a, _ in adjacence]
         for fermion_weights in product((-1, 1), repeat=len(fermion_edges)):
             # handling the directions
             dir_weights = list(weights)
@@ -113,9 +121,12 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
 
             g = WeightedGraph(edges, translated_weights)
 
-            fermion_loops = list(g.cntd_components_sub_edges(g.sub_edges_by_weight(fermion)))
-
-            if any(len(loop) % 2 for loop in fermion_loops):
+            _, cycles = g.cycle_decomposition(g.sub_edges_by_weight(fermion))
+            if any(len(c) % 2 for c in cycles):
                 continue
-
             yield g
+
+            # fermion_loops = list(g.cntd_components_sub_edges(g.sub_edges_by_weight(fermion)))
+
+            # if any(len(loop) % 2 for loop in fermion_loops):
+            #     continue
