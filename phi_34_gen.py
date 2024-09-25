@@ -38,7 +38,6 @@ def gen_graphs(L, m, cntd, edge2cntd, vtx2cntd, notadpoles):
     """Generate phi^3 + phi^4 graphs with the desired parameters and
         properties.
         L: Loop number
-        k: Valency
         m: Ext. legs"""
 
     cntd = cntd | edge2cntd | vtx2cntd
