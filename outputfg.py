@@ -11,7 +11,7 @@
 # For instance, via github or email
 
 
-from fractions import *
+# from fractions import *
 
 
 def get_element_str(element, fac):

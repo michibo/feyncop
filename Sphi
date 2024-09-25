@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" - Main program code for "Sphi". 
+""" - Main program code for "Sphi".
 
 This program is part of the feyncop/feyngen package.
 """
@@ -15,55 +15,55 @@ __version__ = "1.0"
 
 # Copyright (c) 2014 Michael Borinsky
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy 
-# of this software and associated documentation files (the "Software"), to 
-# deal in the Software without restriction, including without limitation the 
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-# sell copies of the Software, and to permit persons to whom the Software is 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in 
+# The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-# If you have problems using this program, 
+# If you have problems using this program,
 # please feel free to contact me!
 # March 2014
 
-from fractions import *
-import copy
-import argparse
+# from fractions import *
+# import argparse
 import sys
-import collections, operator
-from math import *
-from stuff import *
+# from math import *
+# from stuff import *
 
-import parsefg, outputfg
+import parsefg
+import outputfg
 
-from graph import Graph
-from hopf_graph import HopfGraph
+# from graph import Graph
+# from hopf_graph import HopfGraph
+
 
 def main():
-    """Main program section. Reads the options and parameters and starts the 
+    """Main program section. Reads the options and parameters and starts the
         relevant subroutines."""
 
-    parser = argparse.ArgumentParser(description='')
-    args = parser.parse_args()
-        
+    # parser = argparse.ArgumentParser(description='')
+    # args = parser.parse_args()
+
     string = ""
     try:
         string = next(sys.stdin)
     except StopIteration:
         return
 
-    var_name,ev,el = parsefg.parse_var_name(string)
+    var_name, ev, el = parsefg.parse_var_name(string)
     endsc = False
     if var_name:
         sys.stdout.write("%s_Sphi%s" % (var_name, string[ev:]))
@@ -72,7 +72,8 @@ def main():
 
     S_g = dict()
     corad_g = dict()
-    for g, tp, fac, ym in parsefg.parse_input_lines( sys.stdin, None, string, parsefg.parse_sum_of_graph_with_tp ):
+    for g, tp, fac, ym in parsefg.parse_input_lines(sys.stdin, None, string,
+                                                    parsefg.parse_sum_of_graph_with_tp):
         gu = g.unlabeled_graph
         if gu in S_g:
             continue
@@ -88,25 +89,24 @@ def main():
                 ru = r_g.unlabeled_graph
                 r_cr = corad_g[ru]
                 if r_cr == 1:
-                    maxf_count+=m
+                    maxf_count += m
                 print("%d*(" % m,)
-                for sg,e in sgs:
-                    res_type = "e^%d" % e if sg.residue_type == (2,2) else "v^%d" % e
+                for sg, e in sgs:
+                    res_type = "e^%d" % e if sg.residue_type == (2, 2) else "v^%d" % e
                     print(res_type,)
                 print(")",)
 
-
                 max_corad = max(max_corad, r_cr)
-                S_g[gu] += -m*S_g[ru]
+                S_g[gu] += -m * S_g[ru]
 
             corad_g[gu] = max_corad + 1
 
         g_str = g.get_graph_str(ym)
-        res_type = "e" if g.residue_type == (2,2) else "v"
-        ce, _ = g.cycle_decomposition( g.edges_set )
-        
+        res_type = "e" if g.residue_type == (2, 2) else "v"
+        ce, _ = g.cycle_decomposition(g.edges_set)
+
         print("\t",)
-        print(res_type, len(ce), maxf_count, corad_g[gu], outputfg.get_element_str( g_str, fac*S_g[gu]))
+        print(res_type, len(ce), maxf_count, corad_g[gu], outputfg.get_element_str(g_str, fac * S_g[gu]))
     if endsc:
         print(";")
 
