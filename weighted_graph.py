@@ -18,6 +18,11 @@ from stuff import double_factorial
 from graph import Graph
 
 
+wDict = ['0', 'f', 'A', 'c']
+# what is the convention here ?
+# ?, fermion, boson, ?
+
+
 class WeightedGraph(Graph):
     """This class extends the basic utilities in the Graph class by the tools
         to handle QED and Yang-Mills graphs."""
@@ -37,7 +42,6 @@ class WeightedGraph(Graph):
 
         v1, v2 = self.edges[e]
         w = self.edge_weights[e]
-        wDict = ['0', 'f', 'A', 'c']
         return "[%d,%d,%c]" % (v1, v2, wDict[w])
 
     def get_edges_tuple(self):
@@ -50,14 +54,15 @@ class WeightedGraph(Graph):
         """Create a new graph from a sub set of its edges."""
 
         sub_graph = super().graph_from_sub_edges(sub_edges)
-        sub_graph.edge_weights = tuple(self.edge_weights[e] for e in sorted(sub_edges))
-
+        sub_graph.edge_weights = tuple(self.edge_weights[e]
+                                       for e in sorted(sub_edges))
         return sub_graph
 
     def sub_edges_by_weight(self, weight):
         """Returns all subedges with a certain weight."""
 
-        return frozenset(e for e, w in enumerate(self.edge_weights) if w == weight)
+        return frozenset(e for e, w in enumerate(self.edge_weights)
+                         if w == weight)
 
     @property
     def residue_type(self):
@@ -66,10 +71,7 @@ class WeightedGraph(Graph):
         def dir_e(e, v):
             if self.edge_weights[e] == 2:
                 return 1
-            if v == self.edges[e][0]:
-                return -1
-            else:
-                return 1
+            return -1 if v == self.edges[e][0] else 1
 
         ext_types = (dir_e(e, v) * self.edge_weights[e]
                      for v in self.external_vtcs_set
@@ -112,7 +114,7 @@ class WeightedGraph(Graph):
         # Sorting is important for the v even for all similar mul!
         selfloop_multiplicity_list = sorted((mul, v)
                                             for v, mul in zip(self.internal_vtcs_set, selfloop_degree_list))
-        ((max_selfloop_multiplicity, _), _) = selfloop_multiplicity_list[-1] if selfloop_multiplicity_list else ((0, 2), 0)
+        max_selfloop_multiplicity, _ = selfloop_multiplicity_list[-1][0] if selfloop_multiplicity_list else (0, 2)
 
         self_loop_list = [frozenset(vtx
                                     for (mul, we), vtx in selfloop_multiplicity_list
