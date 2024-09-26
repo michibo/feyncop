@@ -22,8 +22,8 @@ boson = 2
 def gen_graphs(L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry):
     """Generate QED graphs with the desired parameters and properties.
         L: Loop number
-        r_t2: Ext. fermion number
-        m: Ext. boson number"""
+        r_t2: External fermion number
+        m: External boson number"""
 
     phi3_graphs = (phi_k_gen.gen_graphs(L, 3, r_t2 + m, cntd, edge2cntd, vtx2cntd, notadpoles))
 
@@ -75,6 +75,7 @@ def gen_from_phi3_g(fg, r_t2, m):
             dir_weights = list(weights)
             for i, e in enumerate(fermion_edges):
                 dir_weights[e] = fermion_weights[i]
+            # weight -1 for reversed fermion arrow
 
             def dir(e, v):
                 v1, v2 = fg.edges[e]
@@ -89,7 +90,7 @@ def gen_from_phi3_g(fg, r_t2, m):
                 x, y = xy
                 return (y, x)
 
-            edges = tuple(edge if w == 1 or w == 2 else flip(edge) for edge, w in zip(fg.edges, dir_weights))
+            edges = tuple(edge if w == 1 or w == boson else flip(edge) for edge, w in zip(fg.edges, dir_weights))
             translated_weights = tuple(2 if w == 2 else 1 for w in weights)
 
             yield WeightedGraph(tuple(edges), tuple(translated_weights))
