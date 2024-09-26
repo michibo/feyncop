@@ -11,7 +11,8 @@ suitable for Hopf algebra calculations. """
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-import argparse, sys
+import argparse
+import sys
 
 from stuff import factorial
 import combinatorics
@@ -143,11 +144,10 @@ def main():
 
     qed = args.qed or args.qed_furry
 
-    if qed or args.ym:
-        if args.num_ext_legs:
-            print("Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead.")
+    if (qed or args.ym or args.yukawa) and args.num_ext_legs:
+        print("Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead.")
     if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs or args.num_ext_glegs):
-        print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym and without -j to indicate QED or Yang Mills enumeration.")
+        print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym or --yukawa and without -j to indicate QED or Yang Mills enumeration.")
     elif (args.num_ext_blegs or args.num_ext_flegs) and not args.ym:
         args.qed = qed = True
 
@@ -156,7 +156,7 @@ def main():
         return
 
     loops_str = ""
-    loops_str = "%s" % "_".join(["h%d" % l for l in args.loops])
+    loops_str = "%s" % "_".join("h%d" % l for l in args.loops)
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
@@ -213,7 +213,7 @@ def main():
                 print("Warning: Internal error check failed", file=sys.stderr)
 
         elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
-            print("+%s" % str(WeightedGraph(tuple(), tuple()).unlabeled_graph))
+            print("+%s" % str(WeightedGraph((), ()).unlabeled_graph))
             graphs_yielded = True
 
             test_sums['fixed'] = test_sums['non-fixed'] = 1
@@ -230,6 +230,7 @@ def main():
         sys.exit(1)
     else:
         sys.exit(0)
+
 
 if __name__ == "__main__":
     try:
