@@ -17,8 +17,13 @@ from powerseries import lLog, lConvolute
 
 def phi_k_class_coeff(L, m, k):
     """Calculate the sum of the symmetry factors of all phi^k diagrams
-        with L loops, m external edges and valency k."""
+        with L loops, m external edges and valency k.
 
+    EXAMPLES::
+
+        sage: phi_k_class_coeff(2,4,4)
+        Fraction(25025, 24576)
+    """
     s_tkm2 = m + 2 * (L - 1)
     if s_tkm2 % (k - 2):
         return 0
@@ -108,9 +113,9 @@ def cntd_phi_k_class_coeff(L, m, k):
         return 0
 
     A = [[phi_k_cc(sp, mp, k) for mp in range(m + 1)] for sp in range(s + 1)]
-    Alog = lLog(A)
+    A_log = lLog(A)
 
-    return Alog[s][m]
+    return A_log[s][m]
 
 
 def cntd_phi34_class_coeff(L, m):
@@ -124,8 +129,8 @@ def cntd_phi34_class_coeff(L, m):
 
     A = [[phi34_cc(sp, mp) for mp in range(m + 1)] for sp in range(s + 1)]
 
-    Alog = lLog(A)
-    return Alog[s][m]
+    A_log = lLog(A)
+    return A_log[s][m]
 
 
 def cntd_qed_class_coeff(L, rt2, m):
@@ -144,9 +149,9 @@ def cntd_qed_class_coeff(L, rt2, m):
 
     A = [[[qed_cc(sp, mp, rp) for mp in range(m + 1)] for rp in range(r + 1)]
          for sp in range(s + 1)]
-    Alog = lLog(A)
+    A_log = lLog(A)
 
-    return Alog[s][r][m]
+    return A_log[s][r][m]
 
 
 def cntd_qed_furry_class_coeff(L, rt2, m):
@@ -166,9 +171,9 @@ def cntd_qed_furry_class_coeff(L, rt2, m):
 
     A = [[[qed_furry_cc(sp, mp, rp) for mp in range(m + 1)] for rp in range(r + 1)]
          for sp in range(s + 1)]
-    Alog = lLog(A)
+    A_log = lLog(A)
 
-    return Alog[s][r][m]
+    return A_log[s][r][m]
 
 
 def cntd_qcd_class_coeff(L, rt2, ut2, m):
@@ -189,8 +194,8 @@ def cntd_qcd_class_coeff(L, rt2, ut2, m):
     A = [[[[qcd_cc(sp, mp, rp, up) for rp in range(r + 1)] for up in range(u + 1)]
           for mp in range(m + 1)] for sp in range(s + 1)]
 
-    Alog = lLog(A)
-    return Alog[s][m][u][r]
+    A_log = lLog(A)
+    return A_log[s][m][u][r]
 
 
 def phi_k_cc(s, m, k):

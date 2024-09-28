@@ -119,7 +119,7 @@ def get_tensor_product_from_match(m):
                 print("Warning strange input: %s" % m.group(0), file=sys.stderr)
                 continue
 
-            p = 1 if '' == exp_str else int(exp_str)
+            p = 1 if not exp_str else int(exp_str)
 
             yield sg, p
 

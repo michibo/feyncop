@@ -21,10 +21,10 @@ The theoretical background to the programs with details to validation and implem
 
 Please cite Michael Borinsky, [Feynman graph generation and calculations in the Hopf algebra of Feynman graphs](http://dx.doi.org/10.1016/j.cpc.2014.07.023), *Computer Physics Communications*, Volume 185, Issue 12, December 2014, Pages 3317–3330 if you want to refer to the programs.
 
-Acknowlegements
----------------
+Acknowledgements
+----------------
 
-Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen&feyncop to Python3 in 2024.
+Many thanks are owed to [Frédéric Chapoton](//irma.math.unistra.fr/~chapoton/) for the long overdue upgrade of feyngen & feyncop to Python3 in 2024.
 
 Bug reports or (pull) requests are always welcome.
 

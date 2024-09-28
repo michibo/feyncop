@@ -56,7 +56,7 @@ def main():
             g_sym = g.unlabeled_graph.symmetry_factor
 
         if Fraction(1, g_sym) != Fraction(fac, 1) and not args.no_warning:
-            sys.stderr.write("Warning: %s doen't have symmetry factor %s. It has %s. (Non-)Fixed legs?\n" % (g, fac, Fraction(1, g_sym)))
+            sys.stderr.write("Warning: %s doesn't have symmetry factor %s. It has %s. (Non-)Fixed legs?\n" % (g, fac, Fraction(1, g_sym)))
         sum_fac += fac
 
     print("%s" % sum_fac)

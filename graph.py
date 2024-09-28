@@ -24,14 +24,30 @@ class Graph:
         Feynman graph handling."""
 
     def __init__(self, edges, symmetry_factor=0):
-        """Initializes the Graph class. Edges and symmetry_factor can be provided."""
+        """
+        Initializes the Graph class.
 
+        Edges and symmetry_factor can be provided.
+
+        EXAMPLES::
+
+            sage: from graph import *
+            sage: Graph([[0,1],[1,2]],2)
+            G[[0,1],[1,2]]/2
+        """
         self.edges = edges
         self.symmetry_factor = symmetry_factor
 
         self.prepare_graph()
 
     def __str__(self):
+        """
+        EXAMPLES::
+
+            sage: from graph import *
+            sage: str(Graph([[0,1],[1,2]],2))
+            'G[[0,1],[1,2]]/2'
+        """
         g_string = ",".join(self.get_edge_str(e) for e in self.edges_set)
         if self.symmetry_factor:
             return "G[%s]/%d" % (g_string, self.symmetry_factor)
@@ -53,10 +69,18 @@ class Graph:
         return not self == other
 
     def __hash__(self):
-        """Create hash from the labeling. The hash is unique for the
-            isomorphism class of the graph if the labeling is
-            canonical."""
+        """
+        Create hash from the labeling. The hash is unique for the
+        isomorphism class of the graph if the labeling is
+        canonical.
 
+        EXAMPLES::
+
+            sage: from graph import *
+            sage: hash(Graph([[0,1],[1,2]],2))  # random
+            'G[[0,1],[1,2]]/2'
+            -6656892016142386837
+        """
         return hash(self.get_edges_tuple())
 
     def prepare_graph(self):
@@ -194,9 +218,7 @@ class Graph:
             connected."""
 
         if not sub_edges:
-            if len(self.internal_vtcs_set) <= 1:
-                return True
-            return False
+            return len(self.internal_vtcs_set) <= 1
 
         vtcs_set = self.vtcs_set_sub_edges(sub_edges)
 
@@ -291,7 +313,7 @@ class Graph:
     def is_tadpole(self):
         """True if the graph is a tadpole."""
 
-        # For not being a tadpole grpah there must not be any selfloops and
+        # For not being a tadpole graph there must not be any selfloops and
         # all the biconnected components must be connected to an external
         # vertex."""
 
