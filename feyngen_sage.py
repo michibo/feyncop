@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+"""
+Main program code for "feyngen"
 
-""" - Main program code for "feyngen" - A program to generate Feynman graphs
-suitable for Hopf algebra calculations. """
-
+A program to generate Feynman graphs suitable for Hopf algebra calculations.
+"""
 # See also: https://github.com/michibo/feyncop
 
 # Author: Michael Borinsky
@@ -14,7 +15,8 @@ suitable for Hopf algebra calculations. """
 import argparse
 import sys
 
-from sage.all import factorial, QQ, CombinatorialFreeModule, NN, Words
+from sage.all import (factorial, QQ, CombinatorialFreeModule,
+                      NN, Words)
 import combinatorics
 from weighted_graph import WeightedGraph
 import phi_k_gen
@@ -71,8 +73,9 @@ def sum_over_graphs(graphs):
         sage: from feyngen_sage import *
         sage: L = generating_phi_k(2, 2)
         sage: sum_over_graphs(L)
-        1/128*B[word: (0, 0),(0, 0),(1, 1),(1, 1),(2, 3)] + 1/16*B[word: (0, 0),(0, 1),(0, 1),(1, 1),(2, 3)] + 1/4*B[word: (0, 0),(0, 1),(0, 2),(1, 1),(1, 3)] + 1/16*B[word: (0, 0),(0, 2),(0, 3),(1, 1),(1, 1)] + 1/48*B[word: (0, 1),(0, 1),(0, 1),(0, 1),(2, 3)] + 1/6*B[word: (0, 1),(0, 1),(0, 1),(0, 2),(1, 3)] + 1/4*B[word: (0, 1),(0, 1),(0, 2),(0, 3),(1, 1)]
+        1/128*G((0, 0), (0, 0), (1, 1), (1, 1), (2, 3)) + 1/16*G((0, 0), (0, 1), (0, 1), (1, 1), (2, 3)) + 1/4*G((0, 0), (0, 1), (0, 2), (1, 1), (1, 3)) + 1/16*G((0, 0), (0, 2), (0, 3), (1, 1), (1, 1)) + 1/48*G((0, 1), (0, 1), (0, 1), (0, 1), (2, 3)) + 1/6*G((0, 1), (0, 1), (0, 1), (0, 2), (1, 3)) + 1/4*G((0, 1), (0, 1), (0, 2), (0, 3), (1, 1))
         sage: sum(_.coefficients())
+        105/128
     """
     indices = Words(NN.cartesian_product(NN), infinite=False)
     M = CombinatorialFreeModule(QQ, indices)

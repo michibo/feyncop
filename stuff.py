@@ -14,7 +14,15 @@ from math import factorial
 
 
 def double_factorial(k):
-    """Calculate the double factorial of k."""
+    """
+    Calculate the double factorial of k.
+
+    EXAMPLES::
+
+        sage: from stuff import *
+        sage: double_factorial(5)
+        15
+    """
     if k == -1:
         return 1
 
@@ -27,7 +35,15 @@ def double_factorial(k):
 
 
 def binomial(n, k):
-    """Calculate the binomial coefficient n over k."""
+    """
+    Calculate the binomial coefficient n over k.
+
+    EXAMPLES::
+
+        sage: from stuff import *
+        sage: binomial(6,2)
+        15
+    """
     if k < 0:
         return 0
     if n < 0:
