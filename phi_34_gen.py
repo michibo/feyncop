@@ -44,7 +44,8 @@ def gen_graphs(L, m, cntd, edge2cntd, vtx2cntd, notadpoles):
     edge2cntd = edge2cntd | vtx2cntd
     notadpoles = notadpoles | vtx2cntd
 
-    min_n, max_n, min_edges, max_edges = calc_gen_params(L, m, cntd, notadpoles)
+    min_n, max_n, min_edges, max_edges = calc_gen_params(L, m,
+                                                         cntd, notadpoles)
 
     if max_n <= 0:
         return
@@ -56,7 +57,8 @@ def gen_graphs(L, m, cntd, edge2cntd, vtx2cntd, notadpoles):
                 g_bulk, frozenset(range(bulk_n)),
                 L, m, notadpoles))
 
-            unlabeled_graphs = frozenset(g.unlabeled_graph for g in labeled_graphs)
+            unlabeled_graphs = frozenset(g.unlabeled_graph
+                                         for g in labeled_graphs)
 
             for g in unlabeled_graphs:
                 if vtx2cntd and not g.is_vtx_2_connected:

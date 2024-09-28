@@ -32,24 +32,30 @@ def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
     EXAMPLES::
 
         sage: from yukawa_phi4_gen import *
+
         sage: L = gen_graphs_yukawa_phi4(3,0,0,True,False,False,True)
         sage: list(L)
         [G[[1,0,A],[1,0,A],[1,0,A],[1,0,A]]/48]
+
+        sage: L = gen_graphs_yukawa_phi4(0,0,4,True,False,False,True)
+        sage: list(L)
+        [G[[1,0,A],[2,0,A],[3,0,A],[4,0,A]]/24]
     """
     phi34_graphs = phi_34_gen.gen_graphs(loops, ext_fermion + ext_boson,
                                          cntd, edge2cntd, vtx2cntd, notadpoles)
 
     for g_phi34 in phi34_graphs:
-        gen_qcd_graphs = (g.unlabeled_graph
-                          for g in gen_yukawa_phi4_from_phi34(g_phi34,
-                                                              ext_fermion, ext_boson))
-        yield from frozenset(gen_qcd_graphs)
+        gen_yukawa_graphs = (g.unlabeled_graph
+                             for g in gen_yukawa_phi4_from_phi34(g_phi34,
+                                                                 ext_fermion,
+                                                                 ext_boson))
+        yield from frozenset(gen_yukawa_graphs)
 
 
 def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     """
-    Helper function: Generate full fledged Yukawa-Phi4 graphs from the bulk output of
-    phi_34_gen.gen_graphs.
+    Helper function: Generate full fledged Yukawa-Phi4 graphs
+    from the bulk output of phi_34_gen.gen_graphs.
 
     graph: phi34 graph
     ext_fermion: external fermion number
@@ -61,8 +67,10 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     is_sl = [graph.is_selfloop(edge) for edge in graph.edges]
     edge_valence = [2 if is_sl[e] else 1 for e, edge in enumerate(graph.edges)]
 
-    ext_adj = [frozenset(graph.adj_edges(v, graph.edges_set)) for v in ext_vtcs]
-    int_adj = [frozenset(graph.adj_edges(v, graph.edges_set)) for v in int_vtcs]
+    ext_adj = [frozenset(graph.adj_edges(v, graph.edges_set))
+               for v in ext_vtcs]
+    int_adj = [frozenset(graph.adj_edges(v, graph.edges_set))
+               for v in int_vtcs]
 
     allowed_valencies = {(0, 4), (2, 1)}  # phi^4 and Yukawa
     if ext_fermion:
@@ -83,11 +91,13 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
         if any(val not in allowed_valencies for val in valences):
             continue
 
-        fermion_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == fermion)
+        fermion_legs = sum(1 for adj in ext_adj for e in adj
+                           if weights[e] == fermion)
         if fermion_legs != ext_fermion:
             continue
 
-        boson_legs = sum(1 for adj in ext_adj for e in adj if weights[e] == boson)
+        boson_legs = sum(1 for adj in ext_adj for e in adj
+                         if weights[e] == boson)
         if boson_legs != ext_boson:
             continue
 
