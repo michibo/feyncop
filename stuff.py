@@ -10,12 +10,18 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import factorial
+from math import factorial, comb
 
 
 def flip(xy):
     """
     to flip edges
+
+    EXAMPLES::
+
+        sage: from stuff import *
+        sage: flip((4, 5))
+        (5, 4)
     """
     x, y = xy
     return (y, x)
@@ -28,8 +34,12 @@ def double_factorial(k):
     EXAMPLES::
 
         sage: from stuff import *
+        sage: double_factorial(-1)
+        1
         sage: double_factorial(5)
         15
+        sage: double_factorial(6)
+        48
     """
     if k == -1:
         return 1
@@ -49,17 +59,15 @@ def binomial(n, k):
     EXAMPLES::
 
         sage: from stuff import *
+        sage: binomial(6,-2)
+        0
         sage: binomial(6,2)
         15
+        sage: binomial(-6,2)
+        21
     """
     if k < 0:
         return 0
     if n < 0:
         return binomial(-n + k - 1, k) * (-1)**k
-
-    top = 1
-    bot = 1
-    for i in range(k):
-        top *= n - i
-        bot *= 1 + i
-    return top // bot
+    return comb(n, k)

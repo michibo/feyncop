@@ -48,7 +48,8 @@ def main():
     """Main program section. Reads the options and parameters and starts the
         relevant subroutines."""
 
-    # parser = argparse.ArgumentParser(description='Strips varname and semicolon.')
+    # parser = argparse.ArgumentParser(description='Strips varname and
+    # semicolon.')
     # args = parser.parse_args()
 
     string = ""
