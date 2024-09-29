@@ -69,7 +69,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
 
         sage: L = gen_yukawa_phi4_from_phi34(G, 0, 0)
         sage: list(L)
-        [G[[1,0,A],[1,0,A],[1,0,A],[1,0,A]]/48]
+        [G[[0,1,A],[0,1,A],[0,1,A],[0,1,A]]]
 
     """
     allowed_valencies = {(0, 4), (2, 1)}  # phi^4 and Yukawa
