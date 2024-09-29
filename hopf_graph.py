@@ -120,10 +120,10 @@ class HopfGraph(WeightedGraph):
 
             sub_edges_set = frozenset(e for sub_edges in sub_edges_list for e in sub_edges)
             residue_edges_set = (self.edges_set - sub_edges_set) | self.external_edges_set
-            residue_graph = residue_graph.graph_from_sub_edges(residue_edges_set)
-            residue_graph.clean_of_val2_vtcs()
+            residue_graph_reduced = residue_graph.graph_from_sub_edges(residue_edges_set)
+            residue_graph_reduced.clean_of_val2_vtcs()
 
-            yield sub_graphs, residue_graph.unlabeled_graph
+            yield sub_graphs, residue_graph_reduced.unlabeled_graph
 
     def calc_residue_edges(self, edges_set, sub_edges):
         """Helper function: Calculates the residue edges corresponding to a
