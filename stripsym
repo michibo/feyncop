@@ -55,7 +55,8 @@ def main():
     """Main program section. Reads the options and parameters and starts the
         relevant subroutines."""
 
-    # parser = argparse.ArgumentParser(description='Gives all the graphs without prefactors.')
+    # parser = argparse.ArgumentParser(description='Gives all the
+    # graphs without prefactors.')
     # args = parser.parse_args()
 
     string = ""
