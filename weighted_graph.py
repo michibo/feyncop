@@ -14,7 +14,7 @@ from math import factorial
 import copy
 from itertools import permutations
 
-from stuff import double_factorial
+from stuff import double_factorial, flip
 from graph import Graph
 
 
@@ -143,10 +143,6 @@ class WeightedGraph(Graph):
         # edge combinations are included.
         def normalize(edge):
             return (max(edge), min(edge))
-
-        def flip(xy):
-            x, y = xy
-            return (y, x)
 
         fermion_loops = frozenset(normalize(edge) for edge in fermion_edges if flip(edge) in fermion_edges)
         ghost_loops = frozenset(normalize(edge) for edge in ghost_edges if flip(edge) in ghost_edges)
