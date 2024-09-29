@@ -44,6 +44,10 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
     ext_vtcs = fg.external_vtcs_set
     int_vtcs = fg.internal_vtcs_set
 
+    def dir(e, v):
+        v1, _ = fg.edges[e]
+        return 1 if v1 == v else -1
+
     is_sl = [fg.is_selfloop(edge) for e, edge in enumerate(fg.edges)]
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
@@ -77,11 +81,9 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
             for i, e in enumerate(fermion_edges):
                 dir_weights[e] = fermion_weights[i]
 
-            def dir(e, v):
-                v1, _ = fg.edges[e]
-                return 1 if v1 == v else -1
-
-            fermion_res = (sum(0 if is_sl[e] else dir(e, v) * dir_weights[e] for e in adj) for v, adj in zip(int_vtcs, fermion_adj))
+            fermion_res = (sum(dir(e, v) * dir_weights[e] for e in adj
+                               if not is_sl[e])
+                           for v, adj in zip(int_vtcs, fermion_adj))
             if any(fermion_res):
                 continue
 
@@ -90,7 +92,7 @@ def gen_from_phi34_g(fg, r_t2, u_t2, m):
 
             g = WeightedGraph(tuple(edges), tuple(translated_weights))
 
-            fermion_loops = list(g.cntd_components_sub_edges(g.sub_edges_by_weight(1)))
+            fermion_loops = list(g.cntd_components_sub_edges(g.sub_edges_by_weight(fermion)))
 
             for ghost_loops in itertools.product((True, False), repeat=len(fermion_loops)):
                 ghost_weights = list(g.edge_weights)
