@@ -103,8 +103,8 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     for weights in product((fermion, boson), repeat=len(other_edges)):
         fermion_edges = frozenset(e for e, w in zip(other_edges, weights)
                                   if w == fermion)
-        boson_edges = set(e for e, w in zip(other_edges, weights)
-                          if w == boson)
+        boson_edges = {e for e, w in zip(other_edges, weights)
+                       if w == boson}
         boson_edges.update(forced_edges)
 
         full_weights = [boson] * len(graph.edges_set)
@@ -143,7 +143,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
 
         for fermion_weights in product((-1, 1), repeat=len(fermion_edges)):
 
-            weight_table = dict()
+            weight_table = {}
             pos = 0
             for i in graph.edges_set:
                 if i not in boson_edges:

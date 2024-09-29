@@ -185,8 +185,7 @@ def main():
         print("Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3")
         return
 
-    loops_str = ""
-    loops_str = "%s" % "_".join("h%d" % l for l in args.loops)
+    loops_str = "_".join(f"h{loop}" for loop in args.loops)
 
     unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
@@ -232,7 +231,8 @@ def main():
                 print("Warning: Internal error check failed", file=sys.stderr)
 
         elif num_loops == 1 and ext_legs_total == 0 and possible_emptyness:
-            print("+%s" % str(WeightedGraph((), ()).unlabeled_graph))
+            empty = WeightedGraph((), ()).unlabeled_graph
+            print(f"+{empty}")
 
             test_sums['fixed'] = test_sums['non-fixed'] = 1
             if not compare_sym_factors(num_loops, test_sums, args):
