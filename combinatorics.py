@@ -199,11 +199,19 @@ def cntd_qcd_class_coeff(L, rt2, ut2, m):
 
 
 def phi_k_cc(s, m, k):
-    """Helper function which evaluates the relevant term in the
-        generating function(al) of a zero dimensional phi^k theory.
-        s corresponds to the power in the coupling constant and
-        m to the power of the field sources."""
+    """
+    Helper function which evaluates the relevant term in the
+    generating function(al) of a zero dimensional phi^k theory.
 
+    ``s`` corresponds to the power in the coupling constant and
+    ``m`` to the power of the field sources.
+
+    EXAMPLES::
+
+        sage: from combinatorics import *
+        sage: phi_k_cc(3,4,4)
+        Fraction(25025, 24576)
+    """
     l_t2 = m + s * k
 
     if l_t2 % 2:
@@ -216,14 +224,23 @@ def phi_k_cc(s, m, k):
 
 
 def phi34_cc(s, m):
-    """Helper function which evaluates the relevant term in the
-        generating function(al) of a zero dimensional (phi^3+phi^4) theory.
-        s corresponds to the power in the coupling constant and
-        m to the power of the field sources."""
+    """
+    Helper function which evaluates the relevant term in the
+    generating function(al) of a zero dimensional (phi^3+phi^4) theory.
 
+    ``s`` corresponds to the power in the coupling constant and
+    ``m`` to the power of the field sources.
+
+    EXAMPLES::
+
+        sage: from combinatorics import *
+        sage: phi34_cc(2,4)
+        Fraction(35, 48)
+    """
     l_min = max(0, (m + 2 * s + 1) // 2)
     l_max = (3 * s + m) // 2
     S = 0
+    fact_m = factorial(m)
     for l in range(l_min, l_max + 1):
         n_1 = 2 * l - 2 * s - m
         n_2_t2 = -2 * l + 3 * s + m
@@ -231,9 +248,12 @@ def phi34_cc(s, m):
             continue
         n_2 = n_2_t2 // 2
 
+        # denom = factorial(n_1) * factorial(n_2) * \
+        #     factorial(m) * factorial(3)**n_1 *  \
+        #     factorial(4) ** n_2
+
         denom = factorial(n_1) * factorial(n_2) * \
-            factorial(m) * factorial(3)**n_1 *  \
-            factorial(4) ** n_2
+            fact_m * 6**n_1 * 24**n_2
 
         S += Fraction(double_factorial(2 * l - 1), denom)
 
@@ -241,12 +261,20 @@ def phi34_cc(s, m):
 
 
 def qed_cc(s, m, r):
-    """Helper function which evaluates the relevant term in the
-        generating function(al) of zero dimensional QED.
-        s corresponds to the power in the coupling constant,
-        m to the power of the photon field sources and r to
-        the power of the absolute squared fermion sources."""
+    """
+    Helper function which evaluates the relevant term in the
+    generating function(al) of zero dimensional QED.
 
+    ``s`` corresponds to the power in the coupling constant,
+    ``m`` to the power of the photon field sources and
+    ``r`` to the power of the absolute squared fermion sources.
+
+    EXAMPLES::
+
+        sage: from combinatorics import *
+        sage: qed_cc(2,4,3)
+        Fraction(25, 24)
+    """
     l1_t2 = s + m
     l2 = r + s
 
@@ -260,13 +288,21 @@ def qed_cc(s, m, r):
 
 
 def qed_furry_cc(s, m, r):
-    """Helper function which evaluates the relevant term in the
-        generating function(al) of zero dimensional QED respecting
-        Furry's theorem.
-        s corresponds to the power in the coupling constant,
-        m to the power of the photon field sources and r to
-        the power of the absolute squared fermion sources."""
+    """
+    Helper function which evaluates the relevant term in the
+    generating function(al) of zero dimensional QED respecting
+    Furry's theorem.
 
+    ``s`` corresponds to the power in the coupling constant,
+    ``m`` to the power of the photon field sources and
+    ``r`` to the power of the absolute squared fermion sources.
+
+    EXAMPLES::
+
+        sage: from combinatorics import *
+        sage: qed_furry_cc(2,4,3)
+        Fraction(65, 96)
+    """
     S1 = [binomial(r + n - 1, n) for n in range(s + 1)]
     S2 = [Fraction(binomial(2 * n, n), 4**n) for n in range(s + 1)]
     S3 = [(-1)**n * Fraction(binomial(2 * n, n), 4**n) for n in range(s + 1)]
@@ -285,21 +321,29 @@ def qed_furry_cc(s, m, r):
 
 
 def qcd_cc(s, m, r, u):
-    """Helper function which evaluates the relevant term in the
-        generating function(al) of zero dimensional QCD.
-        s corresponds to the power in the coupling constant,
-        m to the power of the photon field sources and r/u to
-        the power of the absolute squared fermion/ghost sources."""
+    """
+    Helper function which evaluates the relevant term in the
+    generating function(al) of zero dimensional QCD.
 
+    ``s`` corresponds to the power in the coupling constant,
+    ``m`` to the power of the photon field sources and
+    ``r/u`` to the power of the absolute squared fermion/ghost sources.
+
+    EXAMPLES::
+
+        sage: from combinatorics import *
+        sage: qcd_cc(2,4,3,2)
+        Fraction(35, 18)
+    """
     l2_min = r
     l3_min = u
     l1_min = (m + 1) // 2
-    l1_max = l2_max = l3_max = (3 * s + m + 2 * r + 2 * u) // 2
+    l_max = (3 * s + m + 2 * r + 2 * u) // 2
 
     S = 0
-    for l1 in range(l1_min, l1_max + 1):
-        for l2 in range(l2_min, l2_max + 1):
-            for l3 in range(l3_min, l3_max + 1):
+    for l1 in range(l1_min, l_max + 1):
+        for l2 in range(l2_min, l_max + 1):
+            for l3 in range(l3_min, l_max + 1):
                 n1 = 2 * l1 + l2 + l3 - 2 * s - m - r - u
                 n2_t2 = -2 * (l1 + l2 + l3) + 3 * s + m + 2 * r + 2 * u
                 n3 = l2 - r
