@@ -11,8 +11,9 @@
 # For instance, via github or email
 
 from itertools import product
-from weighted_graph import WeightedGraph
 
+from weighted_graph import WeightedGraph
+from stuff import flip
 import phi_34_gen
 
 # 1 stands for fermion, 2 for boson
@@ -95,6 +96,10 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                              if e[0] in phi4_vtcs or e[1] in phi4_vtcs)
     other_edges = [e for e in graph.edges_set if e not in forced_edges]
 
+    def dir(e, v):
+        v1, _ = graph.edges[e]
+        return 1 if v1 == v else -1
+
     for weights in product((fermion, boson), repeat=len(other_edges)):
         fermion_edges = frozenset(e for e, w in zip(other_edges, weights)
                                   if w == fermion)
@@ -145,19 +150,11 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                     weight_table[i] = fermion_weights[pos]
                     pos += 1
 
-            def dir(e, v):
-                v1, _ = graph.edges[e]
-                return 1 if v1 == v else -1
-
             # fermion edges must form oriented cycles
             if any(sum(dir(e, v) * weight_table[e]
                        for e in adj if not is_sl[e])
                    for v, adj in zip(int_vtcs, fermion_adj) if adj):
                 continue
-
-            def flip(xy):
-                x, y = xy
-                return (y, x)
 
             edges = []
             pos = 0

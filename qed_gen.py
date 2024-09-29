@@ -11,8 +11,9 @@
 # For instance, via github or email
 
 import itertools
-from weighted_graph import WeightedGraph
 
+from weighted_graph import WeightedGraph
+from stuff import flip
 import phi_k_gen
 
 fermion = 1
@@ -78,17 +79,13 @@ def gen_from_phi3_g(fg, r_t2, m):
             # weight -1 for reversed fermion arrow
 
             def dir(e, v):
-                v1, v2 = fg.edges[e]
+                v1, _ = fg.edges[e]
                 return 1 if v1 == v else -1
 
             fermion_res = (sum(0 if is_sl[e] else dir(e, v) * dir_weights[e] for e in adj)
                            for v, adj in zip(int_vtcs, fermion_adj))
             if any(fermion_res):
                 continue
-
-            def flip(xy):
-                x, y = xy
-                return (y, x)
 
             edges = tuple(edge if w == 1 or w == boson else flip(edge) for edge, w in zip(fg.edges, dir_weights))
             translated_weights = tuple(2 if w == 2 else 1 for w in weights)

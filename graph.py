@@ -12,10 +12,11 @@
 
 import sys
 from math import factorial
-from stuff import double_factorial
 import collections
 import itertools
 import copy
+
+from stuff import double_factorial, flip
 import nauty_wrapper
 
 
@@ -375,9 +376,6 @@ class Graph:
                          for i in range(1, max_edge_multiplicity + 1)]
 
         if edge_coloring:
-            def flip(xy):
-                x, y = xy
-                return (y, x)
             edge_coloring[0] += [flip(edge) for edge in edge_coloring[0]]
 
         return edge_coloring

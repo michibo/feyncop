@@ -13,6 +13,14 @@
 from math import factorial
 
 
+def flip(xy):
+    """
+    to flip edges
+    """
+    x, y = xy
+    return (y, x)
+
+
 def double_factorial(k):
     """
     Calculate the double factorial of k.
