@@ -102,6 +102,13 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                           if w == boson)
         boson_edges.update(forced_edges)
 
+        full_weights = [boson] * len(graph.edges_set)
+        pos = 0
+        for i in graph.edges_set:
+            if i in other_edges:
+                full_weights[i] = weights[pos]
+                pos += 1
+
         # check that vertices are correct
         adjacence = [(adj & fermion_edges, adj & boson_edges)
                      for adj in int_adj]
@@ -114,12 +121,12 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
         # check that legs are correct
         if ext_fermion:
             fermion_legs = sum(1 for adj in ext_adj for e in adj
-                               if weights[e] == fermion)
+                               if full_weights[e] == fermion)
             if fermion_legs != ext_fermion:
                 continue
         if ext_boson:
             boson_legs = sum(1 for adj in ext_adj for e in adj
-                             if weights[e] == boson)
+                             if full_weights[e] == boson)
             if boson_legs != ext_boson:
                 continue
 
