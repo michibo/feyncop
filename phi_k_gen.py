@@ -48,11 +48,26 @@ def calc_gen_params(L, k, m, cntd, notadpoles):
 
 
 def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles):
-    """Generate phi^k graphs with the desired parameters and properties.
-        L: Loop number
-        k: Valency
-        m: Ext. legs"""
+    """
+    Generate phi^k graphs with the desired parameters and properties.
 
+    L: Loop number
+    k: Valency
+    m: Ext. legs
+
+    EXAMPLES::
+
+        sage: from phi_k_gen import *
+        sage: L = gen_graphs(2, 4, 2, False, False, False, False)
+        sage: list(L)
+        [G[[0,0],[0,0],[1,1],[1,1],[3,2]]/256,
+         G[[0,0],[1,1],[1,1],[2,0],[3,0]]/32,
+         G[[1,0],[1,0],[1,1],[2,0],[3,0]]/8,
+         G[[0,0],[1,0],[1,0],[1,1],[3,2]]/32,
+         G[[1,0],[1,0],[1,0],[1,0],[3,2]]/96,
+         G[[0,0],[1,0],[1,1],[2,0],[3,1]]/8,
+         G[[1,0],[1,0],[1,0],[2,0],[3,1]]/12]
+    """
     cntd = cntd | edge2cntd | vtx2cntd
     edge2cntd = edge2cntd | vtx2cntd
     notadpoles = notadpoles | vtx2cntd
