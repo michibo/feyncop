@@ -44,8 +44,20 @@ def gen_graphs(L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry):
 
 def gen_from_phi3_g(fg, ext_fermion, ext_boson):
     """Helper function: Generate full fledged QED graphs
-    from the bulk output of phi_k_gen.gen_graphs."""
+    from the bulk output of phi_k_gen.gen_graphs.
 
+    EXAMPLES::
+
+        sage: from graph import Graph
+        sage: from qed_gen import *
+        sage: G = Graph([[1,1],[0,1],[0,2],[0,3]])
+        sage: L = gen_from_phi3_g(G,2,0)
+        sage: list(L)
+        [G[[1,1,f],[0,1,A],[2,0,f],[0,3,f]],
+         G[[1,1,f],[0,1,A],[0,2,f],[3,0,f]],
+         G[[1,1,f],[0,1,A],[2,0,f],[0,3,f]],
+         G[[1,1,f],[0,1,A],[0,2,f],[3,0,f]]]
+    """
     allowed_valencies = {(2, 1)}  # QED triple vertex
     if ext_fermion:
         allowed_valencies.add((1, 0))
@@ -65,15 +77,12 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
 
-    # for weights in product((fermion, boson), repeat=len(fg.edges)):
-    num_int_boson_edges = (len(int_vtcs) - ext_boson) // 2
-    num_boson_edges = ext_boson + num_int_boson_edges
+    num_boson_edges = (len(int_vtcs) + ext_boson) // 2
 
-    for choice in combinations(fg.edges, num_boson_edges):
-        # boson_edges = frozenset(e for e, w in enumerate(weights)
-        #                         if w == boson)
+    for choice in combinations(fg.edges_set, num_boson_edges):
         boson_edges = frozenset(choice)
-        fermion_edges = frozenset(e for e in fg.edges if e not in boson_edges)
+        fermion_edges = frozenset(e for e in fg.edges_set
+                                  if e not in boson_edges)
         adjacence = [(adj & fermion_edges, adj & boson_edges)
                      for adj in int_adj]
 
@@ -100,7 +109,7 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
         fermion_adj = [a for a, _ in adjacence]
 
         stored_weights = tuple(boson if e in boson_edges else fermion
-                               for e in fg.edges)
+                               for e in fg.edges_set)
 
         for fermion_weights in product((-1, 1), repeat=len(fermion_edges)):
             dir_weights = list(stored_weights)
