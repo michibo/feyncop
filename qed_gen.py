@@ -77,7 +77,10 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
 
-    num_boson_edges = (len(int_vtcs) + ext_boson) // 2
+    N = len(int_vtcs) + ext_boson
+    if N % 2:
+        return
+    num_boson_edges = N // 2
 
     for choice in combinations(fg.edges_set, num_boson_edges):
         boson_edges = frozenset(choice)
