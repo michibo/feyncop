@@ -10,7 +10,7 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from itertools import product
+from itertools import product, combinations
 
 from weighted_graph import WeightedGraph
 from stuff import flip
@@ -65,11 +65,15 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
     ext_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in ext_vtcs]
     int_adj = [frozenset(fg.adj_edges(v, fg.edges_set)) for v in int_vtcs]
 
-    for weights in product((fermion, boson), repeat=len(fg.edges)):
-        boson_edges = frozenset(e for e, w in enumerate(weights)
-                                if w == boson)
-        fermion_edges = frozenset(e for e, w in enumerate(weights)
-                                  if w == fermion)
+    # for weights in product((fermion, boson), repeat=len(fg.edges)):
+    num_int_boson_edges = (len(int_vtcs) - ext_boson) // 2
+    num_boson_edges = ext_boson + num_int_boson_edges
+
+    for choice in combinations(fg.edges, num_boson_edges):
+        # boson_edges = frozenset(e for e, w in enumerate(weights)
+        #                         if w == boson)
+        boson_edges = frozenset(choice)
+        fermion_edges = frozenset(e for e in fg.edges if e not in boson_edges)
         adjacence = [(adj & fermion_edges, adj & boson_edges)
                      for adj in int_adj]
 
@@ -83,20 +87,23 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
         # check the legs
         if ext_fermion:
             fermion_legs = sum(1 for adj in ext_adj for e in adj
-                               if weights[e] == fermion)
+                               if e in fermion_edges)
             if fermion_legs != ext_fermion:
                 continue
 
         if ext_boson:
             boson_legs = sum(1 for adj in ext_adj for e in adj
-                             if weights[e] == boson)
+                             if e in boson_edges)
             if boson_legs != ext_boson:
                 continue
 
         fermion_adj = [a for a, _ in adjacence]
 
+        stored_weights = tuple(boson if e in boson_edges else fermion
+                               for e in fg.edges)
+
         for fermion_weights in product((-1, 1), repeat=len(fermion_edges)):
-            dir_weights = list(weights)
+            dir_weights = list(stored_weights)
             for i, e in enumerate(fermion_edges):
                 dir_weights[e] = fermion_weights[i]
             # weight -1 for reversed fermion arrow
@@ -109,6 +116,5 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
 
             edges = tuple(edge if w == 1 or w == boson else flip(edge)
                           for edge, w in zip(fg.edges, dir_weights))
-            translated_weights = tuple(2 if w == 2 else 1 for w in weights)
 
-            yield WeightedGraph(tuple(edges), tuple(translated_weights))
+            yield WeightedGraph(tuple(edges), stored_weights)
