@@ -67,7 +67,7 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
     ext_vtcs = fg.external_vtcs_set
     int_vtcs = fg.internal_vtcs_set
 
-    def dir(e, v):
+    def dir_sign(e, v):
         v1, _ = fg.edges[e]
         return 1 if v1 == v else -1
 
@@ -120,7 +120,7 @@ def gen_from_phi3_g(fg, ext_fermion, ext_boson):
                 dir_weights[e] = fermion_weights[i]
             # weight -1 for reversed fermion arrow
 
-            fermion_res = (sum(dir(e, v) * dir_weights[e] for e in adj
+            fermion_res = (sum(dir_sign(e, v) * dir_weights[e] for e in adj
                                if not is_sl[e])
                            for v, adj in zip(int_vtcs, fermion_adj))
             if any(fermion_res):
