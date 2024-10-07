@@ -96,7 +96,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                              if e[0] in phi4_vtcs or e[1] in phi4_vtcs)
     other_edges = [e for e in graph.edges_set if e not in forced_edges]
 
-    def dir(e, v):
+    def dir_sign(e, v):
         v1, _ = graph.edges[e]
         return 1 if v1 == v else -1
 
@@ -151,7 +151,7 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                     pos += 1
 
             # fermion edges must form oriented cycles
-            if any(sum(dir(e, v) * weight_table[e]
+            if any(sum(dir_sign(e, v) * weight_table[e]
                        for e in adj if not is_sl[e])
                    for v, adj in zip(int_vtcs, fermion_adj) if adj):
                 continue
