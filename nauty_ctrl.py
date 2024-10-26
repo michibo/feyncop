@@ -26,17 +26,19 @@ def get_geng_obj(num_vtcs, cntd, max_degree):
 
     cntd_param = ["-c"] if cntd else []
 
-    geng_path = nauty_path / "geng"
-    geng_obj = sp.Popen([geng_path, "%d" % num_vtcs, "-D%d" % max_degree, "-q"] + cntd_param, stdout=sp.PIPE, stderr=None, stdin=None)
-    return geng_obj
+    geng_path = str(nauty_path / "geng")
+    return sp.Popen([geng_path, "%d" % num_vtcs,
+                     "-D%d" % max_degree, "-q"] + cntd_param,
+                    stdout=sp.PIPE, stderr=None, stdin=None)
 
 
 def get_multig_obj(geng_stream, min_edges, max_edges, max_degree):
     """Calls multig with desired range of edges and max degree."""
 
-    multig_path = nauty_path / "multig"
-    multig_obj = sp.Popen([multig_path, "-e%d:%d" % (min_edges, max_edges), "-D%d" % max_degree, "-T", "-q"], stdout=sp.PIPE, stderr=None, stdin=geng_stream)
-    return multig_obj
+    multig_path = str(nauty_path / "multig")
+    return sp.Popen([multig_path, "-e%d:%d" % (min_edges, max_edges),
+                     "-D%d" % max_degree, "-T", "-q"],
+                    stdout=sp.PIPE, stderr=None, stdin=geng_stream)
 
 
 def multig_to_graph(multig_line):

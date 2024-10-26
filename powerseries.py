@@ -18,10 +18,9 @@ from math import log
 def unary_rec_list_op(op, A):
     """Apply an unary operation to a multivariable polynomial: op(A)"""
 
-    if type(A) is list:
+    if isinstance(A, list):
         return [unary_rec_list_op(op, a) for a in A]
-    else:
-        return op(A)
+    return op(A)
 
 
 def binary_rec_list_op(op, A, B):
@@ -63,7 +62,7 @@ def lConvolute(A, B):
 def lInvert(A):
     """Calculate reciproke truncated power series: 1/A"""
 
-    if type(A) is list:
+    if isinstance(A, list):
         if len(A) > 1:
             Ainv_s = lInvert(A[:-1])
             Ap = [reduce(lSum, (lConvolute(Ainv_s[k], A[n - k]) for k in range(n))) for n in range(1, len(A))]
