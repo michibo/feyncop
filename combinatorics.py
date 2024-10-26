@@ -239,7 +239,7 @@ def phi34_cc(s, m):
     """
     l_min = max(0, (m + 2 * s + 1) // 2)
     l_max = (3 * s + m) // 2
-    S = 0
+    S = Fraction(0, 1)
     fact_m = factorial(m)
     for l in range(l_min, l_max + 1):
         n_1 = 2 * l - 2 * s - m
@@ -340,7 +340,7 @@ def qcd_cc(s, m, r, u):
     l1_min = (m + 1) // 2
     l_max = (3 * s + m + 2 * r + 2 * u) // 2
 
-    S = 0
+    S = Fraction(0, 1)
     for l1 in range(l1_min, l_max + 1):
         for l2 in range(l2_min, l_max + 1):
             for l3 in range(l3_min, l_max + 1):

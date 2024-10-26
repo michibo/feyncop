@@ -107,7 +107,7 @@ def get_tensor_product_from_match(m):
     res_graph, res_fac, res_ym = get_graph_from_match(graph_pattern.match(res_str))
     if res_fac != 1:
         print(f"Warning strange input: {m.group(0)}", file=sys.stderr)
-        return
+        return None
 
     def gen_sgs():
         sbgrs_str = gprs[2]
@@ -194,14 +194,14 @@ def parse_input_lines(instream, outstream, string, parser_fun=parse_sum_of_graph
 
             yield g_fac
         string = string[oldend:]
-    else:
-        oldend = 0
-        for g_fac, strbeg, strend in parser_fun(string):
-            not_parsable_check(string[oldend:strbeg])
-            oldend = strend
 
-            yield g_fac
-        string = string[oldend:]
+    oldend = 0
+    for g_fac, strbeg, strend in parser_fun(string):
+        not_parsable_check(string[oldend:strbeg])
+        oldend = strend
+
+        yield g_fac
+    string = string[oldend:]
 
     if string:
         m = end_pattern.match(string)
