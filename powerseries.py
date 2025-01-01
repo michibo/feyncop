@@ -60,7 +60,7 @@ def lConvolute(A, B):
 
 
 def lInvert(A):
-    """Calculate reciproke truncated power series: 1/A"""
+    """Calculate reciprocal truncated power series: 1/A"""
 
     if isinstance(A, list):
         if len(A) > 1:
@@ -69,10 +69,9 @@ def lInvert(A):
             A0rec = lInvert(A[0])
             A0rec_neg = lScalMult(-1, A0rec)
             return [A0rec] + [lConvolute(A0rec_neg, a) for a in Ap]
-        else:
-            return [lInvert(A[0])]
-    else:
-        return Fraction(1, A)
+        return [lInvert(A[0])]
+
+    return Fraction(1, A)
 
 
 def lLog(A):

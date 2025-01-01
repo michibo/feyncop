@@ -24,11 +24,9 @@ def parse_var_name(string):
     """Parses the name of a input graph sum."""
 
     m = var_name_ptrn.search(string)
-
     if m:
         return m.group(1), m.end(1), m.end()
-    else:
-        return "", 0, 0
+    return "", 0, 0
 
 
 fraction_pattern = re.compile(r"^(\d*)(/?)(\d*)$")

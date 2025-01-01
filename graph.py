@@ -52,8 +52,7 @@ class Graph:
         g_string = ",".join(self.get_edge_str(e) for e in self.edges_set)
         if self.symmetry_factor:
             return "G[%s]/%d" % (g_string, self.symmetry_factor)
-        else:
-            return f"G[{g_string}]"
+        return f"G[{g_string}]"
 
     __repr__ = __str__
 

@@ -30,8 +30,7 @@ class HopfGraph(WeightedGraph):
 
         if ym:
             return str(self)
-        else:
-            return str(Graph(self.edges, self.symmetry_factor))
+        return str(Graph(self.edges, self.symmetry_factor))
 
     def is_primitive(self, dimension, ym=False):
         """True if the graph is primitive."""
@@ -142,9 +141,7 @@ class HopfGraph(WeightedGraph):
             m = {v: (n if m[v] == o else m[v]) for v in m}
 
             residue_edges[sub_edge] = (-1, -1)
-            residue_edges = [(m[v1], m[v2]) for e, (v1, v2) in enumerate(residue_edges)]
-        residue_edges = [edge for i, edge in enumerate(residue_edges)]
-
+            residue_edges = [(m[v1], m[v2]) for v1, v2 in residue_edges]
         return residue_edges
 
     def sub_graph_with_legs(self, sub_edges):
@@ -168,8 +165,7 @@ class HopfGraph(WeightedGraph):
         def dir_e(vn, v, e):
             if self.edges[e][0] == v:
                 return (v, vn)
-            else:
-                return (vn, v)
+            return (vn, v)
 
         new_edges = [(dir_e(i + ext_vtcs_offset, v, e), e)
                      for i, (vx, v, e) in enumerate(sorted(ext_edges))]
