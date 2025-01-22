@@ -71,7 +71,7 @@ Now, feyncop and feyngen can be build:
     $ make
 
 The two python programs feyngen and feyncop in the feyncop/ directory should
-know be working as expected.
+now be working as expected.
 
 An overview of the parameters of the two programs is displayed with
 
