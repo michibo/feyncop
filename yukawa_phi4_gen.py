@@ -66,12 +66,19 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
 
         sage: from yukawa_phi4_gen import *
         sage: from graph import Graph
-        sage: G = Graph([[0,1],[0,1],[0,1],[0,1]])
 
+        sage: G = Graph([[0,1],[0,1],[0,1],[0,1]])
         sage: L = gen_yukawa_phi4_from_phi34(G, 0, 0)
         sage: list(L)
         [G[[0,1,A],[0,1,A],[0,1,A],[0,1,A]]]
 
+        sage: G = Graph([[0,1],[0,1],[0,2],[2,1],[3,4],[3,4],[2,3],[2,4]])
+        sage: L = gen_yukawa_phi4_from_phi34(G, 0, 0)
+        sage: list(L)
+        [G[[1,0,f],[0,1,f],[0,2,A],[2,1,A],[4,3,f],[3,4,f],[2,3,A],[2,4,A]],
+         G[[1,0,f],[0,1,f],[0,2,A],[2,1,A],[3,4,f],[4,3,f],[2,3,A],[2,4,A]],
+         G[[0,1,f],[1,0,f],[0,2,A],[2,1,A],[4,3,f],[3,4,f],[2,3,A],[2,4,A]],
+         G[[0,1,f],[1,0,f],[0,2,A],[2,1,A],[3,4,f],[4,3,f],[2,3,A],[2,4,A]]]
     """
     allowed_valencies = {(0, 4), (2, 1)}  # phi^4 and Yukawa
     if ext_fermion:
@@ -83,6 +90,8 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     int_vtcs = graph.internal_vtcs_set
     phi4_vtcs = [v for v in int_vtcs
                  if graph.vtx_valence(v, graph.edges_set) == 4]
+    phi3_vtcs = [v for v in int_vtcs
+                 if graph.vtx_valence(v, graph.edges_set) == 3]
 
     is_sl = [graph.is_selfloop(edge) for edge in graph.edges]
     edge_valence = [2 if is_sl[e] else 1 for e, edge in enumerate(graph.edges)]
@@ -92,20 +101,44 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     int_adj = [frozenset(graph.adj_edges(v, graph.edges_set))
                for v in int_vtcs]
 
-    forced_edges = frozenset(i for i, e in enumerate(graph.edges)
-                             if e[0] in phi4_vtcs or e[1] in phi4_vtcs)
-    other_edges = [e for e in graph.edges_set if e not in forced_edges]
+    forced_boson_edges = frozenset(i for i, e in enumerate(graph.edges)
+                                   if e[0] in phi4_vtcs or e[1] in phi4_vtcs)
+
+    forced_fermion_edges = set()
+    for v in phi3_vtcs:
+        adjacent_edges = int_adj[v]
+        if len(adjacent_edges) == 2:
+            # there is a loop at v
+            a, b = adjacent_edges
+            if is_sl[a]:
+                forced_fermion_edges.add(a)
+            else:
+                forced_fermion_edges.add(b)
+        else:
+            # no loop at v
+            a, b, c = adjacent_edges
+            if a in forced_boson_edges:
+                forced_fermion_edges.union({b, c})
+            elif b in forced_boson_edges:
+                forced_fermion_edges.union({c, a})
+            elif c in forced_boson_edges:
+                forced_fermion_edges.union({a, b})
+
+    other_edges = [e for e in graph.edges_set
+                   if e not in forced_boson_edges
+                   and e not in forced_fermion_edges]
 
     def dir_sign(e, v):
         v1, _ = graph.edges[e]
         return 1 if v1 == v else -1
 
     for weights in product((fermion, boson), repeat=len(other_edges)):
-        fermion_edges = frozenset(e for e, w in zip(other_edges, weights)
-                                  if w == fermion)
+        fermion_edges = {e for e, w in zip(other_edges, weights)
+                         if w == fermion}
+        fermion_edges.update(forced_fermion_edges)
         boson_edges = {e for e, w in zip(other_edges, weights)
                        if w == boson}
-        boson_edges.update(forced_edges)
+        boson_edges.update(forced_boson_edges)
 
         full_weights = [boson] * len(graph.edges_set)
         pos = 0
