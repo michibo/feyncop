@@ -55,7 +55,7 @@ def multig_to_graph(multig_line):
         v1, v2, mul = int(x), int(y), int(z)
 
         if v1 == v2:
-            mul //= 2
+            mul >>= 1
 
         edges.extend([(v2, v1)] * mul)
 
