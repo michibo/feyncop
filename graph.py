@@ -287,23 +287,38 @@ class Graph:
         yield from self.cntd_components_sub_edges(self.edges_set)
 
     def is_edge_2_connected_sub_edges(self, sub_edges):
-        """True if the subgraph consisting of sub_edges is edge-2-connected."""
+        """
+        Return ``True`` if the subgraph consisting of sub_edges is edge-2-connected.
+        """
+        useful_edges = sub_edges & self.internal_edges_set
 
-        if not self.is_connected_sub_edges(sub_edges):
+        if not self.is_connected_sub_edges(useful_edges):
             return False
 
-        # Use cycle decomposition to check that no bridge-edges are in the
-        # graph.
-        cycles, cycles_edges = self.cycle_decomposition(sub_edges & self.internal_edges_set)
+        # Use cycle decomposition to check that no bridge-edges
+        # are in the graph.
+        # See https://en.wikipedia.org/wiki/Bridge_(graph_theory)
+        _, cycles_edges = self.cycle_decomposition(useful_edges)
         loop_edges = {e for cycle in cycles_edges for e in cycle}
-        nonloop_edges = sub_edges & self.internal_edges_set - loop_edges
-
-        return not nonloop_edges and loop_edges
+        return all(e in loop_edges for e in useful_edges)
 
     @property
     def is_edge_2_connected(self):
-        """True if the graph is edge-2-connected."""
+        """
+        Return ``True`` if the graph is edge-2-connected.
 
+        EXAMPLES::
+
+            sage: G = Graph([[0,1],[0,1],[0,1]])
+            sage: G.is_edge_2_connected
+            True
+            sage: G = Graph([[0,1],[0,1]])
+            sage: G.is_edge_2_connected
+            False
+            sage: G = Graph([[0,1],[1,2],[2,3]])
+            sage: G.is_edge_2_connected
+            False
+        """
         return self.is_edge_2_connected_sub_edges(self.edges_set)
 
     @property
