@@ -249,7 +249,7 @@ class Graph:
         # Connectedness is checked using the dfs algorithm.
         discovered = set()
         self.dfs(v, sub_edges, None, None, discovered, f_edges, b_edges)
-        return sub_edges - (f_edges | b_edges) == set() and vtcs_set - discovered == set()
+        return not (sub_edges - (f_edges | b_edges)) and not (vtcs_set - discovered)
 
     @property
     def is_connected(self):
