@@ -102,6 +102,7 @@ class Graph:
 
         self.edges_set = frozenset(range(len(self.edges)))
         vtcs = frozenset(v for edge in self.edges for v in edge)
+        self.num_verts = len(vtcs)
 
         self.valency_dict = collections.defaultdict(int)
         for v1, v2 in self.edges:
