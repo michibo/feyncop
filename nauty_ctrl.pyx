@@ -41,15 +41,22 @@ def get_multig_obj(geng_stream, min_edges, max_edges, max_degree):
                     stdout=sp.PIPE, stderr=None, stdin=geng_stream)
 
 
-def multig_to_graph(multig_line):
-    """Reads the output of multig to a Graph object."""
+cpdef multig_to_graph(multig_line):
+    """
+    Read the output of ``multig`` to a ``Graph`` object.
+￼		￼
+￼   EXAMPLES::
+￼		￼
+    ￼	sage: line = b'4 3  0 3 2 1 3 1 2 3 1\n'
+￼       sage: multig_to_graph(line)
+￼       G[[3,0],[3,0],[3,1],[3,2]]
+    """
+    cdef int v1, v2, mul
 
-    info = multig_line.split()
+    cdef list info = multig_line.split()
 
-    num_edges = int(info[1])
-
-    edge_info = info[2:3 * num_edges + 2]
-    edges = []
+    cdef list edge_info = info[2:]
+    cdef list edges = []
 
     for x, y, z in zip(edge_info[::3], edge_info[1::3], edge_info[2::3]):
         v1, v2, mul = int(x), int(y), int(z)
