@@ -26,18 +26,32 @@ class Graph:
 
     def __init__(self, edges, symmetry_factor=0):
         """
-        Initializes the Graph class.
+        Initialize the Graph class.
 
-        Edges and symmetry_factor can be provided.
+        INPUT:
+
+        - either a graph
+
+        - or edges
+
+        - or (edges, symmetry factor)
 
         EXAMPLES::
 
             sage: from graph import *
-            sage: Graph([[0,1],[1,2]],2)
+            sage: G = Graph([[0,1],[1,2]],2); G
+            G[[0,1],[1,2]]/2
+            sage: Graph(G)
             G[[0,1],[1,2]]/2
         """
-        self.edges = edges
-        self.symmetry_factor = symmetry_factor
+        if isinstance(edges, Graph):
+            # input is already a graph
+            self.edges = edges.edges
+            self.symmetry_factor = edges.symmetry_factor
+        else:
+            # input is a list of edges
+            self.edges = edges
+            self.symmetry_factor = symmetry_factor
 
         self.prepare_graph()
 
@@ -88,7 +102,8 @@ class Graph:
 
         self.edges_set = frozenset(range(len(self.edges)))
         vtcs = frozenset(v for edge in self.edges for v in edge)
-        self.valency_dict = collections.defaultdict(lambda: 0)
+
+        self.valency_dict = collections.defaultdict(int)
         for v1, v2 in self.edges:
             self.valency_dict[v1] += 1
             self.valency_dict[v2] += 1

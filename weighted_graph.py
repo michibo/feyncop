@@ -27,12 +27,38 @@ class WeightedGraph(Graph):
     """This class extends the basic utilities in the Graph class by the tools
         to handle QED and Yang-Mills graphs."""
 
-    def __init__(self, edges, edge_weights, symmetry_factor=0):
-        """Initializes the WeightedGraph class. Edges, edge_weights and
-            symmetry_factor can be provided."""
+    def __init__(self, edges, edge_weights=None, symmetry_factor=0):
+        """
+        Initialize the WeightedGraph class.
 
-        if len(edges) != len(edge_weights):
-            raise
+        INPUT:
+
+        - either a weighted graph
+
+        - or (edges, edge_weights)
+
+        - or (edges, edge_weights, symmetry factor)
+
+        EXAMPLES::
+
+            sage: G = WeightedGraph([[0,1],[0,1],[0,1],[0,1]],[0,1,2,3]); G
+            G[[0,1,0],[0,1,f],[0,1,A],[0,1,c]]
+
+            sage: WeightedGraph([[0,1],[1,2]],[0,1],2)
+            G[[0,1,0],[1,2,f]]/2
+        """
+        if isinstance(edges, WeightedGraph):
+            # input = (graph,)
+            G = edges
+            edges = G.edges
+            edge_weights = G.edge_weights
+            symmetry_factor = G.symmetry_factor
+        else:
+            # input = (edges, edge_weights, maybe integer)
+            if edge_weights is None:
+                raise TypeError("weights are missing")
+            if len(edges) != len(edge_weights):
+                raise ValueError("bad number of weights")
 
         super().__init__(edges, symmetry_factor)
         self.edge_weights = edge_weights
