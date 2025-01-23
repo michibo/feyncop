@@ -27,12 +27,38 @@ class WeightedGraph(Graph):
     """This class extends the basic utilities in the Graph class by the tools
         to handle QED and Yang-Mills graphs."""
 
-    def __init__(self, edges, edge_weights, symmetry_factor=0):
-        """Initializes the WeightedGraph class. Edges, edge_weights and
-            symmetry_factor can be provided."""
+    def __init__(self, edges, edge_weights=None, symmetry_factor=0):
+        """
+        Initialize the WeightedGraph class.
 
-        if len(edges) != len(edge_weights):
-            raise
+        INPUT:
+
+        - either a weighted graph
+
+        - or (edges, edge_weights)
+
+        - or (edges, edge_weights, symmetry factor)
+
+        EXAMPLES::
+
+            sage: G = WeightedGraph([[0,1],[0,1],[0,1],[0,1]],[0,1,2,3]); G
+            G[[0,1,0],[0,1,f],[0,1,A],[0,1,c]]
+
+            sage: WeightedGraph([[0,1],[1,2]],[0,1],2)
+            G[[0,1,0],[1,2,f]]/2
+        """
+        if isinstance(edges, WeightedGraph):
+            # input = (graph,)
+            G = edges
+            edges = G.edges
+            edge_weights = G.edge_weights
+            symmetry_factor = G.symmetry_factor
+        else:
+            # input = (edges, edge_weights, maybe integer)
+            if edge_weights is None:
+                raise TypeError("weights are missing")
+            if len(edges) != len(edge_weights):
+                raise ValueError("bad number of weights")
 
         super().__init__(edges, symmetry_factor)
         self.edge_weights = edge_weights
@@ -57,6 +83,23 @@ class WeightedGraph(Graph):
         sub_graph.edge_weights = tuple(self.edge_weights[e]
                                        for e in sorted(sub_edges))
         return sub_graph
+
+    def delete_one_vertex(self):
+        """
+        Create a weighted graph with one arbitrary vertex removed.
+
+        EXAMPLES::
+
+            sage: G = WeightedGraph([[0,1],[0,1],[0,1],[0,2],[1,3],[2,3],[2,3]],[1,1,1,1,1,2,2])
+            sage: G.delete_one_vertex()
+            G[[0,1,f],[0,1,f],[0,1,f],[0,2,f]]
+        """
+        edges = self.edges
+        weights = self.edge_weights
+        n = self.num_verts - 1
+        data = [(e, w) for e, w in zip(edges, weights)
+                if n not in e]
+        return WeightedGraph([p[0] for p in data], [p[1] for p in data])
 
     def sub_edges_by_weight(self, weight):
         """Returns all subedges with a certain weight."""

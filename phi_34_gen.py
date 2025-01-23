@@ -57,6 +57,7 @@ def gen_graphs(L, m, cntd, edge2cntd, vtx2cntd, notadpoles):
                 g_bulk, frozenset(range(bulk_n)),
                 L, m, notadpoles))
 
+            # do we need frozenset here ??
             unlabeled_graphs = frozenset(g.unlabeled_graph
                                          for g in labeled_graphs)
 
