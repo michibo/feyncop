@@ -59,14 +59,53 @@ def multig_to_graph(multig_line):
 
         edges.extend([(v2, v1)] * mul)
 
-    return Graph(edges)
+    return edges
 
 
 def gen_nauty_graphs(num_vtcs, cntd, max_degree, min_edges, max_edges):
-    """Generate graphs with the desired properties."""
+    """
+    Generate graphs with the desired properties.
+
+    EXAMPLES::
+
+        sage: from nauty_ctrl import *
+        sage: list(gen_nauty_graphs(4,True,4,4,4))
+        [G[[3,0],[3,0],[3,1],[3,2]],
+         G[[2,0],[3,0],[3,0],[3,1]],
+         G[[2,0],[2,0],[3,0],[3,1]],
+         G[[2,0],[3,0],[3,1],[3,2]],
+         G[[2,0],[3,0],[2,1],[3,1]]]
+    """
+    geng = get_geng_obj(num_vtcs, cntd, max_degree)
+    multig = get_multig_obj(geng.stdout, min_edges, max_edges, max_degree)
+
+    for line in multig.stdout:
+        yield Graph(multig_to_graph(line))
+
+
+# SageMath alternative
+
+
+def gen_nauty_graphs_sage(num_vtcs, cntd, max_degree, min_edges, max_edges):
+    """
+    Generate SageMath graphs with the desired properties.
+
+    EXAMPLES::
+
+        sage: from nauty_ctrl import *
+        sage: L = list(gen_nauty_graphs_sage(4,True,4,4,4)); L
+        [Looped multi-graph on 4 vertices,
+         Looped multi-graph on 4 vertices,
+         Looped multi-graph on 4 vertices,
+         Looped multi-graph on 4 vertices,
+         Looped multi-graph on 4 vertices]
+        sage: L[0].edges()
+        [(0, 3, None), (0, 3, None), (1, 3, None), (2, 3, None)]
+    """
+    from sage.graphs.graph import Graph as SageGraph
 
     geng = get_geng_obj(num_vtcs, cntd, max_degree)
     multig = get_multig_obj(geng.stdout, min_edges, max_edges, max_degree)
 
     for line in multig.stdout:
-        yield multig_to_graph(line)
+        yield SageGraph(multig_to_graph(line), loops=True, multiedges=True)
