@@ -70,6 +70,21 @@ class WeightedGraph(Graph):
         w = self.edge_weights[e]
         return "[%d,%d,%c]" % (v1, v2, wDict[w])
 
+    def sage(self):
+        """
+        Transform into a Sage graph.
+
+        EXAMPLES::
+
+            sage: from weighted_graph import *
+            sage: WeightedGraph([[0,1],[1,2]],[1,2]).sage()
+            Looped multi-graph on 3 vertices
+        """
+        from sage.graphs.graph import Graph as SageGraph
+        edges = [(a, b, c) for (a, b), c in zip(self.edges, self.edge_weights)]
+        return SageGraph(edges, loops=True, multiedges=True,
+                         format="list_of_edges")
+
     def get_edges_tuple(self):
         """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
 
