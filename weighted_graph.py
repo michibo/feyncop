@@ -19,6 +19,8 @@ from graph import Graph
 
 
 wDict = ['0', 'f', 'A', 'c']
+e_styles = {0: "-", 1: "--", 2: "-", 3: "dotted"}
+e_colors = {0: "black", 1: "red", 2: "blue", 3: "green"}
 # what is the convention here ?
 # ?, fermion, boson, ?
 
@@ -74,16 +76,34 @@ class WeightedGraph(Graph):
         """
         Transform into a Sage graph.
 
+        This allows to display the graph easily.
+
         EXAMPLES::
 
             sage: from weighted_graph import *
-            sage: WeightedGraph([[0,1],[1,2]],[1,2]).sage()
+            sage: G = WeightedGraph([[0,1],[1,2]],[1,2]).sage(); G
             Looped multi-graph on 3 vertices
         """
         from sage.graphs.graph import Graph as SageGraph
         edges = [(a, b, c) for (a, b), c in zip(self.edges, self.edge_weights)]
         return SageGraph(edges, loops=True, multiedges=True,
                          format="list_of_edges")
+
+    def plot(self):
+        """
+        Display the graph with colors.
+
+        EXAMPLES::
+
+            sage: from weighted_graph import *
+            sage: G = WeightedGraph([[0,1],[1,2],[2,0]],[1,2,0]); G.plot()
+            Graphics object consisting of 4 graphics primitives
+        """
+        G = self.sage()
+        return G.plot(vertex_labels=False,
+                      edge_styles=e_styles,
+                      color_by_label=e_colors,
+                      vertex_size=50)
 
     def get_edges_tuple(self):
         """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
