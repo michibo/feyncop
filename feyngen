@@ -145,11 +145,9 @@ def main():
     qed = args.qed or args.qed_furry
 
     if (qed or args.ym or args.yukawa) and args.num_ext_legs:
-        print("Warning: -j# is ignored. Generating QED graphs, use -b and -f for # of boson and fermion legs instead.")
+        print("Warning: -j# is ignored. Generating QED-like graphs, use -b and -f for # of boson and fermion legs instead.")
     if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs or args.num_ext_glegs):
-        print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym or --yukawa and without -j to indicate QED or Yang Mills enumeration.")
-    elif (args.num_ext_blegs or args.num_ext_flegs) and not args.ym:
-        args.qed = qed = True
+        print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym or --yukawa and without -j to indicate QED or Yang Mills or Yukawa+Phi4 enumeration.")
 
     if not qed and args.valence <= 2:
         print("Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3")
