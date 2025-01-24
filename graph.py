@@ -92,7 +92,6 @@ class Graph:
 
             sage: from graph import *
             sage: hash(Graph([[0,1],[1,2]],2))  # random
-            'G[[0,1],[1,2]]/2'
             -6656892016142386837
         """
         return hash(self.get_edges_tuple())
@@ -119,6 +118,20 @@ class Graph:
 
         v1, v2 = self.edges[e]
         return "[%d,%d]" % (v1, v2)
+
+    def sage(self):
+        """
+        Transform into a Sage graph.
+
+        EXAMPLES::
+
+            sage: from graph import *
+            sage: Graph([[0,1],[1,2]],2).sage()
+            Looped multi-graph on 3 vertices
+        """
+        from sage.graphs.graph import Graph as SageGraph
+        return SageGraph(self.edges, loops=True, multiedges=True,
+                         format="list_of_edges")
 
     def get_edges_tuple(self):
         """Get a unique tuple to identify the graph. (Unique only for every labeling)."""
@@ -314,7 +327,7 @@ class Graph:
             True
             sage: G = Graph([[0,1],[0,1]])
             sage: G.is_edge_2_connected
-            False
+            True
             sage: G = Graph([[0,1],[1,2],[2,3]])
             sage: G.is_edge_2_connected
             False

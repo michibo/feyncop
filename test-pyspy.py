@@ -1,5 +1,8 @@
-from yukawa_phi4_gen import *
+from yukawa_phi4_gen import gen_graphs_yukawa_phi4
 
-L = gen_graphs_yukawa_phi4(7,0,0,True,True,True,False)
+# uncomment before launching
+# py-spy top -- python test-pyspy.py
 
-D = list(L)
+# L = gen_graphs_yukawa_phi4(7, 0, 0, True, True, True, False)
+
+# D = list(L)
