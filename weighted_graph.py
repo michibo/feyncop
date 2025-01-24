@@ -19,7 +19,7 @@ from graph import Graph
 
 
 wDict = ['0', 'f', 'A', 'c']
-e_styles = {0: "-", 1: "--", 2: "-", 3: "dotted"}
+e_styles = {0: "-", 1: "-", 2: "--", 3: "dotted"}
 e_colors = {0: "black", 1: "red", 2: "blue", 3: "green"}
 # what is the convention here ?
 # ?, fermion, boson, ?
