@@ -20,14 +20,16 @@ fermion = 1
 boson = 2
 
 
-def gen_graphs(L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles):
+def gen_graphs(L, r_t2, u_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, chunk=None):
     """Generate QCD graphs with the desired parameters and properties.
         L: Loop number
         r_t2: Ext. fermion number
         u_t2: Ext. ghost number
         m: Ext. boson number"""
 
-    phi34_graphs = (phi_34_gen.gen_graphs(L, r_t2 + m + u_t2, cntd, edge2cntd, vtx2cntd, notadpoles))
+    phi34_graphs = phi_34_gen.gen_graphs(L, r_t2 + m + u_t2,
+                                         cntd, edge2cntd, vtx2cntd,
+                                         notadpoles, chunk=chunk)
 
     for g_phi34 in phi34_graphs:
         gen_qcd_graphs = (g.unlabeled_graph for g in gen_from_phi34_g(g_phi34, r_t2, u_t2, m))

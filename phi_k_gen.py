@@ -11,8 +11,9 @@
 # For instance, via github or email
 
 import itertools
-from graph import Graph
 
+from graph import Graph
+from stuff import parse_cntd
 import nauty_ctrl
 
 
@@ -47,7 +48,7 @@ def calc_gen_params(L, k, m, cntd, notadpoles):
     return bulk_n, min_edges, max_edges
 
 
-def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles):
+def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles, chunk=None):
     """
     Generate phi^k graphs with the desired parameters and properties.
 
@@ -71,6 +72,7 @@ def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles):
     cntd = cntd | edge2cntd | vtx2cntd
     edge2cntd = edge2cntd | vtx2cntd
     notadpoles = notadpoles | vtx2cntd
+    nauty_cntd = parse_cntd(cntd, vtx2cntd)
 
     bulk_n, min_edges, max_edges = calc_gen_params(L, k, m, cntd, notadpoles)
 
@@ -78,7 +80,7 @@ def gen_graphs(L, k, m, cntd, edge2cntd, vtx2cntd, notadpoles):
         return
 
     for g_bulk in nauty_ctrl.gen_nauty_graphs(
-            bulk_n, cntd, k, min_edges, max_edges):
+            bulk_n, nauty_cntd, k, min_edges, max_edges, chunk=chunk):
         labeled_graphs = (g for g in gen_from_bulk_g(
             g_bulk, frozenset(range(bulk_n)),
             k, m, notadpoles))

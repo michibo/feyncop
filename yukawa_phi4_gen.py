@@ -22,7 +22,7 @@ boson = 2
 
 
 def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
-                           cntd, edge2cntd, vtx2cntd, notadpoles):
+                           cntd, edge2cntd, vtx2cntd, notadpoles, chunk=None):
     """
     Generate Yukawa+Phi^4 graphs with the desired parameters and properties.
 
@@ -43,7 +43,7 @@ def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
         [G[[1,0,A],[2,0,A],[3,0,A],[4,0,A]]/24]
     """
     phi34_graphs = phi_34_gen.gen_graphs(loops, ext_fermion + ext_boson,
-                                         cntd, edge2cntd, vtx2cntd, notadpoles)
+                                         cntd, edge2cntd, vtx2cntd, notadpoles, chunk=chunk)
 
     for g_phi34 in phi34_graphs:
         gen_yukawa_graphs = (g.unlabeled_graph
