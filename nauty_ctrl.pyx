@@ -61,14 +61,14 @@ def get_multig_obj(geng_stream, min_edges, max_edges, max_degree):
 
 
 cpdef multig_to_graph(multig_line):
-    """
+    r"""
     Read the output of ``multig`` to a ``Graph`` object.
 
-￼   EXAMPLES::
+    EXAMPLES::
 
         sage: line = b'4 3  0 3 2 1 3 1 2 3 1\n'
-￼       sage: multig_to_graph(line)
-￼       G[[3,0],[3,0],[3,1],[3,2]]
+        sage: multig_to_graph(line)
+        [(3, 0), (3, 0), (3, 1), (3, 2)]
     """
     cdef int v1, v2, mul
 
