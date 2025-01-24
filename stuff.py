@@ -18,7 +18,7 @@ def parse_cntd(cntd, vtx2cntd) -> str:
     Manage what to ask nauty about connectivity.
     """
     if vtx2cntd:
-        return "biconnected"
+        return "connected"  # should be "biconnected"
     if cntd:
         return "connected"
     return ""
