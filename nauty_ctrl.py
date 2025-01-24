@@ -108,4 +108,5 @@ def gen_nauty_graphs_sage(num_vtcs, cntd, max_degree, min_edges, max_edges):
     multig = get_multig_obj(geng.stdout, min_edges, max_edges, max_degree)
 
     for line in multig.stdout:
-        yield SageGraph(multig_to_graph(line), loops=True, multiedges=True)
+        yield SageGraph(multig_to_graph(line), loops=True, multiedges=True,
+                        format="list_of_edges")
