@@ -41,6 +41,8 @@ To use either of the programs Python 3 with development files must be
 installed on your machine. For information on how to install Python please
 consult https://www.python.org/
 
+You need also a C compiler and the Cython compiler, so that both commands `gcc` and `cythonize` are available on your machine.
+
 Additionally if you do not use the pre-built version, the nauty package by Brendan McKay is needed. The newest version can be downloaded from: http://pallini.di.uniroma1.it/
 
 Installation
@@ -53,9 +55,9 @@ Clone the feyncop repository and copy the nauty archives into the same directory
     $ git clone https://github.com/michibo/feyncop.git
     $ tar xzf nautyXXXX.tar.gz
 
-Where XXXX are some letters representing the current nauty version that can be downloaded from http://pallini.di.uniroma1.it/
+Where XXXX are some letters representing the current `nauty` version that can be downloaded from http://pallini.di.uniroma1.it/
 
-Next, change the name of the folder containing the nauty package:
+Next, change the name of the folder containing the `nauty` package:
 
     $ mv nautyXXXX/ nauty/
 
@@ -70,7 +72,7 @@ Now, feyncop and feyngen can be build:
     $ cd feyncop/
     $ make
 
-The two python programs feyngen and feyncop in the feyncop/ directory should
+The two python programs `feyngen` and `feyncop` in the `feyncop/` directory should
 now be working as expected.
 
 An overview of the parameters of the two programs is displayed with
