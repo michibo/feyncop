@@ -20,14 +20,15 @@ fermion = 1
 boson = 2
 
 
-def gen_graphs(L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry):
+def gen_graphs(L, r_t2, m, cntd, edge2cntd, vtx2cntd, notadpoles, furry, chunk=None):
     """Generate QED graphs with the desired parameters and properties.
         L: Loop number
         r_t2: External fermion number
         m: External boson number"""
 
-    phi3_graphs = (phi_k_gen.gen_graphs(L, 3, r_t2 + m,
-                                        cntd, edge2cntd, vtx2cntd, notadpoles))
+    phi3_graphs = phi_k_gen.gen_graphs(L, 3, r_t2 + m,
+                                       cntd, edge2cntd, vtx2cntd,
+                                       notadpoles, chunk=chunk)
 
     for g_phi3 in phi3_graphs:
         gen_qed_graphs = (g.unlabeled_graph for g in gen_from_phi3_g(g_phi3, r_t2, m))

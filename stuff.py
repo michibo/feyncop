@@ -13,6 +13,17 @@
 from math import factorial, comb
 
 
+def parse_cntd(cntd, vtx2cntd) -> str:
+    """
+    Manage what to ask nauty about connectivity.
+    """
+    if vtx2cntd:
+        return "biconnected"
+    if cntd:
+        return "connected"
+    return ""
+
+
 def flip(xy):
     """
     to flip edges

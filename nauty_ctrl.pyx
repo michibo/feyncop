@@ -20,15 +20,34 @@ from graph import Graph
 nauty_path = Path(__file__).resolve().parent
 
 
-def get_geng_obj(num_vtcs, cntd, max_degree):
-    """Calls geng with the desired number of vertices, connectedness and
-    maximum degree."""
+def get_geng_obj(num_vtcs, cntd : str, max_degree, chunk=None):
+    """
+    Calls geng with the desired number of vertices, connectedness and
+    maximum degree.
 
-    cntd_param = ["-c"] if cntd else []
+    The argument ``cntd`` can be ``"connected"`` or ``"biconnected"``
+    or the empty string otherwise.
 
-    geng_path = str(nauty_path / "geng")
-    return sp.Popen([geng_path, "%d" % num_vtcs,
-                     "-D%d" % max_degree, "-q"] + cntd_param,
+    The argument ``chunk`` should be either ``None`` or a pair of
+    integers (i,N).  The integer N is a modulus. Only graphs with
+    index equal to i mod N will be returned.
+    """
+    if cntd == "connected":
+        cntd_param = ["-c"]
+    elif cntd == "biconnected":
+        cntd_param = ["-C"]
+    else:
+        cntd_param = []
+
+    command = [str(nauty_path / "geng")]
+    command.extend(cntd_param)
+    command += ["-D%d" % max_degree, "-q", "%d" % num_vtcs]
+    if chunk is not None:
+        a, b = chunk
+        a = int(a)
+        b = int(b)
+        command.append(f"{a}/{b}")
+    return sp.Popen(command,
                     stdout=sp.PIPE, stderr=None, stdin=None)
 
 
@@ -44,10 +63,10 @@ def get_multig_obj(geng_stream, min_edges, max_edges, max_degree):
 cpdef multig_to_graph(multig_line):
     """
     Read the output of ``multig`` to a ``Graph`` object.
-￼		￼
+
 ￼   EXAMPLES::
-￼		￼
-    ￼	sage: line = b'4 3  0 3 2 1 3 1 2 3 1\n'
+
+        sage: line = b'4 3  0 3 2 1 3 1 2 3 1\n'
 ￼       sage: multig_to_graph(line)
 ￼       G[[3,0],[3,0],[3,1],[3,2]]
     """
@@ -69,21 +88,24 @@ cpdef multig_to_graph(multig_line):
     return edges
 
 
-def gen_nauty_graphs(num_vtcs, cntd, max_degree, min_edges, max_edges):
+def gen_nauty_graphs(num_vtcs, cntd : str, max_degree,
+                     min_edges, max_edges, chunk=None):
     """
     Generate graphs with the desired properties.
 
     EXAMPLES::
 
         sage: from nauty_ctrl import *
-        sage: list(gen_nauty_graphs(4,True,4,4,4))
+        sage: list(gen_nauty_graphs(4,"connected",4,4,4))
         [G[[3,0],[3,0],[3,1],[3,2]],
          G[[2,0],[3,0],[3,0],[3,1]],
          G[[2,0],[2,0],[3,0],[3,1]],
          G[[2,0],[3,0],[3,1],[3,2]],
          G[[2,0],[3,0],[2,1],[3,1]]]
+        sage: list(gen_nauty_graphs(4,"biconnected",4,4,4))
+        [G[[2,0],[3,0],[2,1],[3,1]]]
     """
-    geng = get_geng_obj(num_vtcs, cntd, max_degree)
+    geng = get_geng_obj(num_vtcs, cntd, max_degree, chunk=chunk)
     multig = get_multig_obj(geng.stdout, min_edges, max_edges, max_degree)
 
     for line in multig.stdout:
@@ -93,14 +115,15 @@ def gen_nauty_graphs(num_vtcs, cntd, max_degree, min_edges, max_edges):
 # SageMath alternative
 
 
-def gen_nauty_graphs_sage(num_vtcs, cntd, max_degree, min_edges, max_edges):
+def gen_nauty_graphs_sage(num_vtcs, cntd : str, max_degree,
+                          min_edges, max_edges, chunk=None):
     """
     Generate SageMath graphs with the desired properties.
 
     EXAMPLES::
 
         sage: from nauty_ctrl import *
-        sage: L = list(gen_nauty_graphs_sage(4,True,4,4,4)); L
+        sage: L = list(gen_nauty_graphs_sage(4,"connected",4,4,4)); L
         [Looped multi-graph on 4 vertices,
          Looped multi-graph on 4 vertices,
          Looped multi-graph on 4 vertices,
@@ -111,7 +134,7 @@ def gen_nauty_graphs_sage(num_vtcs, cntd, max_degree, min_edges, max_edges):
     """
     from sage.graphs.graph import Graph as SageGraph
 
-    geng = get_geng_obj(num_vtcs, cntd, max_degree)
+    geng = get_geng_obj(num_vtcs, cntd, max_degree, chunk=chunk)
     multig = get_multig_obj(geng.stdout, min_edges, max_edges, max_degree)
 
     for line in multig.stdout:
