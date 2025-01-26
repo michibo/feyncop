@@ -141,7 +141,7 @@ def main():
 
     theory = parser.add_argument_group('theory',
                                        'This is required to choose the theory to consider. The choices are mutually exclusive.')
-    _theory = theory.add_mutually_exclusive_group(required=True)
+    _theory = theory.add_mutually_exclusive_group()
     _theory.add_argument('-k', '--valence', dest='valence', type=int, default=4,
                         help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
     _theory.add_argument('--phi34', dest='phi34', action='store_true',
