@@ -118,30 +118,56 @@ def main():
         relevant subroutines."""
 
     parser = argparse.ArgumentParser(description='Generate non-isomorphic Feynman diagrams with their corresponding symmetry-factors.')
-    parser.add_argument('loops', metavar='#loops', type=int, nargs='+', help='Loop number(s) to generate or order in h-bar for non connected graphs')
+    parser.add_argument('loops', metavar='#loops', type=int, nargs='+',
+                        help='Loop number(s) to generate or order in h-bar for non connected graphs')
 
-    parser.add_argument('-c', '--connected', dest='connected', action='store_true', help='Generate only connected graphs. (default: false)')
-    parser.add_argument('-p', '--1PI', dest='edge2cntd', action='store_true', help='Generate only 1PI graphs. Implies -c/--connected. (default: false)')
-    parser.add_argument('-v', '--vtx2cntd', dest='vtx2cntd', action='store_true', help='Generate only 2-vertex connected graphs. Implies -p/--1PI and -t/--notadpoles. (default: false)')
-    parser.add_argument('-t', '--notadpoles', dest='notadpoles', action='store_true', help='Generate only non-tadpole graphs. (default: false)')
+    graph = parser.add_argument_group('connectivity',
+                                      'This allows to impose constraints about connectivity of the underlying graph.')
+    graph.add_argument('-c', '--connected', dest='connected', action='store_true',
+                       help='Generate only connected graphs. (default: false)')
+    graph.add_argument('-p', '--1PI', dest='edge2cntd', action='store_true',
+                       help='Generate only 1PI graphs. Implies -c/--connected. (default: false)')
+    graph.add_argument('-v', '--vtx2cntd', dest='vtx2cntd', action='store_true',
+                       help='Generate only 2-vertex connected graphs. Implies -p/--1PI and -t/--notadpoles. (default: false)')
+    graph.add_argument('-t', '--notadpoles', dest='notadpoles', action='store_true',
+                       help='Generate only non-tadpole graphs. (default: false)')
 
-    parser.add_argument('--residue', dest='residue', type=int, default=0, help="restrict generation to some residue modulo some modulus")
-    parser.add_argument('--modulus', dest='modulus', type=int, default=0, help="restrict generation to some residue modulo some modulus")
+    generation = parser.add_argument_group('generation',
+                                           'This allows to repeatedly generate one graph then skip some.')
+    generation.add_argument('--residue', dest='residue', type=int, default=0,
+                            help="Restrict generation to some residue modulo some modulus.")
+    generation.add_argument('--modulus', dest='modulus', type=int, default=0,
+                            help="Restrict generation to some residue modulo some modulus.")
 
-    parser.add_argument('-k', '--valence', dest='valence', type=int, default=4, help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
-    parser.add_argument('--phi34', dest='phi34', action='store_true', help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
+    theory = parser.add_argument_group('Quantum Field Theory',
+                                       'This allows to choose the theory to consider.')
+    _theory = theory.add_mutually_exclusive_group(required=True)
+    _theory.add_argument('-k', '--valence', dest='valence', type=int, default=4,
+                        help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
+    _theory.add_argument('--phi34', dest='phi34', action='store_true',
+                        help='Generate graphs with only 3 or 4 valent internal vertices. -k is ignored. (default: false)')
+    _theory.add_argument('--qed', dest='qed', action='store_true',
+                        help='Generate QED graphs (with neglect of Furry\'s theorem). -k is ignored. (default: false)')
+    _theory.add_argument('--qed_furry', dest='qed_furry', action='store_true',
+                        help='Generate QED graphs (respecting Furry\'s theorem). -k is ignored. (default: false)')
+    _theory.add_argument('--ym', dest='ym', action='store_true',
+                        help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
+    _theory.add_argument('--yukawa', dest='yukawa', action='store_true',
+                        help='Generate Yukawa+phi^4 graphs. -k is ignored. (default: false)')
 
-    parser.add_argument('--qed', dest='qed', action='store_true', help='Generate QED graphs (with neglect of Furry\'s theorem). -k is ignored. (default: false)')
-    parser.add_argument('--qed_furry', dest='qed_furry', action='store_true', help='Generate QED graphs (respecting Furry\'s theorem). -k is ignored. (default: false)')
-    parser.add_argument('--ym', dest='ym', action='store_true', help='Generate Yang-Mills graphs. -k is ignored. (default: false)')
-    parser.add_argument('--yukawa', dest='yukawa', action='store_true', help='Generate Yukawa+phi^4 graphs. -k is ignored. (default: false)')
+    legs = parser.add_argument_group('number and type of legs',
+                                     'This allows to specify the number of each type of leg.')
+    legs.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0,
+                      help='Set the number of external legs in scalar phi^k-QFT. (default: 0)')
+    legs.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0,
+                      help='Set the number of external photon/gluon legs (default: 0)')
+    legs.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0,
+                      help='Set the number of external fermion legs (default: 0)')
+    legs.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0,
+                      help='Set the number of external ghost legs (default: 0)')
 
-    parser.add_argument('-j', '--ext_legs', dest='num_ext_legs', type=int, default=0, help='Set the number of external legs in scalar phi^k-QFT. (default: 0)')
-    parser.add_argument('-b', '--ext_boson_legs', dest='num_ext_blegs', type=int, default=0, help='Set the number of external photon/gluon legs (default: 0)')
-    parser.add_argument('-f', '--ext_fermion_legs', dest='num_ext_flegs', type=int, default=0, help='Set the number of external fermion legs (default: 0)')
-    parser.add_argument('-g', '--ext_ghost_legs', dest='num_ext_glegs', type=int, default=0, help='Set the number of external ghost legs (default: 0)')
-
-    parser.add_argument('-u', '--non_leg_fixed', dest='non_leg_fixed', action='store_true', help='Generate non-leg-fixed graphs. I.e. don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
+    parser.add_argument('-u', '--non_leg_fixed', dest='non_leg_fixed', action='store_true',
+                        help='Generate non-leg-fixed graphs. I.e. don\'t label/distinguish external legs of graphs during isomorphism testing and symmetry-factor calculation. (default: false)')
 
     args = parser.parse_args()
 
