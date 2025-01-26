@@ -12,9 +12,10 @@
 
 import itertools
 
+import nauty_ctrl
+
 from graph import Graph
 from stuff import parse_cntd
-import nauty_ctrl
 
 
 def calc_gen_params(L, k, m, cntd, notadpoles):

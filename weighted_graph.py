@@ -10,13 +10,12 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import factorial
 import copy
 from itertools import permutations
+from math import factorial
 
-from stuff import double_factorial, flip
 from graph import Graph
-
+from stuff import double_factorial, flip
 
 wDict = ['0', 'f', 'A', 'c']
 e_styles = {0: "-", 1: "-", 2: "--", 3: "dotted"}

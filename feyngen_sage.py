@@ -15,14 +15,14 @@ A program to generate Feynman graphs suitable for Hopf algebra calculations.
 import argparse
 import sys
 
-from sage.all import (factorial, QQ, CombinatorialFreeModule,
-                      NN, Words)
+from sage.all import NN, QQ, CombinatorialFreeModule, Words, factorial
+
 import combinatorics
-from weighted_graph import WeightedGraph
-import phi_k_gen
-import qed_gen
-import qcd_gen
 import phi_34_gen
+import phi_k_gen
+import qcd_gen
+import qed_gen
+from weighted_graph import WeightedGraph
 
 
 def gen_and_count(gen_graphs, non_leg_fixed, test_sums):

@@ -10,10 +10,10 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
+import collections
 import re
 import sys
 from fractions import Fraction
-import collections
 
 from hopf_graph import HopfGraph
 

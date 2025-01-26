@@ -10,11 +10,11 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from itertools import product, combinations
+from itertools import combinations, product
 
-from weighted_graph import WeightedGraph
-from stuff import flip
 import phi_k_gen
+from stuff import flip
+from weighted_graph import WeightedGraph
 
 fermion = 1
 boson = 2

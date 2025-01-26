@@ -12,9 +12,9 @@
 
 from itertools import product
 
-from weighted_graph import WeightedGraph
-from stuff import flip
 import phi_34_gen
+from stuff import flip
+from weighted_graph import WeightedGraph
 
 # 1 stands for fermion, 2 for boson
 fermion = 1

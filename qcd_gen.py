@@ -12,9 +12,9 @@
 
 import itertools
 
-from weighted_graph import WeightedGraph
-from stuff import flip
 import phi_34_gen
+from stuff import flip
+from weighted_graph import WeightedGraph
 
 fermion = 1
 boson = 2

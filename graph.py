@@ -10,14 +10,15 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
+import collections
+import copy
+import itertools
 import sys
 from math import factorial
-import collections
-import itertools
-import copy
+
+import nauty_wrapper
 
 from stuff import double_factorial, flip
-import nauty_wrapper
 
 
 class Graph:

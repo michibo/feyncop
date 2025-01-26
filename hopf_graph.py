@@ -10,13 +10,13 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-import itertools
 import collections
-import sys
 import copy
+import itertools
+import sys
 
-from weighted_graph import WeightedGraph
 from graph import Graph
+from weighted_graph import WeightedGraph
 
 
 class HopfGraph(WeightedGraph):

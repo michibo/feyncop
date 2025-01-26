@@ -10,9 +10,10 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from stuff import binomial, factorial, double_factorial
 from fractions import Fraction
-from powerseries import lLog, lConvolute
+
+from powerseries import lConvolute, lLog
+from stuff import binomial, double_factorial, factorial
 
 
 def phi_k_class_coeff(L, m, k):

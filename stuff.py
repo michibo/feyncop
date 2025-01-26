@@ -10,7 +10,7 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from math import factorial, comb
+from math import comb, factorial
 
 
 def parse_cntd(cntd, vtx2cntd) -> str:
