@@ -178,25 +178,35 @@ def main():
     if args.num_ext_legs and (args.num_ext_blegs or args.num_ext_flegs or args.num_ext_glegs):
         print("Warning: -b# and -f# are ignored. Use only -b, -f or -g with --qed or --ym or --yukawa and without -j to indicate QED or Yang Mills or Yukawa+Phi4 enumeration.")
 
-    if not qed and args.valence <= 2:
-        print("Sorry, this program is designed to generate feynman graphs. The vertex valence (-k) needs to be >=3")
+    if args.valence <= 2:
+        print("Sorry, this program is designed to generate Feynman graphs. The vertex valence (-k) needs to be >=3")
         return
 
-    loops_str = "_".join("h%d" % loop for loop in args.loops)
-
-    unlabeled_str = "_nlf" if args.non_leg_fixed else ""
     if args.qed_furry:
-        print("qed_with_furry_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
+        prefix = "qed_with_furry"
+        middle = "_f%d_b%d" % (args.num_ext_flegs, args.num_ext_blegs)
     elif qed:
-        print("qed_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
+        prefix = "qed"
+        middle = "_f%d_b%d" % (args.num_ext_flegs, args.num_ext_blegs)
     elif args.ym:
-        print("ym_f%d_g%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs, unlabeled_str, loops_str))
+        prefix = "ym"
+        middle = "_f%d_g%d_b%d" % (args.num_ext_flegs, args.num_ext_glegs, args.num_ext_blegs)
     elif args.phi34:
-        print("phi3_4_j%d%s_%s :=" % (args.num_ext_legs, unlabeled_str, loops_str))
+        prefix = "phi_3_4"
+        middle = "_j%d" % (args.num_ext_legs)
     elif args.yukawa:
-        print("yukawa_phi_4_f%d_b%d%s_%s :=" % (args.num_ext_flegs, args.num_ext_blegs, unlabeled_str, loops_str))
+        prefix = "yukawa_phi_4"
+        middle = "_f%d_b%d" % (args.num_ext_flegs, args.num_ext_blegs)
     else:
-        print("phi%d_j%d%s_%s :=" % (args.valence, args.num_ext_legs, unlabeled_str, loops_str))
+        prefix = f"phi{args.valence}"
+        middle = "_j%d" % (args.num_ext_legs)
+
+    suffix = "_nlf" if args.non_leg_fixed else ""
+    suffix += "".join(f"_h{loop}" for loop in args.loops)
+    suffix += f"_res{args.residue}_mod{args.modulus}" if args.modulus else ""
+    suffix += " :="
+
+    print(prefix + middle + suffix)
 
     ext_legs_total = 0
     possible_emptyness = not args.connected and not args.edge2cntd and not args.vtx2cntd
