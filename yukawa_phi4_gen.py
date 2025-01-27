@@ -132,6 +132,8 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
         v1, _ = graph.edges[e]
         return 1 if v1 == v else -1
 
+    # the line below should be a binomial choice and not a multiple boolean choice
+    # can we decide how many fermion edges there are ?
     for weights in product((fermion, boson), repeat=len(other_edges)):
         fermion_edges = {e for e, w in zip(other_edges, weights)
                          if w == fermion}
