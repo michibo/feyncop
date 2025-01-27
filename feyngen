@@ -140,7 +140,7 @@ def main():
                             help="Restrict generation to some residue modulo some modulus.")
 
     theory = parser.add_argument_group('theory',
-                                       'This is required to choose the theory to consider. The choices are mutually exclusive.')
+                                       'This is the theory to consider. The choices are mutually exclusive. The default is phi^4.')
     _theory = theory.add_mutually_exclusive_group()
     _theory.add_argument('-k', '--valence', dest='valence', type=int, default=4,
                         help='Generate phi^k graphs. k determines the vertex valence of the phi^k-QFT. (default: 4)')
