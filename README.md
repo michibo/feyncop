@@ -126,6 +126,6 @@ This output corresponds to the coproduct of the sum of all 1PI,
 For more exhaustive tests run the scripts in the `tests` directory.
 
     $ cd tests
-    $ .test_feyngen.sh
-    $ .test_feyncop.sh
+    $ ./test_feyngen.sh
+    $ ./test_feyncop.sh
 
