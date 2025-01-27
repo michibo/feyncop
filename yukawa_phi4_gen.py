@@ -53,6 +53,39 @@ def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
         yield from frozenset(gen_yukawa_graphs)
 
 
+def gen_graphs_yukawa_phi4_parallel(loops, ext_fermion, ext_boson,
+                                    cntd, edge2cntd, vtx2cntd,
+                                    notadpoles):
+    """
+    EXAMPLES::
+
+        sage: from yukawa_phi4_gen import *
+        sage: L = gen_graphs_yukawa_phi4_parallel(3,0,0,True,False,False,True)
+        sage: list(L)
+        [G[[1,0,A],[1,0,A],[1,0,A],[1,0,A]]/48]
+
+        sage: L = gen_graphs_yukawa_phi4_parallel(0,0,4,True,False,False,True)
+        sage: list(L)
+        [G[[1,0,A],[2,0,A],[3,0,A],[4,0,A]]/24]
+    """
+    from sage.parallel.multiprocessing_sage import parallel_iter
+
+    N_proc = 2
+
+    def possibilities(bare_graph, ext_fermion, ext_boson):
+        return frozenset(g.unlabeled_graph
+                         for g in gen_yukawa_phi4_from_phi34(bare_graph,
+                                                             ext_fermion,
+                                                             ext_boson))
+
+    phi34_graphs = phi_34_gen.gen_graphs(loops, ext_fermion + ext_boson,
+                                         cntd, edge2cntd, vtx2cntd, notadpoles)
+
+    return parallel_iter(N_proc, possibilities,
+                         (((g, ext_fermion, ext_boson), {})
+                          for g in phi34_graphs))
+
+
 def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
     """
     Helper function: Generate full fledged Yukawa-Phi4 graphs
