@@ -1,0 +1,385 @@
+This file contains a list of numbers produced by feyngen with different parameters
+./feyngen -k4 0 -j0
+0
+./feyngen -k4 0 -j0 -u
+0
+./feyngen -k4 0 -j0 -p
+0
+./feyngen -k4 0 -j0 -p -u
+0
+./feyngen -k4 0 -j0 -t
+0
+./feyngen -k4 0 -j0 -t -u
+0
+./feyngen -k4 0 -j0 -t -p
+0
+./feyngen -k4 0 -j0 -t -p -u
+0
+./feyngen -k4 0 -j0 -v
+0
+./feyngen -k4 0 -j0 -v -u
+0
+./feyngen -k4 0 -j0 -v -p
+0
+./feyngen -k4 0 -j0 -v -p -u
+0
+./feyngen -k4 0 -j0 -v -t
+0
+./feyngen -k4 0 -j0 -v -t -u
+0
+./feyngen -k4 0 -j0 -v -t -p
+0
+./feyngen -k4 0 -j0 -v -t -p -u
+0
+./feyngen -k4 0 -j0 -c
+0
+./feyngen -k4 0 -j0 -c -u
+0
+./feyngen -k4 0 -j0 -c -p
+0
+./feyngen -k4 0 -j0 -c -p -u
+0
+./feyngen -k4 0 -j0 -c -t
+0
+./feyngen -k4 0 -j0 -c -t -u
+0
+./feyngen -k4 0 -j0 -c -t -p
+0
+./feyngen -k4 0 -j0 -c -t -p -u
+0
+./feyngen -k4 0 -j0 -c -v
+0
+./feyngen -k4 0 -j0 -c -v -u
+0
+./feyngen -k4 0 -j0 -c -v -p
+0
+./feyngen -k4 0 -j0 -c -v -p -u
+0
+./feyngen -k4 0 -j0 -c -v -t
+0
+./feyngen -k4 0 -j0 -c -v -t -u
+0
+./feyngen -k4 0 -j0 -c -v -t -p
+0
+./feyngen -k4 0 -j0 -c -v -t -p -u
+0
+./feyngen -k4 1 -j0
+1
+./feyngen -k4 1 -j0 -u
+1
+./feyngen -k4 1 -j0 -p
+0
+./feyngen -k4 1 -j0 -p -u
+0
+./feyngen -k4 1 -j0 -t
+1
+./feyngen -k4 1 -j0 -t -u
+1
+./feyngen -k4 1 -j0 -t -p
+0
+./feyngen -k4 1 -j0 -t -p -u
+0
+./feyngen -k4 1 -j0 -v
+0
+./feyngen -k4 1 -j0 -v -u
+0
+./feyngen -k4 1 -j0 -v -p
+0
+./feyngen -k4 1 -j0 -v -p -u
+0
+./feyngen -k4 1 -j0 -v -t
+0
+./feyngen -k4 1 -j0 -v -t -u
+0
+./feyngen -k4 1 -j0 -v -t -p
+0
+./feyngen -k4 1 -j0 -v -t -p -u
+0
+./feyngen -k4 1 -j0 -c
+0
+./feyngen -k4 1 -j0 -c -u
+0
+./feyngen -k4 1 -j0 -c -p
+0
+./feyngen -k4 1 -j0 -c -p -u
+0
+./feyngen -k4 1 -j0 -c -t
+0
+./feyngen -k4 1 -j0 -c -t -u
+0
+./feyngen -k4 1 -j0 -c -t -p
+0
+./feyngen -k4 1 -j0 -c -t -p -u
+0
+./feyngen -k4 1 -j0 -c -v
+0
+./feyngen -k4 1 -j0 -c -v -u
+0
+./feyngen -k4 1 -j0 -c -v -p
+0
+./feyngen -k4 1 -j0 -c -v -p -u
+0
+./feyngen -k4 1 -j0 -c -v -t
+0
+./feyngen -k4 1 -j0 -c -v -t -u
+0
+./feyngen -k4 1 -j0 -c -v -t -p
+0
+./feyngen -k4 1 -j0 -c -v -t -p -u
+0
+./feyngen -k4 0 -j1
+0
+./feyngen -k4 0 -j1 -u
+0
+./feyngen -k4 0 -j1 -p
+0
+./feyngen -k4 0 -j1 -p -u
+0
+./feyngen -k4 0 -j1 -t
+0
+./feyngen -k4 0 -j1 -t -u
+0
+./feyngen -k4 0 -j1 -t -p
+0
+./feyngen -k4 0 -j1 -t -p -u
+0
+./feyngen -k4 0 -j1 -v
+0
+./feyngen -k4 0 -j1 -v -u
+0
+./feyngen -k4 0 -j1 -v -p
+0
+./feyngen -k4 0 -j1 -v -p -u
+0
+./feyngen -k4 0 -j1 -v -t
+0
+./feyngen -k4 0 -j1 -v -t -u
+0
+./feyngen -k4 0 -j1 -v -t -p
+0
+./feyngen -k4 0 -j1 -v -t -p -u
+0
+./feyngen -k4 0 -j1 -c
+0
+./feyngen -k4 0 -j1 -c -u
+0
+./feyngen -k4 0 -j1 -c -p
+0
+./feyngen -k4 0 -j1 -c -p -u
+0
+./feyngen -k4 0 -j1 -c -t
+0
+./feyngen -k4 0 -j1 -c -t -u
+0
+./feyngen -k4 0 -j1 -c -t -p
+0
+./feyngen -k4 0 -j1 -c -t -p -u
+0
+./feyngen -k4 0 -j1 -c -v
+0
+./feyngen -k4 0 -j1 -c -v -u
+0
+./feyngen -k4 0 -j1 -c -v -p
+0
+./feyngen -k4 0 -j1 -c -v -p -u
+0
+./feyngen -k4 0 -j1 -c -v -t
+0
+./feyngen -k4 0 -j1 -c -v -t -u
+0
+./feyngen -k4 0 -j1 -c -v -t -p
+0
+./feyngen -k4 0 -j1 -c -v -t -p -u
+0
+./feyngen -k4 1 -j1
+0
+./feyngen -k4 1 -j1 -u
+0
+./feyngen -k4 1 -j1 -p
+0
+./feyngen -k4 1 -j1 -p -u
+0
+./feyngen -k4 1 -j1 -t
+0
+./feyngen -k4 1 -j1 -t -u
+0
+./feyngen -k4 1 -j1 -t -p
+0
+./feyngen -k4 1 -j1 -t -p -u
+0
+./feyngen -k4 1 -j1 -v
+0
+./feyngen -k4 1 -j1 -v -u
+0
+./feyngen -k4 1 -j1 -v -p
+0
+./feyngen -k4 1 -j1 -v -p -u
+0
+./feyngen -k4 1 -j1 -v -t
+0
+./feyngen -k4 1 -j1 -v -t -u
+0
+./feyngen -k4 1 -j1 -v -t -p
+0
+./feyngen -k4 1 -j1 -v -t -p -u
+0
+./feyngen -k4 1 -j1 -c
+0
+./feyngen -k4 1 -j1 -c -u
+0
+./feyngen -k4 1 -j1 -c -p
+0
+./feyngen -k4 1 -j1 -c -p -u
+0
+./feyngen -k4 1 -j1 -c -t
+0
+./feyngen -k4 1 -j1 -c -t -u
+0
+./feyngen -k4 1 -j1 -c -t -p
+0
+./feyngen -k4 1 -j1 -c -t -p -u
+0
+./feyngen -k4 1 -j1 -c -v
+0
+./feyngen -k4 1 -j1 -c -v -u
+0
+./feyngen -k4 1 -j1 -c -v -p
+0
+./feyngen -k4 1 -j1 -c -v -p -u
+0
+./feyngen -k4 1 -j1 -c -v -t
+0
+./feyngen -k4 1 -j1 -c -v -t -u
+0
+./feyngen -k4 1 -j1 -c -v -t -p
+0
+./feyngen -k4 1 -j1 -c -v -t -p -u
+0
+./feyngen -k4 0 -j2
+1
+./feyngen -k4 0 -j2 -u
+1/2
+./feyngen -k4 0 -j2 -p
+1
+./feyngen -k4 0 -j2 -p -u
+1/2
+./feyngen -k4 0 -j2 -t
+1
+./feyngen -k4 0 -j2 -t -u
+1/2
+./feyngen -k4 0 -j2 -t -p
+1
+./feyngen -k4 0 -j2 -t -p -u
+1/2
+./feyngen -k4 0 -j2 -v
+0
+./feyngen -k4 0 -j2 -v -u
+0
+./feyngen -k4 0 -j2 -v -p
+0
+./feyngen -k4 0 -j2 -v -p -u
+0
+./feyngen -k4 0 -j2 -v -t
+0
+./feyngen -k4 0 -j2 -v -t -u
+0
+./feyngen -k4 0 -j2 -v -t -p
+0
+./feyngen -k4 0 -j2 -v -t -p -u
+0
+./feyngen -k4 0 -j2 -c
+1
+./feyngen -k4 0 -j2 -c -u
+1/2
+./feyngen -k4 0 -j2 -c -p
+1
+./feyngen -k4 0 -j2 -c -p -u
+1/2
+./feyngen -k4 0 -j2 -c -t
+1
+./feyngen -k4 0 -j2 -c -t -u
+1/2
+./feyngen -k4 0 -j2 -c -t -p
+1
+./feyngen -k4 0 -j2 -c -t -p -u
+1/2
+./feyngen -k4 0 -j2 -c -v
+0
+./feyngen -k4 0 -j2 -c -v -u
+0
+./feyngen -k4 0 -j2 -c -v -p
+0
+./feyngen -k4 0 -j2 -c -v -p -u
+0
+./feyngen -k4 0 -j2 -c -v -t
+0
+./feyngen -k4 0 -j2 -c -v -t -u
+0
+./feyngen -k4 0 -j2 -c -v -t -p
+0
+./feyngen -k4 0 -j2 -c -v -t -p -u
+0
+./feyngen -k4 1 -j2
+5/8
+./feyngen -k4 1 -j2 -u
+5/16
+./feyngen -k4 1 -j2 -p
+1/2
+./feyngen -k4 1 -j2 -p -u
+1/4
+./feyngen -k4 1 -j2 -t
+0
+./feyngen -k4 1 -j2 -t -u
+0
+./feyngen -k4 1 -j2 -t -p
+0
+./feyngen -k4 1 -j2 -t -p -u
+0
+./feyngen -k4 1 -j2 -v
+0
+./feyngen -k4 1 -j2 -v -u
+0
+./feyngen -k4 1 -j2 -v -p
+0
+./feyngen -k4 1 -j2 -v -p -u
+0
+./feyngen -k4 1 -j2 -v -t
+0
+./feyngen -k4 1 -j2 -v -t -u
+0
+./feyngen -k4 1 -j2 -v -t -p
+0
+./feyngen -k4 1 -j2 -v -t -p -u
+0
+./feyngen -k4 1 -j2 -c
+1/2
+./feyngen -k4 1 -j2 -c -u
+1/4
+./feyngen -k4 1 -j2 -c -p
+1/2
+./feyngen -k4 1 -j2 -c -p -u
+1/4
+./feyngen -k4 1 -j2 -c -t
+0
+./feyngen -k4 1 -j2 -c -t -u
+0
+./feyngen -k4 1 -j2 -c -t -p
+0
+./feyngen -k4 1 -j2 -c -t -p -u
+0
+./feyngen -k4 1 -j2 -c -v
+0
+./feyngen -k4 1 -j2 -c -v -u
+0
+./feyngen -k4 1 -j2 -c -v -p
+0
+./feyngen -k4 1 -j2 -c -v -p -u
+0
+./feyngen -k4 1 -j2 -c -v -t
+0
+./feyngen -k4 1 -j2 -c -v -t -u
+0
+./feyngen -k4 1 -j2 -c -v -t -p
+0
+./feyngen -k4 1 -j2 -c -v -t -p -u
+0

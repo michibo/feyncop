@@ -12,7 +12,6 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-
 APP_ROOT="$(dirname "$(dirname "$(readlink -fm "$0")")")"
 
 FG=$APP_ROOT/feyngen
@@ -21,7 +20,7 @@ WS=$APP_ROOT/weightsum
 MAXLOOPS=2
 MAXSRCS=4
 
-CMPFILE=verification.out
+CMPFILE=$APP_ROOT/tests/verification.out
 TESTFILE=$(mktemp)
 
 echo "$TESTFILE"
@@ -120,9 +119,8 @@ do
     done
 done
 
-
-
 DIFF=$(diff $TESTFILE $CMPFILE) 
+
 if [ "$DIFF" == "" ] 
 then
     echo "TEST ENDED SUCCESSFULLY"
