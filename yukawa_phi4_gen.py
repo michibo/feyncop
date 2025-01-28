@@ -10,7 +10,7 @@
 # Bugreports, comments, or suggestions are always welcome.
 # For instance, via github or email
 
-from itertools import product
+from itertools import product, combinations
 
 import phi_34_gen
 from stuff import flip
@@ -41,9 +41,24 @@ def gen_graphs_yukawa_phi4(loops, ext_fermion, ext_boson,
         sage: L = gen_graphs_yukawa_phi4(0,0,4,True,False,False,True)
         sage: list(L)
         [G[[1,0,A],[2,0,A],[3,0,A],[4,0,A]]/24]
+
+        sage: L = gen_graphs_yukawa_phi4(4,0,0,True,True,True,False)
+        sage: list(L)
+        [G[[1,0,A],[1,0,A],[2,0,A],[2,0,A],[2,1,A],[2,1,A]]/48,
+         G[[0,1,f],[1,0,f],[2,0,A],[3,1,A],[3,2,A],[3,2,A],[3,2,A]]/12,
+         G[[0,1,f],[1,2,f],[2,3,f],[3,0,f],[4,0,A],[4,1,A],[4,2,A],[4,3,A]]/4,
+         G[[0,1,f],[1,2,f],[2,3,f],[3,4,f],[4,5,f],[5,0,f],[2,1,A],[4,3,A],[5,0,A]]/3,
+         G[[0,2,f],[1,4,f],[2,0,f],[3,5,f],[4,1,f],[5,3,f],[1,0,A],[3,2,A],[5,4,A]]/6,
+         G[[0,2,f],[1,3,f],[2,5,f],[3,1,f],[4,0,f],[5,4,f],[2,0,A],[4,3,A],[5,1,A]]/1,
+         G[[0,2,f],[1,3,f],[2,5,f],[3,4,f],[4,0,f],[5,1,f],[2,0,A],[3,1,A],[5,4,A]]/2,
+         G[[0,1,f],[1,4,f],[2,5,f],[3,0,f],[4,2,f],[5,3,f],[2,0,A],[4,3,A],[5,1,A]]/6,
+         G[[0,1,f],[1,0,f],[2,4,f],[3,5,f],[4,3,f],[5,2,f],[3,2,A],[4,0,A],[5,1,A]]/2,
+         G[[0,4,f],[1,0,f],[2,3,f],[3,5,f],[4,2,f],[5,1,f],[1,0,A],[4,3,A],[5,2,A]]/1,
+         G[[0,2,f],[1,3,f],[2,5,f],[3,4,f],[4,0,f],[5,1,f],[1,0,A],[4,2,A],[5,3,A]]/2]
     """
     phi34_graphs = phi_34_gen.gen_graphs(loops, ext_fermion + ext_boson,
-                                         cntd, edge2cntd, vtx2cntd, notadpoles, chunk=chunk)
+                                         cntd, edge2cntd, vtx2cntd, notadpoles,
+                                         chunk=chunk)
 
     for g_phi34 in phi34_graphs:
         gen_yukawa_graphs = (g.unlabeled_graph
@@ -128,25 +143,24 @@ def gen_yukawa_phi4_from_phi34(graph, ext_fermion, ext_boson):
                    if e not in forced_boson_edges
                    and e not in forced_fermion_edges]
 
+    n3 = len(phi3_vtcs)
+    needed_fermions = n3 + ext_fermion // 2 - len(forced_fermion_edges)
+
     def dir_sign(e, v):
         v1, _ = graph.edges[e]
         return 1 if v1 == v else -1
 
-    # the line below should be a binomial choice and not a multiple boolean choice
-    # can we decide how many fermion edges there are ?
-    for weights in product((fermion, boson), repeat=len(other_edges)):
-        fermion_edges = {e for e, w in zip(other_edges, weights)
-                         if w == fermion}
+    for chosen_fermions in combinations(other_edges, needed_fermions):
+        fermion_edges = set(chosen_fermions)
         fermion_edges.update(forced_fermion_edges)
-        boson_edges = {e for e, w in zip(other_edges, weights)
-                       if w == boson}
+        boson_edges = {e for e in other_edges if e not in fermion_edges}
         boson_edges.update(forced_boson_edges)
 
         full_weights = [boson] * len(graph.edges_set)
         pos = 0
         for i in graph.edges_set:
             if i in other_edges:
-                full_weights[i] = weights[pos]
+                full_weights[i] = fermion if i in fermion_edges else boson
                 pos += 1
 
         # check that vertices are correct
